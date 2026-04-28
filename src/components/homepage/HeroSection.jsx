@@ -13,7 +13,7 @@ import { useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
 
 export function HeroSection() {
   const { t } = useTranslation();
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState({ from: null, to: null });
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -112,9 +112,14 @@ export function HeroSection() {
     return date.toLocaleDateString("en-US", options);
   };
 
+  const formatDateRange = (dateRange) => {
+    if (!dateRange || !dateRange.from) return "";
+    if (!dateRange.to) return formatDate(dateRange.from);
+    return `${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`;
+  };
+
   const handleDateSelect = (date) => {
     setSelectedDate(date);
-    setShowCalendar(false);
   };
 
   const toggleCalendar = (e) => {
@@ -171,7 +176,7 @@ export function HeroSection() {
                   <Input
                     className="h-auto border-0 px-0 py-0.5 text-[11px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) cursor-pointer"
                     placeholder={t('hero.selectDate')}
-                    value={selectedDate ? formatDate(selectedDate) : ""}
+                    value={formatDateRange(selectedDate)}
                     onClick={toggleCalendar}
                     readOnly
                   />
@@ -182,6 +187,7 @@ export function HeroSection() {
                     className="absolute left-0 top-full z-100 mt-2"
                   >
                     <Calendar
+                      mode="range"
                       selected={selectedDate}
                       onSelect={handleDateSelect}
                       onClose={() => setShowCalendar(false)}

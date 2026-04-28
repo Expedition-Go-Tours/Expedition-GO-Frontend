@@ -1,7 +1,17 @@
-import { Facebook, Instagram, Link2, Music2, Play, Twitter, Youtube, Smartphone } from "lucide-react";
+import { Facebook, Instagram, Link2, Music2, Play, Twitter, Youtube, Smartphone, ChevronDown } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { footerGroups, paymentLogos } from "./data";
+import { useCurrency } from "@/contexts/CurrencyContext";
+
+// Import payment method images
+import viiviPay from "@/assets/images/Viivi.svg";
+import mastercardPay from "@/assets/images/mastercard.svg";
+import amexPay from "@/assets/images/americanexpress_pay.svg";
+import googlePay from "@/assets/images/google_pay.svg";
+import applePay from "@/assets/images/apple_pay.svg";
+import paypalPay from "@/assets/images/paypal_pay.svg";
 
 // Google Play Icon Component
 function GooglePlayIcon() {
@@ -22,7 +32,39 @@ function AppleIcon() {
 }
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { currency, setCurrency, availableCurrencies } = useCurrency();
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+
+  const handleLanguageChange = (langCode) => {
+    i18n.changeLanguage(langCode);
+    localStorage.setItem('language', langCode);
+    setIsLanguageOpen(false);
+  };
+
+  const handleCurrencyChange = (currencyCode) => {
+    setCurrency(currencyCode);
+    setIsCurrencyOpen(false);
+  };
+
+  const languages = [
+    { code: "en", name: "English (US)" },
+    { code: "es", name: "Español (ES)" },
+    { code: "fr", name: "Français (FR)" },
+    { code: "de", name: "Deutsch (DE)" },
+    { code: "nl", name: "Nederlands (NL)" }
+  ];
+
+  const getCurrentLanguageName = () => {
+    const lang = languages.find(l => l.code === i18n.language);
+    return lang ? lang.name : "English (US)";
+  };
+
+  const getCurrentCurrencyName = () => {
+    const curr = availableCurrencies.find(c => c.code === currency);
+    return curr ? `${curr.code} - ${curr.name} (${curr.symbol})` : "USD - US Dollar ($)";
+  };
   
   // Map footer titles and links to translation keys
   const getTranslationKey = (text) => {
@@ -70,25 +112,115 @@ export function Footer() {
       <div className="mx-auto grid max-w-[1520px] gap-6 px-3 py-6 sm:gap-8 sm:px-4 sm:py-8 lg:px-6 lg:py-10 xl:grid-cols-[180px_200px_200px_1fr_1fr_1fr_190px]">
         {/* Language & Currency Section */}
         <div className="space-y-4">
-          <div>
+          <div className="relative">
             <p className="mb-2 text-sm font-semibold">Language</p>
-            <div className="rounded-md border border-white/15 bg-white px-3 py-2 text-[13px] text-slate-900">English (US)</div>
+            <button
+              onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+              className="w-full rounded-md border border-white/15 bg-white px-3 py-2 text-left text-[13px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
+            >
+              <span>{getCurrentLanguageName()}</span>
+              <ChevronDown className={`size-4 text-slate-500 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isLanguageOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsLanguageOpen(false)}
+                />
+                <div className="absolute bottom-full left-0 mb-2 z-50 w-full min-w-[200px] rounded-lg border border-slate-200 bg-white shadow-xl">
+                  <div className="max-h-[300px] overflow-y-auto p-2">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition ${
+                          i18n.language === lang.code
+                            ? "bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold"
+                            : "text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <span>{lang.name}</span>
+                        {i18n.language === lang.code && (
+                          <svg className="size-4 text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-          <div>
+          <div className="relative">
             <p className="mb-2 text-sm font-semibold">Currency</p>
-            <div className="rounded-md border border-white/15 bg-white px-3 py-2 text-[13px] text-slate-900">USD - US Dollar ($)</div>
+            <button
+              onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
+              className="w-full rounded-md border border-white/15 bg-white px-3 py-2 text-left text-[13px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
+            >
+              <span>{getCurrentCurrencyName()}</span>
+              <ChevronDown className={`size-4 text-slate-500 transition-transform ${isCurrencyOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isCurrencyOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsCurrencyOpen(false)}
+                />
+                <div className="absolute bottom-full left-0 mb-2 z-50 w-full min-w-[250px] rounded-lg border border-slate-200 bg-white shadow-xl">
+                  <div className="max-h-[300px] overflow-y-auto p-2">
+                    {availableCurrencies.map((curr) => (
+                      <button
+                        key={curr.code}
+                        onClick={() => handleCurrencyChange(curr.code)}
+                        className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition ${
+                          currency === curr.code
+                            ? "bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold"
+                            : "text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div>
+                          <div className="font-medium">{curr.code}</div>
+                          <div className="text-xs text-slate-500">{curr.name} ({curr.symbol})</div>
+                        </div>
+                        {currency === curr.code && (
+                          <svg className="size-4 text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* Ways You Can Pay */}
         <div>
           <p className="mb-3 text-sm font-semibold">{t('footer.waysYouCanPay')}</p>
-          <div className="grid grid-cols-3 gap-2">
-            {paymentLogos.slice(0, 6).map((logo) => (
-              <div key={logo} className="rounded-md border border-white/10 bg-white px-2 py-2 text-center text-[10px] font-semibold text-[color:var(--brand-green)]">
-                {logo}
+          <div className="inline-block bg-white/5 rounded-md p-0.5">
+            <div className="grid grid-cols-3 gap-0">
+              <div className="flex items-center justify-center h-6 w-10">
+                <img src={viiviPay} alt="Viivi" className="h-full w-full object-contain" />
               </div>
-            ))}
+              <div className="flex items-center justify-center h-6 w-10">
+                <img src={mastercardPay} alt="Mastercard" className="h-full w-full object-contain" />
+              </div>
+              <div className="flex items-center justify-center h-6 w-10">
+                <img src={amexPay} alt="American Express" className="h-full w-full object-contain" />
+              </div>
+              <div className="flex items-center justify-center h-6 w-10">
+                <img src={googlePay} alt="Google Pay" className="h-full w-full object-contain" />
+              </div>
+              <div className="flex items-center justify-center h-6 w-10">
+                <img src={applePay} alt="Apple Pay" className="h-full w-full object-contain" />
+              </div>
+              <div className="flex items-center justify-center h-6 w-10">
+                <img src={paypalPay} alt="PayPal" className="h-full w-full object-contain" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -164,7 +296,6 @@ export function Footer() {
             <a href="#" className="block transition hover:text-white">{t('footer.home')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.tours')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.destinations')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.experiences')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.deals')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.aboutUs')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.contact')}</a>

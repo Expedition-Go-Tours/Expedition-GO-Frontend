@@ -8,9 +8,24 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-export function Calendar({ selected, onSelect, onClose }) {
+export function Calendar({ selected, onSelect, onClose, mode = "single" }) {
   const today = new Date();
-  const [currentMonth, setCurrentMonth] = useState(selected ? new Date(selected) : today);
+  
+  // Initialize currentMonth based on mode
+  const getInitialMonth = () => {
+    if (mode === "range" && selected?.from) {
+      return new Date(selected.from);
+    } else if (mode === "single" && selected) {
+      return new Date(selected);
+    }
+    return today;
+  };
+  
+  const [currentMonth, setCurrentMonth] = useState(getInitialMonth());
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState(null);
+  const [dragEnd, setDragEnd] = useState(null);
+  const [hoverDate, setHoverDate] = useState(null);
 
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
@@ -28,9 +43,55 @@ export function Calendar({ selected, onSelect, onClose }) {
   };
 
   const handleDateClick = (day) => {
+    const clickedDate = new Date(year, month, day);
+    
+    if (mode === "range") {
+      // If no start date or both dates are set, start new selection
+      if (!dragStart || (dragStart && dragEnd)) {
+        setDragStart(clickedDate);
+        setDragEnd(null);
+        onSelect({ from: clickedDate, to: null });
+      } else {
+        // Complete the range
+        const from = dragStart < clickedDate ? dragStart : clickedDate;
+        const to = dragStart < clickedDate ? clickedDate : dragStart;
+        setDragEnd(to);
+        onSelect({ from, to });
+      }
+    } else {
+      onSelect(clickedDate);
+      if (onClose) onClose();
+    }
+  };
+
+  const handleMouseDown = (day) => {
+    if (mode !== "range") return;
     const selectedDate = new Date(year, month, day);
-    onSelect(selectedDate);
-    if (onClose) onClose();
+    setIsDragging(true);
+    setDragStart(selectedDate);
+    setDragEnd(null);
+  };
+
+  const handleMouseEnter = (day) => {
+    const selectedDate = new Date(year, month, day);
+    setHoverDate(selectedDate);
+    
+    if (mode === "range" && isDragging && dragStart) {
+      setDragEnd(selectedDate);
+    }
+  };
+
+  const handleMouseUp = (day) => {
+    if (mode !== "range" || !isDragging) return;
+    const selectedDate = new Date(year, month, day);
+    setIsDragging(false);
+    
+    if (dragStart) {
+      const from = dragStart < selectedDate ? dragStart : selectedDate;
+      const to = dragStart < selectedDate ? selectedDate : dragStart;
+      setDragEnd(to);
+      onSelect({ from, to });
+    }
   };
 
   const isToday = (day) => {
@@ -43,11 +104,110 @@ export function Calendar({ selected, onSelect, onClose }) {
 
   const isSelected = (day) => {
     if (!selected) return false;
-    const selectedDate = new Date(selected);
+    
+    if (mode === "range") {
+      const date = new Date(year, month, day);
+      const from = selected.from;
+      const to = selected.to;
+      
+      if (from && to) {
+        return date >= from && date <= to;
+      } else if (from) {
+        return (
+          day === from.getDate() &&
+          month === from.getMonth() &&
+          year === from.getFullYear()
+        );
+      }
+      return false;
+    } else {
+      const selectedDate = new Date(selected);
+      return (
+        day === selectedDate.getDate() &&
+        month === selectedDate.getMonth() &&
+        year === selectedDate.getFullYear()
+      );
+    }
+  };
+
+  const isInDragRange = (day) => {
+    if (mode !== "range" || !dragStart) return false;
+    
+    const date = new Date(year, month, day);
+    
+    // Show hover preview when selecting range
+    if (!dragEnd && hoverDate && !isDragging) {
+      const from = dragStart < hoverDate ? dragStart : hoverDate;
+      const to = dragStart < hoverDate ? hoverDate : dragStart;
+      return date > from && date < to;
+    }
+    
+    // Show range during drag
+    const end = isDragging ? (hoverDate || dragEnd) : dragEnd;
+    
+    if (!end) return false;
+    
+    const from = dragStart < end ? dragStart : end;
+    const to = dragStart < end ? end : dragStart;
+    
+    return date > from && date < to;
+  };
+
+  const isRangeStart = (day) => {
+    if (mode !== "range" || !dragStart) return false;
+    const date = new Date(year, month, day);
+    
+    // Show hover preview when selecting range
+    if (!dragEnd && hoverDate && !isDragging) {
+      const from = dragStart < hoverDate ? dragStart : hoverDate;
+      return (
+        day === from.getDate() &&
+        month === from.getMonth() &&
+        year === from.getFullYear()
+      );
+    }
+    
+    const end = dragEnd || (isDragging ? hoverDate : null);
+    
+    if (!end) {
+      return (
+        day === dragStart.getDate() &&
+        month === dragStart.getMonth() &&
+        year === dragStart.getFullYear()
+      );
+    }
+    
+    const from = dragStart < end ? dragStart : end;
     return (
-      day === selectedDate.getDate() &&
-      month === selectedDate.getMonth() &&
-      year === selectedDate.getFullYear()
+      day === from.getDate() &&
+      month === from.getMonth() &&
+      year === from.getFullYear()
+    );
+  };
+
+  const isRangeEnd = (day) => {
+    if (mode !== "range" || !dragStart) return false;
+    const date = new Date(year, month, day);
+    
+    // Show hover preview when selecting range
+    if (!dragEnd && hoverDate && !isDragging) {
+      const to = dragStart < hoverDate ? hoverDate : dragStart;
+      return (
+        day === to.getDate() &&
+        month === to.getMonth() &&
+        year === to.getFullYear()
+      );
+    }
+    
+    const end = dragEnd || (isDragging ? hoverDate : null);
+    
+    if (!end) return false;
+    
+    const to = dragStart < end ? end : dragStart;
+    return (
+      day === to.getDate() &&
+      month === to.getMonth() &&
+      year === to.getFullYear()
     );
   };
 
@@ -122,26 +282,43 @@ export function Calendar({ selected, onSelect, onClose }) {
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1">
+      <div 
+        className="grid grid-cols-7 gap-1"
+        onMouseLeave={() => {
+          if (isDragging) {
+            setIsDragging(false);
+          }
+        }}
+      >
         {calendarDays.map((item, index) => {
           const isCurrentMonth = item.isCurrentMonth;
           const day = item.day;
           const isPast = item.isPast;
           const todayDate = isToday(day) && isCurrentMonth;
           const selectedDate = isSelected(day) && isCurrentMonth;
+          const inDragRange = isInDragRange(day) && isCurrentMonth;
+          const rangeStart = isRangeStart(day) && isCurrentMonth;
+          const rangeEnd = isRangeEnd(day) && isCurrentMonth;
 
           return (
             <button
               key={index}
               onClick={() => isCurrentMonth && !isPast && handleDateClick(day)}
+              onMouseDown={() => isCurrentMonth && !isPast && handleMouseDown(day)}
+              onMouseEnter={() => isCurrentMonth && !isPast && handleMouseEnter(day)}
+              onMouseUp={() => isCurrentMonth && !isPast && handleMouseUp(day)}
               disabled={!isCurrentMonth || isPast}
               className={`
-                grid size-9 place-items-center rounded-lg text-sm transition
+                grid size-9 place-items-center rounded-lg text-sm transition select-none
                 ${!isCurrentMonth ? "text-slate-300" : ""}
-                ${isPast && isCurrentMonth ? "text-slate-300 cursor-not-allowed" : ""}
-                ${!isPast && isCurrentMonth ? "hover:bg-[color:var(--brand-mist)] cursor-pointer" : ""}
-                ${todayDate ? "border border-[color:var(--brand-green)] text-[color:var(--brand-green)] font-semibold" : ""}
-                ${selectedDate ? "bg-[color:var(--brand-green)] text-white font-semibold hover:bg-[color:var(--brand-green-2)]" : ""}
+                ${isPast && isCurrentMonth ? "text-slate-400 opacity-40 cursor-not-allowed" : ""}
+                ${!isPast && isCurrentMonth ? "hover:bg-[#edf6f0] cursor-pointer" : ""}
+                ${todayDate && !selectedDate && !inDragRange && !rangeStart && !rangeEnd ? "border-2 border-[#0b4f2b] text-[#01311a] font-semibold" : ""}
+                ${selectedDate && mode === "single" ? "bg-[#01311a] text-white font-semibold hover:bg-[#0b4f2b]" : ""}
+                ${inDragRange && mode === "range" && !rangeStart && !rangeEnd ? "bg-[#d4e8dc]" : ""}
+                ${(rangeStart || rangeEnd) && mode === "range" ? "bg-[#01311a] text-white font-semibold hover:bg-[#0b4f2b]" : ""}
+                ${rangeStart && mode === "range" ? "rounded-r-none" : ""}
+                ${rangeEnd && mode === "range" && dragStart && dragEnd && dragStart.getTime() !== dragEnd.getTime() ? "rounded-l-none" : ""}
               `}
             >
               {day}
@@ -156,7 +333,11 @@ export function Calendar({ selected, onSelect, onClose }) {
           variant="outline"
           size="sm"
           onClick={() => {
-            onSelect(today);
+            if (mode === "range") {
+              onSelect({ from: today, to: today });
+            } else {
+              onSelect(today);
+            }
             if (onClose) onClose();
           }}
           className="flex-1 border-slate-300 text-slate-700 hover:bg-slate-50"

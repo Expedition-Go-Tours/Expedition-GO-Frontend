@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Link2, Music2, Play, Twitter, Youtube, Smartphone, ChevronDown } from "lucide-react";
+import { Facebook, Instagram, Music2, Youtube, Smartphone, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -200,26 +200,24 @@ export function Footer() {
         {/* Ways You Can Pay */}
         <div>
           <p className="mb-3 text-sm font-semibold">{t('footer.waysYouCanPay')}</p>
-          <div className="inline-block bg-white/5 rounded-md p-0.5">
-            <div className="grid grid-cols-3 gap-0">
-              <div className="flex items-center justify-center h-6 w-10">
-                <img src={viiviPay} alt="Viivi" className="h-full w-full object-contain" />
-              </div>
-              <div className="flex items-center justify-center h-6 w-10">
-                <img src={mastercardPay} alt="Mastercard" className="h-full w-full object-contain" />
-              </div>
-              <div className="flex items-center justify-center h-6 w-10">
-                <img src={amexPay} alt="American Express" className="h-full w-full object-contain" />
-              </div>
-              <div className="flex items-center justify-center h-6 w-10">
-                <img src={googlePay} alt="Google Pay" className="h-full w-full object-contain" />
-              </div>
-              <div className="flex items-center justify-center h-6 w-10">
-                <img src={applePay} alt="Apple Pay" className="h-full w-full object-contain" />
-              </div>
-              <div className="flex items-center justify-center h-6 w-10">
-                <img src={paypalPay} alt="PayPal" className="h-full w-full object-contain" />
-              </div>
+          <div className="grid grid-cols-3 gap-0">
+            <div className="flex items-center justify-center h-8 w-12">
+              <img src={viiviPay} alt="Viivi" className="h-full w-full object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-8 w-12">
+              <img src={mastercardPay} alt="Mastercard" className="h-full w-full object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-8 w-12">
+              <img src={amexPay} alt="American Express" className="h-full w-full object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-8 w-12">
+              <img src={googlePay} alt="Google Pay" className="h-full w-full object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-8 w-12">
+              <img src={applePay} alt="Apple Pay" className="h-full w-full object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-8 w-12">
+              <img src={paypalPay} alt="PayPal" className="h-full w-full object-contain" />
             </div>
           </div>
         </div>
@@ -307,15 +305,13 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-[1520px] px-3 py-4 sm:px-4 lg:px-6">
           <div className="flex flex-col gap-4 text-xs text-white/80 xl:flex-row xl:items-center xl:justify-between">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
               <p>{t('footer.copyright')}</p>
-              <div className="flex items-center gap-3 text-white">
+              <div className="flex items-center justify-center gap-3 text-white">
                 <a href="#" className="transition hover:text-white/80"><Instagram className="size-5" /></a>
                 <a href="#" className="transition hover:text-white/80"><Facebook className="size-5" /></a>
                 <a href="#" className="transition hover:text-white/80"><Music2 className="size-5" /></a>
-                <a href="#" className="transition hover:text-white/80"><Link2 className="size-5" /></a>
                 <a href="#" className="transition hover:text-white/80"><Youtube className="size-5" /></a>
-                <a href="#" className="transition hover:text-white/80"><Twitter className="size-5" /></a>
               </div>
             </div>
             <div className="flex flex-wrap gap-4">

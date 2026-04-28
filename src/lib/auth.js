@@ -16,8 +16,11 @@ const AUTH_PROVIDER = import.meta.env.VITE_AUTH_PROVIDER || 'mock';
 // Local storage key for user data
 const AUTH_USER_KEY = 'expedition_go_auth_user';
 
-// Backend API base
-const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+// Backend API base: prefer specific auth API env, then generic, then relative
+const API_BASE =
+  import.meta.env.VITE_AUTH_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  '/api/v1';
 
 // Firebase configuration
 const firebaseConfig = {

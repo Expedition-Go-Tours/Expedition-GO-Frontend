@@ -13,6 +13,12 @@ import googlePay from "@/assets/images/google_pay.svg";
 import applePay from "@/assets/images/apple_pay.svg";
 import paypalPay from "@/assets/images/paypal_pay.svg";
 
+// Import social media images
+import instagramImg from "@/assets/images/instagram.svg";
+import facebookImg from "@/assets/images/facebook.svg";
+import tiktokImg from "@/assets/images/tiktok.svg";
+import youtubeImg from "@/assets/images/utube.svg";
+
 // Google Play Icon Component
 function GooglePlayIcon() {
   return (
@@ -308,10 +314,18 @@ export function Footer() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
               <p>{t('footer.copyright')}</p>
               <div className="flex items-center justify-center gap-3 text-white">
-                <a href="#" className="transition hover:text-white/80"><Instagram className="size-5" /></a>
-                <a href="#" className="transition hover:text-white/80"><Facebook className="size-5" /></a>
-                <a href="#" className="transition hover:text-white/80"><Music2 className="size-5" /></a>
-                <a href="#" className="transition hover:text-white/80"><Youtube className="size-5" /></a>
+                <a href="#" className="transition hover:opacity-80">
+                  <img src={instagramImg} alt="Instagram" className="h-5 w-5 object-contain" />
+                </a>
+                <a href="#" className="transition hover:opacity-80">
+                  <img src={facebookImg} alt="Facebook" className="h-5 w-5 object-contain" />
+                </a>
+                <a href="#" className="transition hover:opacity-80">
+                  <img src={tiktokImg} alt="TikTok" className="h-5 w-5 object-contain" />
+                </a>
+                <a href="#" className="transition hover:opacity-80">
+                  <img src={youtubeImg} alt="YouTube" className="h-5 w-5 object-contain" />
+                </a>
               </div>
             </div>
             <div className="flex flex-wrap gap-4">

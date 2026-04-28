@@ -17,11 +17,19 @@ const AUTH_PROVIDER = import.meta.env.VITE_AUTH_PROVIDER || 'mock';
 const AUTH_USER_KEY = 'expedition_go_auth_user';
 
 // Backend API base: prefer specific auth API env, then generic, then relative
-const API_BASE = (
+const rawBase = (
   import.meta.env.VITE_AUTH_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
   '/api/v1'
-).replace(/\/+$/, '');
+);
+
+let API_BASE = rawBase.replace(/\/+$/, '');
+
+// If the base is an absolute host-only URL (e.g. https://host.com),
+// append the expected API prefix so calls target /api/v1 endpoints.
+if (/^https?:\/\/[^\/]+$/.test(API_BASE)) {
+  API_BASE = `${API_BASE}/api/v1`;
+}
 
 // Firebase configuration
 const firebaseConfig = {

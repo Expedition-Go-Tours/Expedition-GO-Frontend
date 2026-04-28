@@ -1,12 +1,14 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { destinations } from "./data";
 import { DestinationCard } from "./DestinationCard";
-import { SectionHeading } from "./SectionHeading";
+import { DestinationsModal } from "./DestinationsModal";
 
 export function DestinationsSection() {
   const { t } = useTranslation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const scrollContainerRef = useRef(null);
   const dragContainerRef = useRef(null);
   const contentRef = useRef(null);
@@ -139,12 +141,37 @@ export function DestinationsSection() {
       id="destinations" 
       className="py-2"
     >
-      <SectionHeading 
-        title={t('sections.destinations')} 
-        categoryId="destinations"
-        onScrollLeft={() => scroll('left')}
-        onScrollRight={() => scroll('right')}
-      />
+      <div className="mb-1.5 xl:mb-2 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-[13px] font-bold tracking-tight text-slate-900 sm:text-[14px] xl:text-[17px]">{t('sections.destinations')}</h2>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-[color:var(--brand-green)] transition hover:text-[color:var(--brand-green-2)]"
+          >
+            {t('sections.viewAll')}
+            <ChevronRight className="size-4" />
+          </button>
+          <div className="hidden items-center gap-2 xl:flex">
+            <button 
+              onClick={() => scroll('left')}
+              className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <button 
+              onClick={() => scroll('right')}
+              className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
+        </div>
+      </div>
       
       {/* Desktop: Horizontal scroll with arrow buttons */}
       <div 
@@ -196,6 +223,8 @@ export function DestinationsSection() {
           ))}
         </motion.div>
       </div>
+
+      <DestinationsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 }

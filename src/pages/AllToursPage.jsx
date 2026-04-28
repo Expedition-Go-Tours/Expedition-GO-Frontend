@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/homepage/Navbar";
 import { Footer } from "@/components/homepage/Footer";
 import { TourCard } from "@/components/homepage/TourCard";
@@ -22,8 +22,14 @@ function AllToursPageContent() {
     dates: true,
     duration: true,
     price: true,
-    rating: true
+    rating: true,
+    people: true,
+    timeOfDay: true
   });
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [priceRange, setPriceRange] = useState([0, 500]);
+  const [selectedTimeOfDay, setSelectedTimeOfDay] = useState([]);
 
   // Map category to tours/destinations data
   const categoryMap = {
@@ -46,17 +52,20 @@ function AllToursPageContent() {
 
   return (
     <>
-      <div className="min-h-screen bg-white text-slate-900">
-        <Navbar />
+      <div className="flex flex-col min-h-screen">
+        <div className="bg-white text-slate-900">
+          <Navbar />
+        </div>
         
-        <main className="mx-auto max-w-[1520px] px-4 py-6 sm:px-6 lg:px-8">
+        <main className="bg-white flex-1 mx-auto w-full max-w-[1520px] px-4 py-6 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold tracking-tight text-slate-900">{title}</h1>
           </div>
 
           <div className="flex gap-8">
-            {/* Sidebar Filters */}
+            {/* Sidebar Filters - Hidden for destinations */}
+            {category !== 'destinations' && (
             <aside className="hidden w-72 shrink-0 lg:block">
               <div className="sticky top-24 space-y-6">
                 <div>
@@ -110,10 +119,34 @@ function AllToursPageContent() {
                     </button>
                     {expandedFilters.price && (
                       <div className="mt-3 space-y-3">
-                        <input type="range" min="0" max="500" className="w-full" />
+                        <div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="500" 
+                            value={priceRange[1]}
+                            onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                            className="w-full"
+                          />
+                          <div className="mt-2 text-sm text-slate-600">
+                            ${priceRange[0]} - ${priceRange[1]}
+                          </div>
+                        </div>
                         <div className="flex gap-2">
-                          <input type="number" placeholder="Min" className="w-full rounded border border-slate-300 px-2 py-1 text-sm" />
-                          <input type="number" placeholder="Max" className="w-full rounded border border-slate-300 px-2 py-1 text-sm" />
+                          <input 
+                            type="number" 
+                            placeholder="Min" 
+                            value={priceRange[0]}
+                            onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                            className="w-full rounded border border-slate-300 px-2 py-1 text-sm" 
+                          />
+                          <input 
+                            type="number" 
+                            placeholder="Max" 
+                            value={priceRange[1]}
+                            onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 500])}
+                            className="w-full rounded border border-slate-300 px-2 py-1 text-sm" 
+                          />
                         </div>
                       </div>
                     )}
@@ -139,12 +172,96 @@ function AllToursPageContent() {
                       </div>
                     )}
                   </div>
+
+                  {/* Number of People */}
+                  <div className="mb-4 border-b border-slate-200 pb-4">
+                    <button
+                      onClick={() => toggleFilter('people')}
+                      className="flex w-full items-center justify-between py-2 font-medium text-slate-900"
+                    >
+                      <span>Number of People</span>
+                      <ChevronDown className={`size-5 transition-transform ${expandedFilters.people ? 'rotate-180' : ''}`} />
+                    </button>
+                    {expandedFilters.people && (
+                      <div className="mt-3 space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 block mb-2">Adults</label>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => setAdults(Math.max(1, adults - 1))}
+                              className="size-8 rounded border border-slate-300 flex items-center justify-center hover:bg-slate-100"
+                            >
+                              −
+                            </button>
+                            <span className="text-sm font-semibold w-8 text-center">{adults}</span>
+                            <button
+                              onClick={() => setAdults(adults + 1)}
+                              className="size-8 rounded border border-slate-300 flex items-center justify-center hover:bg-slate-100"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 block mb-2">Children</label>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => setChildren(Math.max(0, children - 1))}
+                              className="size-8 rounded border border-slate-300 flex items-center justify-center hover:bg-slate-100"
+                            >
+                              −
+                            </button>
+                            <span className="text-sm font-semibold w-8 text-center">{children}</span>
+                            <button
+                              onClick={() => setChildren(children + 1)}
+                              className="size-8 rounded border border-slate-300 flex items-center justify-center hover:bg-slate-100"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Time of Day */}
+                  <div className="mb-4 border-b border-slate-200 pb-4">
+                    <button
+                      onClick={() => toggleFilter('timeOfDay')}
+                      className="flex w-full items-center justify-between py-2 font-medium text-slate-900"
+                    >
+                      <span>Time of Day</span>
+                      <ChevronDown className={`size-5 transition-transform ${expandedFilters.timeOfDay ? 'rotate-180' : ''}`} />
+                    </button>
+                    {expandedFilters.timeOfDay && (
+                      <div className="mt-3 space-y-3">
+                        {['Morning', 'Afternoon', 'Evening'].map(time => (
+                          <label key={time} className="flex items-center gap-3 text-sm">
+                            <input 
+                              type="checkbox" 
+                              className="rounded border-slate-300"
+                              checked={selectedTimeOfDay.includes(time)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedTimeOfDay([...selectedTimeOfDay, time]);
+                                } else {
+                                  setSelectedTimeOfDay(selectedTimeOfDay.filter(t => t !== time));
+                                }
+                              }}
+                            />
+                            <span className="text-slate-700">{time} Tours</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </aside>
+            )}
 
             {/* Main Content */}
-            <div className="flex-1">
+            <div className={category === 'destinations' ? 'w-full' : 'flex-1'}>
               {/* Top Bar */}
               <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4">
                 <p className="text-sm font-medium text-slate-600">{items.length} {type === "destinations" ? t('common.destinations') : t('common.tours')} available</p>

@@ -1,6 +1,6 @@
 import { Globe, Heart, Headset, Menu, ShoppingCart, UserCircle2, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import companyPic from "@/assets/images/company_pic.jpg";
@@ -14,11 +14,14 @@ export function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLanguageCurrencyOpen, setIsLanguageCurrencyOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("language");
+  const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { t, i18n } = useTranslation();
   const { currency, setCurrency, availableCurrencies } = useCurrency();
 
-  const handleBrandClick = () => {
+  const handleBrandClick = (e) => {
+    e.preventDefault();
+    navigate('/');
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -63,13 +66,13 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 !bg-white shadow-sm dark:!bg-white dark:border-slate-200">
       <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-2 px-3 py-2 text-slate-950 sm:gap-4 sm:px-4 sm:py-3 lg:px-6 dark:text-slate-950">
-        <Link to="/" onClick={handleBrandClick} className="block shrink-0">
+        <button onClick={handleBrandClick} className="block shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
           <img
             src={companyPic}
             alt="Expedition-Go Group Limited"
             className="h-auto w-[140px] object-contain sm:w-[180px] md:w-[220px] lg:w-[260px] xl:w-[320px]"
           />
-        </Link>
+        </button>
 
         <div className="hidden items-center gap-6 lg:flex">
           <Link to="/wishlist" className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer">

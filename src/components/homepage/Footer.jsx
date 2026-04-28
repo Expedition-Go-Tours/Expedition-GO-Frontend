@@ -1,8 +1,7 @@
-import { Facebook, Instagram, Music2, Youtube, Smartphone, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { footerGroups, paymentLogos } from "./data";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Import payment method images
@@ -70,47 +69,6 @@ export function Footer() {
   const getCurrentCurrencyName = () => {
     const curr = availableCurrencies.find(c => c.code === currency);
     return curr ? `${curr.code} - ${curr.name} (${curr.symbol})` : "USD - US Dollar ($)";
-  };
-  
-  // Map footer titles and links to translation keys
-  const getTranslationKey = (text) => {
-    const keyMap = {
-      'Explore': 'explore',
-      'Support': 'support',
-      'Company': 'company',
-      'Supplier Zone': 'supplierZone',
-      'Follow Us': 'followUs',
-      'Home': 'home',
-      'Tours': 'tours',
-      'Destinations': 'destinations',
-      'Experiences': 'experiences',
-      'Deals': 'deals',
-      'About Us': 'aboutUs',
-      'Contact': 'contact',
-      'Help Centre': 'helpCentre',
-      'Contact Us': 'contactUs',
-      'Live Chat': 'liveChat',
-      'Booking Support': 'bookingSupport',
-      'Cancellation Help': 'cancellationHelp',
-      'FAQ': 'faq',
-      'Careers': 'careers',
-      'Partners': 'partners',
-      'Affiliate Program': 'affiliateProgram',
-      'Press': 'press',
-      'Investor Relations': 'investorRelations',
-      'List Your Tours': 'listYourTours',
-      'Become a Tour Operator': 'becomeOperator',
-      'Supplier Dashboard': 'supplierDashboard',
-      'API Access': 'apiAccess',
-      'Agent Accounts': 'agentAccounts',
-      'Instagram': 'instagram',
-      'Facebook': 'facebook',
-      'TikTok': 'tiktok',
-      'Link': 'link',
-      'YouTube': 'youtube',
-      'X': 'x'
-    };
-    return keyMap[text] || text.toLowerCase().replace(/\s+/g, '');
   };
   
   return (
@@ -206,23 +164,23 @@ export function Footer() {
         {/* Ways You Can Pay */}
         <div>
           <p className="mb-3 text-sm font-semibold">{t('footer.waysYouCanPay')}</p>
-          <div className="grid grid-cols-3 gap-0">
-            <div className="flex items-center justify-center h-8 w-12">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="flex items-center justify-center h-10 w-14">
               <img src={viiviPay} alt="Viivi" className="h-full w-full object-contain" />
             </div>
-            <div className="flex items-center justify-center h-8 w-12">
+            <div className="flex items-center justify-center h-10 w-14">
               <img src={mastercardPay} alt="Mastercard" className="h-full w-full object-contain" />
             </div>
-            <div className="flex items-center justify-center h-8 w-12">
+            <div className="flex items-center justify-center h-10 w-14">
               <img src={amexPay} alt="American Express" className="h-full w-full object-contain" />
             </div>
-            <div className="flex items-center justify-center h-8 w-12">
+            <div className="flex items-center justify-center h-10 w-14">
               <img src={googlePay} alt="Google Pay" className="h-full w-full object-contain" />
             </div>
-            <div className="flex items-center justify-center h-8 w-12">
+            <div className="flex items-center justify-center h-10 w-14">
               <img src={applePay} alt="Apple Pay" className="h-full w-full object-contain" />
             </div>
-            <div className="flex items-center justify-center h-8 w-12">
+            <div className="flex items-center justify-center h-10 w-14">
               <img src={paypalPay} alt="PayPal" className="h-full w-full object-contain" />
             </div>
           </div>

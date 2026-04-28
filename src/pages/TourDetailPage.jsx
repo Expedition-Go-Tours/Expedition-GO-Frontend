@@ -151,7 +151,7 @@ function TourDetailContent() {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-[color:var(--brand-green)] transition mb-4"
+          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-[color:var(--brand-green)] transition mb-4 cursor-pointer hover:opacity-80"
         >
           <ArrowLeft className="size-4" />
           {t('common.back')}

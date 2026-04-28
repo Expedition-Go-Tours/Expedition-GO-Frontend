@@ -1,0 +1,163 @@
+import { useState, useEffect } from "react";
+import { X, Search, ChevronDown } from "lucide-react";
+import { destinations } from "./data";
+import { DestinationCard } from "./DestinationCard";
+
+export function DestinationsModal({ isOpen, onClose }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("all");
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  const regions = [
+    { id: "all", name: "All Regions" },
+    { id: "east-asia", name: "East Asia" },
+    { id: "southeast-asia", name: "South East Asia" },
+    { id: "south-asia", name: "South Asia / Middle East" },
+    { id: "oceania", name: "Oceania" },
+    { id: "europe", name: "Europe" },
+    { id: "north-america", name: "North America" }
+  ];
+
+  const filteredDestinations = destinations.filter(dest =>
+    dest.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-40 bg-black/50 transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Slide-out Panel */}
+      <div className="fixed right-0 top-0 z-50 h-screen w-full max-w-2xl bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col">
+        {/* Header - Fixed */}
+        <div className="border-b border-slate-200 bg-white px-6 py-4 flex-shrink-0">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-slate-900">Where to next?</h2>
+            <button
+              onClick={onClose}
+              className="grid size-10 place-items-center rounded-full hover:bg-slate-100 transition"
+              aria-label="Close"
+            >
+              <X className="size-6 text-slate-600" />
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search destinations"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg bg-slate-100 pl-10 pr-4 py-2.5 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--brand-green)]"
+            />
+          </div>
+        </div>
+
+        {/* Content - Scrollable with visible scrollbar */}
+        <div className="flex-1 overflow-y-scroll px-6 py-6 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+          {/* Popular Destinations */}
+          <div className="mb-8">
+            <h3 className="mb-4 text-lg font-bold text-slate-900">Popular destinations</h3>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {filteredDestinations.slice(0, 6).map((dest, index) => (
+                <div key={`${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
+                  <DestinationCard {...dest} />
+                </div>
+              ))}
+            </div>
+            <button className="w-full rounded-lg border-2 border-slate-300 py-3 font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50">
+              See more <ChevronDown className="inline size-4 ml-1" />
+            </button>
+          </div>
+
+          {/* Regions */}
+          <div className="mb-8">
+            <div className="flex flex-wrap gap-2">
+              {regions.map(region => (
+                <button
+                  key={region.id}
+                  onClick={() => setSelectedRegion(region.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                    selectedRegion === region.id
+                      ? "bg-[color:var(--brand-green)] text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {region.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Region Destinations */}
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900">Hong Kong & Macau</h3>
+              <a href="#" className="text-sm font-semibold text-[color:var(--brand-green)] hover:underline">
+                Explore
+              </a>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {filteredDestinations.slice(0, 2).map((dest, index) => (
+                <div key={`region-${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
+                  <DestinationCard {...dest} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Additional sections for scrolling */}
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900">Southeast Asia</h3>
+              <a href="#" className="text-sm font-semibold text-[color:var(--brand-green)] hover:underline">
+                Explore
+              </a>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {filteredDestinations.slice(2, 4).map((dest, index) => (
+                <div key={`sea-${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
+                  <DestinationCard {...dest} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900">Europe</h3>
+              <a href="#" className="text-sm font-semibold text-[color:var(--brand-green)] hover:underline">
+                Explore
+              </a>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {filteredDestinations.slice(4, 6).map((dest, index) => (
+                <div key={`eu-${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
+                  <DestinationCard {...dest} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -123,9 +123,11 @@ function AuthShell({ title, description, badgeLabel, children, footerText, foote
         <section className="flex items-center justify-center px-4 py-10 sm:px-6 lg:px-10">
           <Card className="w-full max-w-xl rounded-[30px] border border-slate-200 bg-white shadow-[0_28px_70px_rgba(15,23,42,0.08)]">
             <CardContent className="p-7 sm:p-9">
-              <Badge variant="outline" className="border-[color:var(--brand-green)]/12 bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]">
-                {badgeLabel}
-              </Badge>
+              {badgeLabel ? (
+                <Badge variant="outline" className="border-[color:var(--brand-green)]/12 bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]">
+                  {badgeLabel}
+                </Badge>
+              ) : null}
               <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-900">{title}</h2>
               <p className="mt-3 text-sm leading-7 text-slate-500">{description}</p>
 

@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
@@ -30,6 +31,14 @@ let API_BASE = rawBase.replace(/\/+$/, '');
 if (/^https?:\/\/[^\/]+$/.test(API_BASE)) {
   API_BASE = `${API_BASE}/api/v1`;
 }
+console.log('API_BASE:', API_BASE);
+
+// On localhost, route auth API calls through Vite proxy to avoid browser CORS
+// while still using the hosted backend target configured in vite.config.js.
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
 
 // Firebase configuration
 const firebaseConfig = {
@@ -92,40 +101,54 @@ function notifyAuthStateChange(user) {
   authStateListeners.forEach((l) => l(user));
 }
 
-async function callBackendCreateMe(idToken) {
-  const res = await fetch(`${API_BASE}/users/create-me`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
+function extractBackendUser(payload) {
+  if (!payload || typeof payload !== 'object') return null;
+  return payload?.data?.user || payload?.user || payload?.data || null;
+}
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Backend create-me failed: ${res.status} ${text}`);
+async function callBackendUserOnboarding(idToken, attempts) {
+  let lastError = null;
+
+  for (const attempt of attempts) {
+    const res = await fetch(`${API_BASE}${attempt.path}`, {
+      method: attempt.method,
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      lastError = new Error(`Backend ${attempt.label} failed: ${res.status} ${text}`);
+
+      // Keep trying fallback routes/methods on 404.
+      if (res.status === 404) continue;
+      throw lastError;
+    }
+
+    const payload = await res.json();
+    const user = extractBackendUser(payload);
+    if (user) return user;
+
+    lastError = new Error(`Backend ${attempt.label} returned no user payload`);
   }
 
-  const payload = await res.json();
-  return payload.data.user;
+  throw lastError || new Error('Backend onboarding failed: no valid endpoint response');
+}
+
+async function callBackendCreateMe(idToken) {
+  return callBackendUserOnboarding(idToken, [
+    { method: 'POST', path: '/users/create-me', label: 'create-me' },
+    { method: 'PATCH', path: '/users/sync-me', label: 'sync-me (fallback)' },
+  ]);
 }
 
 async function callBackendSyncMe(idToken) {
-  const res = await fetch(`${API_BASE}/users/sync-me`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Backend sync-me failed: ${res.status} ${text}`);
-  }
-
-  const payload = await res.json();
-  return payload.data.user;
+  return callBackendUserOnboarding(idToken, [
+    { method: 'PATCH', path: '/users/sync-me', label: 'sync-me' },
+    { method: 'POST', path: '/users/create-me', label: 'create-me (fallback)' },
+  ]);
 }
 
 function normalizeFirebaseClientUser(firebaseUser) {
@@ -138,6 +161,19 @@ function normalizeFirebaseClientUser(firebaseUser) {
     photoURL: firebaseUser.photoURL || null,
     provider: firebaseUser.providerData?.[0]?.providerId || 'email',
   };
+}
+
+async function resolveBackendUserOrFallback(firebaseUser, idToken) {
+  try {
+    return await callBackendCreateMe(idToken);
+  } catch (createError) {
+    try {
+      return await callBackendSyncMe(idToken);
+    } catch (syncError) {
+      console.error('Backend onboarding failed:', createError, syncError);
+      return normalizeFirebaseClientUser(firebaseUser);
+    }
+  }
 }
 
 /**
@@ -161,19 +197,7 @@ export async function subscribeToAuthState(callback) {
         const idToken = await firebaseUser.getIdToken(/* forceRefresh= */ false);
 
         // Ensure backend user exists and return backend user object
-        let backendUser = null;
-        try {
-          backendUser = await callBackendCreateMe(idToken);
-        } catch (err) {
-          // If create-me fails, attempt sync (some backends expect sync)
-          try {
-            backendUser = await callBackendSyncMe(idToken);
-          } catch (err2) {
-            console.error('Backend onboarding failed:', err, err2);
-            // fallback to client-normalized user
-            backendUser = normalizeFirebaseClientUser(firebaseUser);
-          }
-        }
+        const backendUser = await resolveBackendUserOrFallback(firebaseUser, idToken);
 
         storeAuthUser(backendUser);
         notifyAuthStateChange(backendUser);
@@ -210,8 +234,8 @@ export async function signInWithEmail(email, password) {
       const firebaseUser = credential.user;
       const idToken = await firebaseUser.getIdToken();
 
-      // Ensure backend user exists and return backend user
-      const backendUser = await callBackendCreateMe(idToken);
+      // Keep sign-in resilient locally: fallback if backend onboarding is unavailable.
+      const backendUser = await resolveBackendUserOrFallback(firebaseUser, idToken);
       storeAuthUser(backendUser);
       notifyAuthStateChange(backendUser);
       return backendUser;
@@ -256,8 +280,7 @@ export async function registerWithEmail(name, email, password) {
 
       const idToken = await credential.user.getIdToken();
 
-      // Ensure backend user is created
-      const backendUser = await callBackendCreateMe(idToken);
+      const backendUser = await resolveBackendUserOrFallback(credential.user, idToken);
       // Ensure name is the one provided (backend create may have taken displayName)
       backendUser.name = backendUser.name || name;
       storeAuthUser(backendUser);
@@ -299,17 +322,32 @@ export async function signInWithGoogle() {
       const firebaseUser = result.user;
       const idToken = await firebaseUser.getIdToken();
 
-      const backendUser = await callBackendCreateMe(idToken);
+      const backendUser = await resolveBackendUserOrFallback(firebaseUser, idToken);
       storeAuthUser(backendUser);
       notifyAuthStateChange(backendUser);
       return backendUser;
     } catch (error) {
+      const popupFallbackCodes = new Set([
+        'auth/popup-blocked',
+        'auth/popup-closed-by-user',
+        'auth/cancelled-popup-request',
+      ]);
+
+      if (popupFallbackCodes.has(error?.code)) {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return null;
+        } catch (redirectError) {
+          console.error('Google redirect sign in error:', redirectError);
+          throw new Error('Google sign-in could not start. Please try again.');
+        }
+      }
+
       console.error('Google sign in error:', error);
       let message = 'Failed to sign in with Google. Please try again.';
-      if (error.code === 'auth/popup-closed-by-user') message = 'Sign in was cancelled. Please try again.';
-      else if (error.code === 'auth/popup-blocked') message = 'Pop-up was blocked by your browser. Please allow pop-ups and try again.';
-      else if (error.code === 'auth/account-exists-with-different-credential') message = 'An account already exists with the same email but different sign-in method.';
+      if (error.code === 'auth/account-exists-with-different-credential') message = 'An account already exists with the same email but different sign-in method.';
       else if (error.code === 'auth/operation-not-allowed') message = 'Google sign-in is not enabled.';
+      else if (error.code === 'auth/unauthorized-domain') message = 'This localhost domain is not authorized in Firebase. Add localhost in Firebase Authentication > Settings > Authorized domains.';
       throw new Error(message);
     }
   }

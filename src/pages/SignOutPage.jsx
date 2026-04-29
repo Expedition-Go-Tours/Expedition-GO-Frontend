@@ -18,7 +18,6 @@ function SignOutPage() {
 
   return (
     <AuthShell
-      badgeLabel={t('auth.signOut')}
       title={t('auth.signedOut')}
       description={t('auth.signedOutDesc')}
       footerText={t('auth.wantExplore')}

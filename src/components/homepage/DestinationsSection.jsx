@@ -149,7 +149,7 @@ export function DestinationsSection() {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-1 text-[12px] font-medium text-[color:var(--brand-green)] transition hover:text-[color:var(--brand-green-2)]"
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-slate-900 transition hover:text-slate-700"
           >
             {t('sections.viewAll')}
             <ChevronRight className="size-4" />

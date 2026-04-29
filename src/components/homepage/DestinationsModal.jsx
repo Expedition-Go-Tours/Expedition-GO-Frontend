@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { X, Search, ChevronDown } from "lucide-react";
 import { destinations } from "./data";
 import { DestinationCard } from "./DestinationCard";
@@ -33,18 +34,28 @@ export function DestinationsModal({ isOpen, onClose }) {
     dest.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/50 transition-opacity"
-        onClick={onClose}
-      />
+    <AnimatePresence>
+      {isOpen ? (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            className="fixed inset-0 z-40 bg-black/50"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+          />
 
-      {/* Slide-out Panel */}
-      <div className="fixed right-0 top-0 z-50 h-screen w-full max-w-2xl bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col">
+          {/* Slide-out Panel */}
+          <motion.div
+            className="fixed right-0 top-0 z-50 h-screen w-full max-w-2xl bg-white shadow-2xl flex flex-col"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1], delay: 0.06 }}
+          >
         {/* Header - Fixed */}
         <div className="border-b border-slate-200 bg-white px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
@@ -157,7 +168,9 @@ export function DestinationsModal({ isOpen, onClose }) {
             </div>
           </div>
         </div>
-      </div>
-    </>
+          </motion.div>
+        </>
+      ) : null}
+    </AnimatePresence>
   );
 }

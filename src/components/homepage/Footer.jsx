@@ -164,24 +164,24 @@ export function Footer() {
         {/* Ways You Can Pay */}
         <div>
           <p className="mb-3 text-sm font-semibold">{t('footer.waysYouCanPay')}</p>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="flex items-center justify-center h-10 w-14">
-              <img src={viiviPay} alt="Viivi" className="h-full w-full object-contain" />
+          <div className="grid w-fit grid-cols-3 gap-1">
+            <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
+              <img src={viiviPay} alt="Viivi" className="h-full w-full scale-125 object-contain" />
             </div>
-            <div className="flex items-center justify-center h-10 w-14">
-              <img src={mastercardPay} alt="Mastercard" className="h-full w-full object-contain" />
+            <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
+              <img src={mastercardPay} alt="Mastercard" className="h-full w-full scale-125 object-contain" />
             </div>
-            <div className="flex items-center justify-center h-10 w-14">
-              <img src={amexPay} alt="American Express" className="h-full w-full object-contain" />
+            <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
+              <img src={amexPay} alt="American Express" className="h-full w-full scale-125 object-contain" />
             </div>
-            <div className="flex items-center justify-center h-10 w-14">
-              <img src={googlePay} alt="Google Pay" className="h-full w-full object-contain" />
+            <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
+              <img src={googlePay} alt="Google Pay" className="h-full w-full scale-125 object-contain" />
             </div>
-            <div className="flex items-center justify-center h-10 w-14">
-              <img src={applePay} alt="Apple Pay" className="h-full w-full object-contain" />
+            <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
+              <img src={applePay} alt="Apple Pay" className="h-full w-full scale-125 object-contain" />
             </div>
-            <div className="flex items-center justify-center h-10 w-14">
-              <img src={paypalPay} alt="PayPal" className="h-full w-full object-contain" />
+            <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
+              <img src={paypalPay} alt="PayPal" className="h-full w-full scale-125 object-contain" />
             </div>
           </div>
         </div>

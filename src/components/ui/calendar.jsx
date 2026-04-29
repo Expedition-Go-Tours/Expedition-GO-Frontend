@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./button";
 
@@ -10,6 +10,10 @@ const MONTHS = [
 
 export function Calendar({ selected, onSelect, onClose, mode = "single" }) {
   const today = new Date();
+  const isTouchDevice = useMemo(
+    () => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches,
+    []
+  );
   
   // Initialize currentMonth based on mode
   const getInitialMonth = () => {
@@ -46,15 +50,16 @@ export function Calendar({ selected, onSelect, onClose, mode = "single" }) {
     const clickedDate = new Date(year, month, day);
     
     if (mode === "range") {
-      // If no start date or both dates are set, start new selection
-      if (!dragStart || (dragStart && dragEnd)) {
+      // Tap/click range selection uses the controlled selected value.
+      // This keeps touch devices from prematurely finalizing a same-day range.
+      if (!selected?.from || selected?.to) {
         setDragStart(clickedDate);
         setDragEnd(null);
         onSelect({ from: clickedDate, to: null });
       } else {
-        // Complete the range
-        const from = dragStart < clickedDate ? dragStart : clickedDate;
-        const to = dragStart < clickedDate ? clickedDate : dragStart;
+        const fromDate = selected.from;
+        const from = fromDate < clickedDate ? fromDate : clickedDate;
+        const to = fromDate < clickedDate ? clickedDate : fromDate;
         setDragEnd(to);
         onSelect({ from, to });
       }
@@ -304,9 +309,9 @@ export function Calendar({ selected, onSelect, onClose, mode = "single" }) {
             <button
               key={index}
               onClick={() => isCurrentMonth && !isPast && handleDateClick(day)}
-              onMouseDown={() => isCurrentMonth && !isPast && handleMouseDown(day)}
-              onMouseEnter={() => isCurrentMonth && !isPast && handleMouseEnter(day)}
-              onMouseUp={() => isCurrentMonth && !isPast && handleMouseUp(day)}
+              onMouseDown={() => !isTouchDevice && isCurrentMonth && !isPast && handleMouseDown(day)}
+              onMouseEnter={() => !isTouchDevice && isCurrentMonth && !isPast && handleMouseEnter(day)}
+              onMouseUp={() => !isTouchDevice && isCurrentMonth && !isPast && handleMouseUp(day)}
               disabled={!isCurrentMonth || isPast}
               className={`
                 grid size-9 place-items-center rounded-lg text-sm transition select-none

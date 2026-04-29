@@ -239,20 +239,22 @@ export function Navbar() {
                         <p className="text-xs text-slate-500">{user.email}</p>
                       </div>
                       <div className="py-2">
-                        <button 
+                        <Link 
+                          to="/settings"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <UserCircle2 className="size-4" />
                           <span>{t('nav.settings')}</span>
-                        </button>
-                        <button 
+                        </Link>
+                        <Link 
+                          to="/support"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <Headset className="size-4" />
                           <span>{t('nav.support')}</span>
-                        </button>
+                        </Link>
                         <button 
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
@@ -294,20 +296,14 @@ export function Navbar() {
                     />
                     <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-lg border border-slate-200 bg-white shadow-lg dark:!bg-white">
                       <div className="py-2">
-                        <button 
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
-                        >
-                          <UserCircle2 className="size-4" />
-                          <span>{t('nav.settings')}</span>
-                        </button>
-                        <button 
+                        <Link 
+                          to="/support"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <Headset className="size-4" />
                           <span>{t('nav.support')}</span>
-                        </button>
+                        </Link>
                         <button 
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
@@ -323,7 +319,7 @@ export function Navbar() {
                           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)]"
                         >
                           <UserCircle2 className="size-4" />
-                          <span>{t('nav.signIn')}</span>
+                          <span>Sign In / Sign Up</span>
                         </Link>
                       </div>
                     </div>
@@ -361,10 +357,10 @@ export function Navbar() {
                 <ShoppingCart className="size-4" />
                 <span className="text-sm">{t('nav.cart')}</span>
               </button>
-              <button className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
+              <Link to="/support" className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
                 <Headset className="size-4" />
                 <span className="text-sm">{t('nav.support')}</span>
-              </button>
+              </Link>
               
               {!loading && (
                 user ? (
@@ -405,7 +401,7 @@ export function Navbar() {
                   >
                     <Link to="/signin" onClick={closeMobileMenu}>
                       <UserCircle2 className="size-4" />
-                      {t('nav.signIn')}
+                      Sign In / Sign Up
                     </Link>
                   </Button>
                 )

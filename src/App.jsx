@@ -10,6 +10,8 @@ import TourDetailPage from "@/pages/TourDetailPage";
 import RegisterPage from "@/pages/RegisterPage";
 import SignInPage from "@/pages/SignInPage";
 import SignOutPage from "@/pages/SignOutPage";
+import SupportPage from "@/pages/SupportPage";
+import SettingsPage from "@/pages/SettingsPage";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/signout" element={<SignOutPage />} />
+            <Route path="/support" element={<SupportPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </WishlistProvider>

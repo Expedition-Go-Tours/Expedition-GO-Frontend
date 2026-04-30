@@ -79,6 +79,32 @@ export const pickupTours = [
     image:
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
   },
+  {
+    title: "Aburi Botanical Gardens Walk",
+    duration: "4h",
+    price: "$42",
+    rating: "4.7",
+    reviews: 168,
+    image:
+      "https://images.unsplash.com/photo-1473773508845-188df298d2d1?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Jamestown Lighthouse & Arts Tour",
+    duration: "3.5h",
+    price: "$38",
+    rating: "4.6",
+    reviews: 145,
+    image:
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
+  },
+  ...Array.from({ length: 20 }, (_, index) => ({
+    title: `Signature Discovery Tour ${index + 1}`,
+    duration: `${4 + (index % 5)}h`,
+    price: `$${45 + index}`,
+    rating: (4.5 + ((index % 5) * 0.1)).toFixed(1),
+    reviews: 140 + index * 9,
+    image: `https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80&sig=pickup${index + 1}`,
+  })),
 ];
 
 export const destinations = [
@@ -112,6 +138,23 @@ export const destinations = [
     image:
       "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
   },
+  {
+    title: "Tamale",
+    tours: "40+ Tours",
+    image:
+      "https://images.unsplash.com/photo-1521401830884-6c03c1c87ebb?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Axim",
+    tours: "35+ Tours",
+    image:
+      "https://images.unsplash.com/photo-1501959915551-4e8a04b3074d?auto=format&fit=crop&w=1200&q=80",
+  },
+  ...Array.from({ length: 20 }, (_, index) => ({
+    title: `Ghana Destination ${index + 1}`,
+    tours: `${35 + index * 3}+ Tours`,
+    image: `https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80&sig=destination${index + 1}`,
+  })),
 ];
 
 export const recommendedTours = [
@@ -160,6 +203,32 @@ export const recommendedTours = [
     image:
       "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80",
   },
+  {
+    title: "Aburi and Boti Waterfalls Combo",
+    duration: "7h",
+    price: "$88",
+    rating: "4.8",
+    reviews: 196,
+    image:
+      "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Ghana Street Food Discovery",
+    duration: "4h",
+    price: "$48",
+    rating: "4.7",
+    reviews: 172,
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
+  },
+  ...Array.from({ length: 20 }, (_, index) => ({
+    title: `Recommended Explorer Tour ${index + 1}`,
+    duration: `${3 + (index % 6)}h`,
+    price: `$${52 + index * 2}`,
+    rating: (4.6 + ((index % 4) * 0.1)).toFixed(1),
+    reviews: 160 + index * 8,
+    image: `https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80&sig=recommended${index + 1}`,
+  })),
 ];
 
 export const topRatedTours = [
@@ -208,6 +277,32 @@ export const topRatedTours = [
     image:
       "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
   },
+  {
+    title: "Shai Hills Wildlife & Caves",
+    duration: "5h",
+    price: "$68",
+    rating: "4.8",
+    reviews: 234,
+    image:
+      "https://images.unsplash.com/photo-1535941339077-2dd1c7963098?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Elmina Heritage and Fishing Harbor",
+    duration: "4.5h",
+    price: "$62",
+    rating: "4.7",
+    reviews: 201,
+    image:
+      "https://images.unsplash.com/photo-1446822775955-c34f483b410b?auto=format&fit=crop&w=1200&q=80",
+  },
+  ...Array.from({ length: 20 }, (_, index) => ({
+    title: `Top Rated Experience ${index + 1}`,
+    duration: `${2 + (index % 7)}h`,
+    price: `$${58 + index * 2}`,
+    rating: (4.7 + ((index % 3) * 0.1)).toFixed(1),
+    reviews: 200 + index * 10,
+    image: `https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80&sig=toprated${index + 1}`,
+  })),
 ];
 
 export const leisureTours = [
@@ -261,6 +356,35 @@ export const leisureTours = [
     image:
       "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80",
   },
+  {
+    title: "Aqua Yoga & Brunch Retreat",
+    duration: "3.5h",
+    price: "$65",
+    rating: "4.7",
+    reviews: 98,
+    discount: "Likely to Sell Out",
+    image:
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Secluded Lagoon Kayak Escape",
+    duration: "4.5h",
+    price: "$72",
+    rating: "4.8",
+    reviews: 104,
+    discount: "Likely to Sell Out",
+    image:
+      "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80",
+  },
+  ...Array.from({ length: 20 }, (_, index) => ({
+    title: `Leisure Escape ${index + 1}`,
+    duration: `${3 + (index % 5)}h`,
+    price: `$${55 + index * 2}`,
+    rating: (4.5 + ((index % 4) * 0.1)).toFixed(1),
+    reviews: 95 + index * 7,
+    discount: "Likely to Sell Out",
+    image: `https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80&sig=leisure${index + 1}`,
+  })),
 ];
 
 

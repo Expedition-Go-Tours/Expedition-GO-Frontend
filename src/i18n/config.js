@@ -49,7 +49,7 @@ const resources = {
         title: "Your next adventure is waiting",
         description: "Receive curated travel itineraries featuring the most iconic experiences, exclusive deals, and insider tips straight to your inbox.",
         emailPlaceholder: "Email",
-        signUp: "Sign up",
+        signUp: "Subscribe",
         subscribed: "Subscribed!",
         privacy: "By signing up, you agree to receive promotional emails on activities and insider tips. You can unsubscribe or withdraw your consent at any time. For more information, read our",
         privacyLink: "Privacy statement"

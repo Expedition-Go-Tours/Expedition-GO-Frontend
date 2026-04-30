@@ -7,9 +7,9 @@ export function SectionHeading({ title, subtitle, categoryId, onScrollLeft, onSc
   const hasScrollButtons = onScrollLeft && onScrollRight;
 
   return (
-    <div className="mb-1.5 xl:mb-2 flex items-center justify-between gap-3">
+    <div className="mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
       <div>
-        <h2 className="text-[13px] font-bold tracking-tight text-slate-900 sm:text-[14px] xl:text-[17px]">{title}</h2>
+        <h2 className="text-[17px] font-bold tracking-tight text-slate-900 sm:text-[18px] xl:text-[22px]">{title}</h2>
         {subtitle ? <p className="mt-0.5 xl:mt-1 text-[11px] leading-5 text-slate-500 xl:text-[12px]">{subtitle}</p> : null}
       </div>
 

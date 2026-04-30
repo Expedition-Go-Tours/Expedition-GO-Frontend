@@ -139,11 +139,11 @@ export function DestinationsSection() {
   return (
     <section 
       id="destinations" 
-      className="py-2"
+      className="py-2.5 xl:py-3"
     >
-      <div className="mb-1.5 xl:mb-2 flex items-center justify-between gap-3">
+      <div className="mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-[13px] font-bold tracking-tight text-slate-900 sm:text-[14px] xl:text-[17px]">{t('sections.destinations')}</h2>
+          <h2 className="text-[17px] font-bold tracking-tight text-slate-900 sm:text-[18px] xl:text-[22px]">{t('sections.destinations')}</h2>
         </div>
 
         <div className="flex items-center gap-3">

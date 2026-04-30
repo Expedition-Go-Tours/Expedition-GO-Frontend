@@ -134,7 +134,7 @@ export function TourCarouselSection({ id, title, subtitle, items }) {
   return (
     <section 
       id={id} 
-      className="py-1.5 xl:py-2"
+      className="py-2.5 xl:py-3"
     >
       <SectionHeading 
         title={title} 

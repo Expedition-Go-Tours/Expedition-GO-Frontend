@@ -6,7 +6,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useAuthModal } from "@/contexts/AuthModalContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 
-export function DestinationCard({ title, tours, image }) {
+export function DestinationCard({ title, tours, image, variant = "default" }) {
   const { user } = useAuth();
   const { openAuthModal } = useAuthModal();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -29,10 +29,11 @@ export function DestinationCard({ title, tours, image }) {
       reviews: "150"
     });
   };
+  const imageHeightClass = variant === "allTours" ? "h-[8.5rem] xl:h-[9.5rem]" : "h-28 xl:h-32";
 
   return (
-    <Card className="group overflow-hidden rounded-[12px] border border-slate-200 bg-white shadow-sm transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-lg xl:active:scale-95 xl:active:shadow-sm cursor-pointer">
-      <div className="relative h-24 overflow-hidden">
+    <Card className="group overflow-hidden rounded-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)] cursor-pointer">
+      <div className={`relative ${imageHeightClass} overflow-hidden`}>
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent pointer-events-none" />
         <button 

@@ -41,6 +41,7 @@ export function Footer() {
   const { currency, setCurrency, availableCurrencies } = useCurrency();
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+  const [openFooterSection, setOpenFooterSection] = useState(null);
 
   const handleLanguageChange = (langCode) => {
     i18n.changeLanguage(langCode);
@@ -70,12 +71,62 @@ export function Footer() {
     const curr = availableCurrencies.find(c => c.code === currency);
     return curr ? `${curr.code} - ${curr.name} (${curr.symbol})` : "USD - US Dollar ($)";
   };
+
+  const footerAccordionSections = [
+    {
+      key: "support",
+      title: t('footer.support'),
+      links: [
+        t('footer.helpCentre'),
+        t('footer.contactUs'),
+        t('footer.liveChat'),
+        t('footer.bookingSupport'),
+        t('footer.cancellationHelp'),
+        t('footer.faq'),
+      ],
+    },
+    {
+      key: "company",
+      title: t('footer.company'),
+      links: [
+        t('footer.aboutUs'),
+        t('footer.careers'),
+        t('footer.partners'),
+        t('footer.affiliateProgram'),
+        t('footer.press'),
+        t('footer.investorRelations'),
+      ],
+    },
+    {
+      key: "supplier",
+      title: t('footer.supplierZone'),
+      links: [
+        t('footer.listYourTours'),
+        t('footer.becomeOperator'),
+        t('footer.supplierDashboard'),
+        t('footer.apiAccess'),
+        t('footer.agentAccounts'),
+      ],
+    },
+    {
+      key: "explore",
+      title: t('footer.explore'),
+      links: [
+        t('footer.home'),
+        t('footer.tours'),
+        t('footer.destinations'),
+        t('footer.deals'),
+        t('footer.aboutUs'),
+        t('footer.contact'),
+      ],
+    },
+  ];
   
   return (
     <footer id="contact" className="mt-10 bg-[color:var(--brand-green)] text-white">
-      <div className="mx-auto grid max-w-[1520px] gap-6 px-3 py-6 sm:gap-8 sm:px-4 sm:py-8 lg:px-6 lg:py-10 xl:grid-cols-[180px_200px_200px_1fr_1fr_1fr_190px]">
+      <div className="mx-auto grid max-w-[1520px] grid-cols-2 gap-6 px-3 py-6 sm:gap-8 sm:px-4 sm:py-8 lg:px-6 lg:py-10 xl:grid-cols-[180px_200px_200px_1fr_1fr_1fr_190px]">
         {/* Language & Currency Section */}
-        <div className="space-y-4">
+        <div className="col-span-2 space-y-4 xl:col-span-1">
           <div className="relative">
             <p className="mb-2 text-sm font-semibold">Language</p>
             <button
@@ -162,9 +213,9 @@ export function Footer() {
         </div>
 
         {/* Ways You Can Pay */}
-        <div>
+        <div className="col-span-1 sm:col-span-1">
           <p className="mb-3 text-sm font-semibold">{t('footer.waysYouCanPay')}</p>
-          <div className="grid w-fit grid-cols-3 gap-1">
+          <div className="grid w-full max-w-[170px] grid-cols-3 gap-1">
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
               <img src={viiviPay} alt="Viivi" className="h-full w-full scale-125 object-contain" />
             </div>
@@ -187,7 +238,7 @@ export function Footer() {
         </div>
 
         {/* Mobile (Download App) */}
-        <div>
+        <div className="col-span-1 sm:col-span-1">
           <p className="mb-3 text-sm font-semibold">Mobile</p>
           <div className="space-y-2">
             <a 
@@ -197,7 +248,7 @@ export function Footer() {
               <GooglePlayIcon />
               <div className="flex flex-col items-start">
                 <span className="text-[9px] text-white/70">{t('footer.getItOn')}</span>
-                <span className="text-xs font-semibold">{t('footer.googlePlay')}</span>
+                <span className="text-[11px] font-semibold">{t('footer.googlePlay')}</span>
               </div>
             </a>
             <a 
@@ -207,14 +258,14 @@ export function Footer() {
               <AppleIcon />
               <div className="flex flex-col items-start">
                 <span className="text-[9px] text-white/70">{t('footer.downloadOn')}</span>
-                <span className="text-xs font-semibold">{t('footer.appStore')}</span>
+                <span className="text-[11px] font-semibold">{t('footer.appStore')}</span>
               </div>
             </a>
           </div>
         </div>
 
         {/* Support */}
-        <div>
+        <div className="hidden xl:block">
           <p className="mb-3 text-sm font-semibold">{t('footer.support')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.helpCentre')}</a>
@@ -227,7 +278,7 @@ export function Footer() {
         </div>
 
         {/* Company */}
-        <div>
+        <div className="hidden xl:block">
           <p className="mb-3 text-sm font-semibold">{t('footer.company')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.aboutUs')}</a>
@@ -240,7 +291,7 @@ export function Footer() {
         </div>
 
         {/* Supplier Zone */}
-        <div>
+        <div className="hidden xl:block">
           <p className="mb-3 text-sm font-semibold">{t('footer.supplierZone')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.listYourTours')}</a>
@@ -252,7 +303,7 @@ export function Footer() {
         </div>
 
         {/* Explore Section */}
-        <div>
+        <div className="hidden xl:block">
           <p className="mb-3 text-sm font-semibold">{t('footer.explore')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.home')}</a>
@@ -262,6 +313,36 @@ export function Footer() {
             <a href="#" className="block transition hover:text-white">{t('footer.aboutUs')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.contact')}</a>
           </div>
+        </div>
+      </div>
+      <div className="mx-auto w-full max-w-[1520px] px-3 pb-6 xl:hidden">
+        <div className="border-t border-white/40">
+          {footerAccordionSections.map((section) => {
+            const isOpen = openFooterSection === section.key;
+            return (
+              <div key={section.key} className="border-b border-white/40">
+                <button
+                  type="button"
+                  onClick={() => setOpenFooterSection(isOpen ? null : section.key)}
+                  className="flex w-full items-center justify-between py-4 text-left"
+                >
+                  <span className="text-[18px] font-semibold text-white">{section.title}</span>
+                  <ChevronDown className={`size-5 text-white transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                </button>
+                {isOpen && (
+                  <div className="pb-4">
+                    <div className="space-y-2 text-xs text-white/85">
+                      {section.links.map((link) => (
+                        <a key={`${section.key}-${link}`} href="#" className="block transition hover:text-white">
+                          {link}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 

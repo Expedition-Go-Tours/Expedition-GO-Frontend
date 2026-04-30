@@ -10,6 +10,24 @@ export default function SupportPage() {
     const TAUK_SCRIPT_ID = "tawk-to-support-script";
     const TAUK_SRC = "https://embed.tawk.to/644922ef31ebfa0fe7fa8b14/1guur0u4t";
 
+    // Keep the widget hidden until the user clicks "Start Chat".
+    window.Tawk_API = window.Tawk_API || {};
+    window.Tawk_API.onLoad = function onLoad() {
+      if (typeof window.Tawk_API?.hideWidget === "function") {
+        window.Tawk_API.hideWidget();
+      }
+    };
+    window.Tawk_API.onChatMinimized = function onChatMinimized() {
+      if (typeof window.Tawk_API?.hideWidget === "function") {
+        window.Tawk_API.hideWidget();
+      }
+    };
+    window.Tawk_API.onChatHidden = function onChatHidden() {
+      if (typeof window.Tawk_API?.hideWidget === "function") {
+        window.Tawk_API.hideWidget();
+      }
+    };
+
     const existingScript = document.getElementById(TAUK_SCRIPT_ID);
     if (existingScript) return;
 
@@ -20,8 +38,17 @@ export default function SupportPage() {
     script.setAttribute("crossorigin", "anonymous");
     document.body.appendChild(script);
 
-    // Avoid calling Tawk's methods on unmount: in React strict-mode the effect is mounted/unmounted twice,
-    // and hiding the widget can cause confusing UX.
+    // Hide widget when leaving Support page so it never persists on other pages.
+    return () => {
+      if (typeof window !== "undefined" && window.Tawk_API) {
+        if (typeof window.Tawk_API.minimize === "function") {
+          window.Tawk_API.minimize();
+        }
+        if (typeof window.Tawk_API.hideWidget === "function") {
+          window.Tawk_API.hideWidget();
+        }
+      }
+    };
   }, []);
 
   const handleStartChat = () => {
@@ -35,9 +62,10 @@ export default function SupportPage() {
         return;
       }
 
-      // Tawk provides multiple ways to open/maximize; try common ones safely.
+      // Show and open only from this button click.
+      if (typeof tawk.showWidget === "function") tawk.showWidget();
+      if (typeof tawk.unhideWidget === "function") tawk.unhideWidget();
       if (typeof tawk.maximize === "function") return tawk.maximize();
-      if (typeof tawk.showWidget === "function") return tawk.showWidget();
       if (typeof tawk.openWidget === "function") return tawk.openWidget();
     };
 
@@ -55,7 +83,7 @@ export default function SupportPage() {
           <div className="mb-12">
             <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-4">Support Center</h1>
             <p className="text-lg text-slate-600">
-              We're here to help! Chat with our support team using the chat widget on the right side of the screen.
+              We're here to help. Use Start Chat below to begin a conversation with our support team.
             </p>
           </div>
 
@@ -106,7 +134,7 @@ export default function SupportPage() {
             <div className="rounded-lg border border-slate-200 p-6 bg-[color:var(--brand-mist)]">
               <h2 className="text-xl font-bold text-slate-900 mb-4">Live Chat Support</h2>
               <p className="text-slate-700 mb-4">
-                Our support team is available 24/7 to assist you. Click the chat widget on the right to start a conversation.
+                Our support team is available 24/7 to assist you. Click Start Chat to begin.
               </p>
               <button
                 type="button"

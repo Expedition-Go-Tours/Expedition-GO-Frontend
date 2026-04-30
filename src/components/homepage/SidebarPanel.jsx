@@ -16,7 +16,7 @@ function PanelHeading({ title, linkTo }) {
   
   return (
     <div className="mb-4 flex items-center justify-between">
-      <h3 className="text-[18px] font-bold tracking-tight text-slate-900">{title}</h3>
+      <h3 className="text-[23px] font-bold tracking-tight text-slate-900">{title}</h3>
       <Link to={linkTo} className="text-sm font-semibold text-[color:var(--brand-green)] transition hover:text-[color:var(--brand-green-2)]">
         {t('sections.viewAll')}
       </Link>
@@ -126,9 +126,10 @@ function SwipeableSection({ children, itemCount, originalChildren }) {
 
 export function SidebarPanel() {
   const { t } = useTranslation();
+  const sidebarNewExperiences = [...sidebarTopRated, ...sidebarTopRated.slice(0, 2)];
   
   return (
-    <aside className="space-y-4 overflow-hidden">
+    <aside className="space-y-5 overflow-hidden">
       <Card className="rounded-[18px] border border-slate-200 bg-white shadow-sm overflow-hidden">
         <CardContent className="p-4 overflow-hidden">
           <PanelHeading title={t('sections.lastMinuteDeals')} linkTo="/tours?category=deals" />
@@ -155,14 +156,14 @@ export function SidebarPanel() {
         <CardContent className="p-4 overflow-hidden">
           <PanelHeading title={t('sections.newExperiences')} linkTo="/tours?category=deals" />
           <SwipeableSection 
-            itemCount={sidebarTopRated.length}
-            originalChildren={sidebarTopRated.map((tour) => (
-              <div key={tour.title} className="xl:w-auto">
+            itemCount={sidebarNewExperiences.length}
+            originalChildren={sidebarNewExperiences.map((tour, index) => (
+              <div key={`${tour.title}-${index}`} className="xl:w-auto">
                 <CompactTourCard {...tour} />
               </div>
             ))}
           >
-            {[...sidebarTopRated, ...sidebarTopRated, ...sidebarTopRated].map((tour, index) => (
+            {[...sidebarNewExperiences, ...sidebarNewExperiences, ...sidebarNewExperiences].map((tour, index) => (
               <div key={`${tour.title}-${index}`} className="w-[160px] flex-shrink-0">
                 <div className="pointer-events-auto">
                   <CompactTourCard {...tour} />

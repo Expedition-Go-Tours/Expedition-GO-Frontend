@@ -38,9 +38,9 @@ export function CompactTourCard({ title, duration, price, rating, reviews, image
   return (
     <Card 
       onClick={handleCardClick}
-      className="overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-sm transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-lg xl:active:scale-95 xl:active:shadow-sm cursor-pointer"
+      className="overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)] cursor-pointer"
     >
-      <div className="relative h-24 overflow-hidden">
+      <div className="relative h-36 overflow-hidden">
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-500 hover:scale-105" />
         <span className="absolute left-2 top-2 rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-bold text-white pointer-events-none">{duration}</span>
         <button 
@@ -54,14 +54,14 @@ export function CompactTourCard({ title, duration, price, rating, reviews, image
           />
         </button>
       </div>
-      <CardContent className="p-3">
-        <p className="line-clamp-1 text-[13px] font-semibold text-slate-900">{title}</p>
+      <CardContent className="p-3.5">
+        <p className="line-clamp-2 text-[14px] font-semibold leading-tight text-slate-900">{title}</p>
         <div className="mt-2 flex items-center gap-1 text-[12px]">
           <Star className="size-3.5 fill-orange-400 text-orange-400" />
           <span className="font-semibold text-orange-500">{rating}</span>
           <span className="text-slate-400">({reviews})</span>
         </div>
-        <p className="mt-1 text-sm font-semibold text-slate-900">{t('common.from')} {convertedPrice.formatted}</p>
+        <p className="mt-1.5 text-sm font-semibold text-slate-900">{t('common.from')} {convertedPrice.formatted}</p>
       </CardContent>
     </Card>
   );

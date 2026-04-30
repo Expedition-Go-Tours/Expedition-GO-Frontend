@@ -11,7 +11,7 @@ import { TourCard } from "./TourCard";
 import { heroStats } from "./data";
 import { useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
 
-export function HeroSection() {
+export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
   const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState({ from: null, to: null });
   const [showCalendar, setShowCalendar] = useState(false);
@@ -21,6 +21,8 @@ export function HeroSection() {
   const scrollContainerRef = useRef(null);
   const controls = useAnimation();
   const { recentlyViewed } = useRecentlyViewed();
+  const activeDateRange = sharedDateRange ?? selectedDate;
+  const setActiveDateRange = onSharedDateRangeChange ?? setSelectedDate;
 
   // Carousel setup
   const carouselItems = recentlyViewed.length > 0 ? recentlyViewed : [];
@@ -58,7 +60,7 @@ export function HeroSection() {
       controls.set({ x: -middleSetStart * (cardWidth + gap) });
       setCurrentIndex(middleSetStart);
     }
-  }, [carouselItems.length, controls, cardWidth, gap]);
+  }, [carouselItems.length]);
 
   const handlePrevious = () => {
     if (carouselItems.length <= 4) return;
@@ -108,18 +110,18 @@ export function HeroSection() {
 
   const formatDate = (date) => {
     if (!date) return "";
-    const options = { month: "short", day: "numeric", year: "numeric" };
+    const options = { month: "short", day: "numeric" };
     return date.toLocaleDateString("en-US", options);
   };
 
   const formatDateRange = (dateRange) => {
     if (!dateRange || !dateRange.from) return "";
-    if (!dateRange.to) return formatDate(dateRange.from);
+    if (!dateRange.to) return `${formatDate(dateRange.from)}`;
     return `${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`;
   };
 
   const handleDateSelect = (date) => {
-    setSelectedDate(date);
+    setActiveDateRange(date);
   };
 
   const toggleCalendar = (e) => {
@@ -154,7 +156,7 @@ export function HeroSection() {
           </p>
 
           <div className="mx-auto mt-3 sm:mt-3.5 md:mt-4 max-w-4xl overflow-visible">
-            <div className="grid gap-0 overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.28)] sm:grid-cols-[1fr_1fr_auto]">
+            <div id="hero-search-bar" className="grid gap-0 overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.28)] sm:grid-cols-[1fr_1fr_auto]">
               <div className="flex items-center gap-2 border-b border-slate-200 px-2.5 py-2 text-left text-slate-900 sm:border-b-0 sm:border-r">
                 <MapPin className="size-3.5 text-(--brand-green)" />
                 <div className="min-w-0 flex-1">
@@ -166,7 +168,7 @@ export function HeroSection() {
                 <button
                   onClick={toggleCalendar}
                   type="button"
-                  className="shrink-0 transition hover:scale-110 focus:outline-none"
+                  className="hidden shrink-0 transition hover:scale-110 focus:outline-none lg:inline-flex"
                   aria-label="Open calendar"
                 >
                   <CalendarDays className="size-3.5 text-(--brand-green)" />
@@ -176,7 +178,7 @@ export function HeroSection() {
                   <Input
                     className="h-auto border-0 px-0 py-0.5 text-[11px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) cursor-pointer"
                     placeholder={t('hero.selectDate')}
-                    value={formatDateRange(selectedDate)}
+                    value={formatDateRange(activeDateRange)}
                     onClick={toggleCalendar}
                     readOnly
                   />
@@ -188,7 +190,7 @@ export function HeroSection() {
                   >
                     <Calendar
                       mode="range"
-                      selected={selectedDate}
+                      selected={activeDateRange}
                       onSelect={handleDateSelect}
                       onClose={() => setShowCalendar(false)}
                     />
@@ -217,7 +219,7 @@ export function HeroSection() {
         {/* Auto-scrolling carousel - only show if there are items */}
         {carouselItems.length > 0 && (
           <div className="mt-4 sm:mt-5 md:mt-6 overflow-hidden">
-            <h2 className="mb-2.5 sm:mb-3 text-center text-base font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:text-lg">
+            <h2 className="mb-2.5 sm:mb-3 text-center text-lg font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:text-xl">
               {t('sections.pickupTitle')}
             </h2>
 

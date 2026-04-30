@@ -11,22 +11,24 @@ export function HomePageSkeleton() {
       <Navbar />
       <HeroSkeleton />
 
-      <main className="mx-auto max-w-[1520px] px-4 pb-8 sm:px-6 overflow-hidden">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_430px]">
-          <div className="space-y-1 pt-3 min-w-0">
+      <main className="mx-auto max-w-[1520px] px-4 pb-10 sm:px-6 sm:pb-12 overflow-hidden">
+        <div className="grid gap-6 xl:gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
+          <div className="space-y-[0.7rem] pt-4 min-w-0">
             <TourCarouselSkeleton />
-            <DestinationsSkeleton />
-            <TourCarouselSkeleton />
-            <TourCarouselSkeleton />
-            <TourCarouselSkeleton />
+            <div className="space-y-[0.7rem] pt-5">
+              <DestinationsSkeleton />
+              <TourCarouselSkeleton />
+              <TourCarouselSkeleton />
+              <TourCarouselSkeleton />
+            </div>
           </div>
-          <div className="pt-3 min-w-0">
+          <div className="pt-4 min-w-0">
             <SidebarSkeleton />
           </div>
         </div>
 
         {/* Newsletter Skeleton */}
-        <div className="mt-8">
+        <div className="mt-12">
           <div className="grid gap-0 lg:grid-cols-2 items-stretch rounded-2xl overflow-hidden border border-slate-200 shadow-lg">
             <Skeleton className="h-[280px] lg:h-auto" />
             <div className="bg-[color:var(--brand-mist)] p-8 sm:p-10 lg:p-12 flex flex-col justify-center space-y-4">
@@ -43,7 +45,7 @@ export function HomePageSkeleton() {
         </div>
 
         {/* Features Skeleton */}
-        <div className="mt-8 py-8">
+        <div className="mt-12 py-8">
           <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="flex flex-col items-center text-center space-y-2">

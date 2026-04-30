@@ -1,23 +1,39 @@
-import { Globe, Heart, Headset, Menu, ShoppingCart, UserCircle2, X, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Globe, Heart, Headset, Menu, ShoppingCart, UserCircle2, X, ChevronDown, Search, CalendarDays } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import companyPic from "@/assets/images/company_pic.jpg";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { navItems } from "./data";
 
-export function Navbar() {
+export function Navbar({
+  sharedDateRange,
+  onSharedDateRangeChange,
+  forceShowCompactSearch = false,
+  externalSearchQuery,
+  onExternalSearchChange,
+}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLanguageCurrencyOpen, setIsLanguageCurrencyOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("language");
+  const [showCompactSearch, setShowCompactSearch] = useState(false);
+  const [compactSearchQuery, setCompactSearchQuery] = useState("");
+  const [mobileDateRange, setMobileDateRange] = useState({ from: null, to: null });
+  const [showMobileCalendar, setShowMobileCalendar] = useState(false);
+  const mobileCalendarRef = useRef(null);
+  const mobileDateButtonRef = useRef(null);
+  const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { t, i18n } = useTranslation();
   const { currency, setCurrency, availableCurrencies } = useCurrency();
+  const activeMobileDateRange = sharedDateRange ?? mobileDateRange;
+  const setActiveMobileDateRange = onSharedDateRangeChange ?? setMobileDateRange;
 
   const handleBrandClick = (e) => {
     e.preventDefault();
@@ -43,6 +59,16 @@ export function Navbar() {
     setCurrency(currencyCode);
     setIsLanguageCurrencyOpen(false);
   };
+  const handleCompactSearchSubmit = (e) => {
+    e.preventDefault();
+    if (onExternalSearchChange) return;
+    const query = compactSearchQuery.trim();
+    if (!query) {
+      navigate("/tours");
+      return;
+    }
+    navigate(`/tours?search=${encodeURIComponent(query)}`);
+  };
 
   const getCurrentLanguageLabel = () => {
     const langMap = {
@@ -63,6 +89,65 @@ export function Navbar() {
     { code: "nl", name: "Nederlands" }
   ];
 
+  const formatDate = (date) => {
+    if (!date) return "";
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
+
+  const mobileDateLabel = activeMobileDateRange?.from
+    ? activeMobileDateRange?.to
+      ? `${formatDate(activeMobileDateRange.from)} - ${formatDate(activeMobileDateRange.to)}`
+      : `${formatDate(activeMobileDateRange.from)}`
+    : "";
+  const isExternalSearchMode = typeof onExternalSearchChange === "function";
+  const compactSearchValue = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
+  const compactSearchMaxWidthClass = forceShowCompactSearch ? "max-w-[460px]" : "max-w-[360px]";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (location.pathname !== "/") {
+        setShowCompactSearch((prev) => (prev ? false : prev));
+        return;
+      }
+
+      const heroSearch = document.getElementById("hero-search-bar");
+      if (!heroSearch) {
+        setShowCompactSearch((prev) => (prev ? false : prev));
+        return;
+      }
+
+      const heroSearchBottom = heroSearch.getBoundingClientRect().bottom + window.scrollY;
+      setShowCompactSearch((prev) => { const next = window.scrollY > heroSearchBottom; return prev === next ? prev : next; });
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      const clickedDateButton = mobileDateButtonRef.current?.contains(event.target);
+      const clickedCalendar = mobileCalendarRef.current?.contains(event.target);
+
+      if (!clickedDateButton && !clickedCalendar) {
+        setShowMobileCalendar(false);
+      }
+    };
+
+    if (showMobileCalendar) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [showMobileCalendar]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 !bg-white shadow-sm dark:!bg-white dark:border-slate-200">
       <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-2 px-3 py-2 text-slate-950 sm:gap-4 sm:px-4 sm:py-3 lg:px-6 dark:text-slate-950">
@@ -73,6 +158,29 @@ export function Navbar() {
             className="h-auto w-[140px] object-contain sm:w-[180px] md:w-[220px] lg:w-[260px] xl:w-[320px]"
           />
         </button>
+
+        {(showCompactSearch || forceShowCompactSearch) && (
+          <div className="hidden flex-1 justify-center lg:flex">
+            <form
+              onSubmit={handleCompactSearchSubmit}
+              className={`flex w-full ${compactSearchMaxWidthClass} items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-3 py-2`}
+            >
+              <Search className="size-4 text-slate-500" />
+              <input
+                value={compactSearchValue}
+                onChange={(e) => {
+                  if (isExternalSearchMode) {
+                    onExternalSearchChange(e.target.value);
+                  } else {
+                    setCompactSearchQuery(e.target.value);
+                  }
+                }}
+                placeholder="Search tours"
+                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-500"
+              />
+            </form>
+          </div>
+        )}
 
         <div className="hidden items-center gap-6 lg:flex">
           <Link to="/wishlist" className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer">
@@ -338,6 +446,64 @@ export function Navbar() {
           {isMobileMenuOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
         </button>
       </div>
+
+      {(showCompactSearch || forceShowCompactSearch) && (
+        <div className="px-3 py-2 lg:hidden">
+          <div className="mx-auto max-w-[1520px] sm:px-1">
+            <form
+              onSubmit={handleCompactSearchSubmit}
+              className="flex w-full items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 shadow-sm"
+            >
+              <Search className="size-4 text-slate-600" />
+              <input
+                value={compactSearchValue}
+                onChange={(e) => {
+                  if (isExternalSearchMode) {
+                    onExternalSearchChange(e.target.value);
+                  } else {
+                    setCompactSearchQuery(e.target.value);
+                  }
+                }}
+                placeholder="Search tours"
+                className="w-full bg-transparent text-sm font-medium text-slate-900 outline-none placeholder:text-slate-500"
+              />
+              <span className="h-5 w-px bg-slate-300" />
+              <button
+                ref={mobileDateButtonRef}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowMobileCalendar((value) => !value);
+                }}
+                className="inline-flex items-center gap-2 rounded-md px-1 py-0.5 text-slate-900"
+                aria-label="Open date range calendar"
+              >
+                <CalendarDays className="size-4 text-slate-700" />
+                <span className="whitespace-nowrap text-sm font-semibold text-slate-900">{mobileDateLabel}</span>
+              </button>
+            </form>
+            {showMobileCalendar && (
+              <div className="fixed inset-0 z-[80] grid place-items-center px-3">
+                <button
+                  type="button"
+                  aria-label="Close calendar"
+                  className="absolute inset-0 bg-black/20"
+                  onClick={() => setShowMobileCalendar(false)}
+                />
+                <div ref={mobileCalendarRef} className="relative z-[81]">
+                  <Calendar
+                    mode="range"
+                    selected={activeMobileDateRange}
+                    onSelect={setActiveMobileDateRange}
+                    onClose={() => setShowMobileCalendar(false)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (

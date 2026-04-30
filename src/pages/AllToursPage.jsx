@@ -475,10 +475,10 @@ function AllToursPageContent() {
           <div className="w-full">
             {category !== "destinations" && (
               <div className="mb-6 overflow-y-visible pb-1">
-                <div className="flex w-full min-w-0 items-center gap-2">
+                <div className="flex w-full items-center gap-2 overflow-x-auto pb-1 scrollbar-hide overscroll-x-contain lg:min-w-0 lg:overflow-visible lg:pb-0">
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
                   >
                     <SlidersHorizontal className="size-4" />
                     <span>Filter</span>
@@ -498,7 +498,7 @@ function AllToursPageContent() {
                   <button
                     ref={adultsTriggerRef}
                     onClick={toggleTravelersPanel}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-900 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-900 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
                   >
                     <span>{travelerLabel}</span>
                     <ChevronDown className="size-4" />
@@ -507,7 +507,7 @@ function AllToursPageContent() {
                   <button
                     ref={timeTriggerRef}
                     onClick={toggleTimeOfDayMenu}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
                   >
                     <span>{timeOfDayLabel}</span>
                     <ChevronDown className="size-4" />
@@ -516,7 +516,7 @@ function AllToursPageContent() {
                   <button
                     ref={priceTriggerRef}
                     onClick={togglePriceMenu}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
                   >
                     <span>{priceLabel}</span>
                     <ChevronDown className="size-4" />
@@ -525,7 +525,7 @@ function AllToursPageContent() {
                   <button
                     ref={ratingTriggerRef}
                     onClick={toggleRatingMenu}
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
                   >
                     <span>{ratingLabel}</span>
                     <ChevronDown className="size-4" />
@@ -545,7 +545,7 @@ function AllToursPageContent() {
 
                   <div
                     ref={experienceFiltersRef}
-                    className="flex w-0 flex-1 items-center gap-2 overflow-x-auto scrollbar-hide overscroll-x-contain"
+                    className="flex shrink-0 items-center gap-2 lg:w-0 lg:flex-1 lg:shrink lg:overflow-x-auto lg:overscroll-x-contain lg:[scrollbar-width:none] lg:[-ms-overflow-style:none] lg:[&::-webkit-scrollbar]:hidden"
                   >
                     {experienceFilters.map((filterLabel) => {
                       const isActive = selectedExperienceFilter === filterLabel;

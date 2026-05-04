@@ -11,11 +11,11 @@ export function HomePageSkeleton() {
       <Navbar />
       <HeroSkeleton />
 
-      <main className="mx-auto max-w-[1520px] px-4 pb-10 sm:px-6 sm:pb-12 overflow-hidden">
+      <main className="mx-auto max-w-[1520px] px-4 pb-12 sm:px-6 sm:pb-14 overflow-hidden">
         <div className="grid gap-6 xl:gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
-          <div className="space-y-[0.7rem] pt-4 min-w-0">
+          <div className="space-y-4 pt-5 min-w-0">
             <TourCarouselSkeleton />
-            <div className="space-y-[0.7rem] pt-5">
+            <div className="space-y-4 pt-6">
               <DestinationsSkeleton />
               <TourCarouselSkeleton />
               <TourCarouselSkeleton />
@@ -26,26 +26,28 @@ export function HomePageSkeleton() {
             <SidebarSkeleton />
           </div>
         </div>
+      </main>
 
-        {/* Newsletter Skeleton */}
-        <div className="mt-12">
-          <div className="grid gap-0 lg:grid-cols-2 items-stretch rounded-2xl overflow-hidden border border-slate-200 shadow-lg">
-            <Skeleton className="h-[280px] lg:h-auto" />
-            <div className="bg-[color:var(--brand-mist)] p-8 sm:p-10 lg:p-12 flex flex-col justify-center space-y-4">
-              <Skeleton className="h-8 w-3/4" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-              <div className="flex gap-3 mt-4">
-                <Skeleton className="h-12 flex-1" />
-                <Skeleton className="h-12 w-32" />
-              </div>
-              <Skeleton className="h-3 w-full mt-2" />
+      {/* Newsletter Skeleton - Full Width */}
+      <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
+        <div className="grid gap-0 lg:grid-cols-2 items-stretch rounded-2xl overflow-hidden border border-slate-200 shadow-lg">
+          <Skeleton className="h-[280px] lg:h-auto" />
+          <div className="bg-[color:var(--brand-mist)] p-8 sm:p-10 lg:p-12 flex flex-col justify-center space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <div className="flex gap-3 mt-4">
+              <Skeleton className="h-12 flex-1" />
+              <Skeleton className="h-12 w-32" />
             </div>
+            <Skeleton className="h-3 w-full mt-2" />
           </div>
         </div>
+      </div>
 
-        {/* Features Skeleton */}
-        <div className="mt-12 py-8">
+      {/* Features Skeleton - Full Width */}
+      <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
+        <div className="py-8">
           <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="flex flex-col items-center text-center space-y-2">
@@ -56,7 +58,7 @@ export function HomePageSkeleton() {
             ))}
           </div>
         </div>
-      </main>
+      </div>
 
       <Footer />
     </div>

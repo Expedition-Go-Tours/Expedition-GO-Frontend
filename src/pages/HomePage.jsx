@@ -13,7 +13,6 @@ import { HomePageSkeleton } from "@/components/homepage/skeletons/HomePageSkelet
 import { leisureTours, pickupTours, recommendedTours, topRatedTours } from "@/components/homepage/data";
 import { AuthModalProvider } from "@/contexts/AuthModalContext";
 import { RecentlyViewedProvider } from "@/contexts/RecentlyViewedContext";
-import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AuthModal } from "@/components/ui/auth-modal";
 import { useAuthModal } from "@/contexts/AuthModalContext";
 
@@ -59,30 +58,30 @@ function HomePageContent() {
           onSharedDateRangeChange={setSharedHeroDateRange}
         />
 
-        <main className="mx-auto max-w-[1520px] px-4 pb-10 sm:px-6 sm:pb-12 overflow-hidden">
-          <div className="grid gap-6 xl:gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
-            <div className="space-y-[0.7rem] pt-4 min-w-0">
+        <main className="mx-auto max-w-[1520px] px-4 pb-[3.4rem] sm:px-6 sm:pb-14 overflow-hidden">
+          <div className="grid gap-[2.125rem] md:gap-8 xl:gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
+            <div className="space-y-[1.7rem] pt-[1.4875rem] min-w-0 md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
               <TourCarouselSection id="tours" title={t('sections.featuredTitle')} items={pickupTours} />
-              <div className="space-y-[0.7rem] pt-5">
+              <div className="space-y-[1.7rem] pt-0 md:space-y-6 md:pt-4 xl:space-y-4 xl:pt-5">
                 <DestinationsSection />
                 <TourCarouselSection id="recommended" title={t('sections.recommendedTitle')} items={recommendedTours} />
                 <TourCarouselSection id="deals" title={t('sections.topRatedTitle')} items={topRatedTours} />
                 <TourCarouselSection id="leisure" title={t('sections.likelyToSellOut')} items={leisureTours} />
               </div>
             </div>
-            <div className="pt-4 min-w-0">
+            <div className="pt-[1.7rem] min-w-0 md:pt-6 xl:pt-4">
               <SidebarPanel />
             </div>
           </div>
         </main>
 
         {/* Newsletter Section - Full Width */}
-        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-[3.4rem] md:mb-14">
           <NewsletterSection />
         </div>
 
         {/* Features Section - Full Width before footer */}
-        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-[3.4rem] md:mb-14">
           <FeaturesSection />
         </div>
 
@@ -107,11 +106,9 @@ function HomePageContent() {
 function HomePage() {
   return (
     <AuthModalProvider>
-      <WishlistProvider>
-        <RecentlyViewedProvider>
-          <HomePageContent />
-        </RecentlyViewedProvider>
-      </WishlistProvider>
+      <RecentlyViewedProvider>
+        <HomePageContent />
+      </RecentlyViewedProvider>
     </AuthModalProvider>
   );
 }

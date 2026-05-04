@@ -81,7 +81,7 @@ export function Footer() {
         t('footer.contactUs'),
         t('footer.liveChat'),
         t('footer.bookingSupport'),
-        t('footer.cancellationHelp'),
+        t('footer.refundPolicy'),
         t('footer.faq'),
       ],
     },
@@ -93,8 +93,10 @@ export function Footer() {
         t('footer.careers'),
         t('footer.partners'),
         t('footer.affiliateProgram'),
-        t('footer.press'),
-        t('footer.investorRelations'),
+        t('footer.termsConditions'),
+        t('footer.privacyPolicy'),
+        t('footer.travelLiability'),
+        t('footer.cookiePolicy'),
       ],
     },
     {
@@ -123,12 +125,12 @@ export function Footer() {
   ];
   
   return (
-    <footer id="contact" className="mt-10 bg-[color:var(--brand-green)] text-white">
-      <div className="mx-auto grid max-w-[1520px] grid-cols-2 gap-6 px-3 py-6 sm:gap-8 sm:px-4 sm:py-8 lg:px-6 lg:py-10 xl:grid-cols-[180px_200px_200px_1fr_1fr_1fr_190px]">
+    <footer id="contact" className="mt-[2.55rem] bg-[color:var(--brand-green)] text-white md:mt-10">
+      <div className="mx-auto grid max-w-[1520px] grid-cols-2 gap-[1.7rem] px-3 py-[1.7rem] sm:gap-8 sm:px-4 sm:py-8 lg:px-6 lg:py-10 xl:grid-cols-[180px_200px_200px_1fr_1fr_1fr_190px]">
         {/* Language & Currency Section */}
-        <div className="col-span-2 space-y-4 xl:col-span-1">
+        <div className="col-span-2 space-y-[1.0625rem] xl:col-span-1 md:space-y-4">
           <div className="relative">
-            <p className="mb-2 text-sm font-semibold">Language</p>
+            <p className="mb-2 text-base font-semibold sm:text-sm">Language</p>
             <button
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
               className="w-full rounded-md border border-white/15 bg-white px-3 py-2 text-left text-[13px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
@@ -168,7 +170,7 @@ export function Footer() {
             )}
           </div>
           <div className="relative">
-            <p className="mb-2 text-sm font-semibold">Currency</p>
+            <p className="mb-2 text-base font-semibold sm:text-sm">Currency</p>
             <button
               onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
               className="w-full rounded-md border border-white/15 bg-white px-3 py-2 text-left text-[13px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
@@ -214,7 +216,7 @@ export function Footer() {
 
         {/* Ways You Can Pay */}
         <div className="col-span-1 sm:col-span-1">
-          <p className="mb-3 text-sm font-semibold">{t('footer.waysYouCanPay')}</p>
+          <p className="mb-3 text-base font-semibold sm:text-sm">{t('footer.waysYouCanPay')}</p>
           <div className="grid w-full max-w-[170px] grid-cols-3 gap-1">
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
               <img src={viiviPay} alt="Viivi" className="h-full w-full scale-125 object-contain" />
@@ -239,7 +241,7 @@ export function Footer() {
 
         {/* Mobile (Download App) */}
         <div className="col-span-1 sm:col-span-1">
-          <p className="mb-3 text-sm font-semibold">Mobile</p>
+          <p className="mb-3 text-base font-semibold sm:text-sm">Mobile</p>
           <div className="space-y-2">
             <a 
               href="#" 
@@ -247,8 +249,8 @@ export function Footer() {
             >
               <GooglePlayIcon />
               <div className="flex flex-col items-start">
-                <span className="text-[9px] text-white/70">{t('footer.getItOn')}</span>
-                <span className="text-[11px] font-semibold">{t('footer.googlePlay')}</span>
+                <span className="text-[10px] text-white/70 sm:text-[9px]">{t('footer.getItOn')}</span>
+                <span className="text-[12px] font-semibold sm:text-[11px]">{t('footer.googlePlay')}</span>
               </div>
             </a>
             <a 
@@ -257,8 +259,8 @@ export function Footer() {
             >
               <AppleIcon />
               <div className="flex flex-col items-start">
-                <span className="text-[9px] text-white/70">{t('footer.downloadOn')}</span>
-                <span className="text-[11px] font-semibold">{t('footer.appStore')}</span>
+                <span className="text-[10px] text-white/70 sm:text-[9px]">{t('footer.downloadOn')}</span>
+                <span className="text-[12px] font-semibold sm:text-[11px]">{t('footer.appStore')}</span>
               </div>
             </a>
           </div>
@@ -272,7 +274,7 @@ export function Footer() {
             <a href="#" className="block transition hover:text-white">{t('footer.contactUs')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.liveChat')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.bookingSupport')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.cancellationHelp')}</a>
+            <a href="#" className="block transition hover:text-white">{t('footer.refundPolicy')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.faq')}</a>
           </div>
         </div>
@@ -285,8 +287,10 @@ export function Footer() {
             <a href="#" className="block transition hover:text-white">{t('footer.careers')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.partners')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.affiliateProgram')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.press')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.investorRelations')}</a>
+            <a href="#" className="block transition hover:text-white">{t('footer.termsConditions')}</a>
+            <a href="#" className="block transition hover:text-white">{t('footer.privacyPolicy')}</a>
+            <a href="#" className="block transition hover:text-white">{t('footer.travelLiability')}</a>
+            <a href="#" className="block transition hover:text-white">{t('footer.cookiePolicy')}</a>
           </div>
         </div>
 
@@ -315,7 +319,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="mx-auto w-full max-w-[1520px] px-3 pb-6 xl:hidden">
+      <div className="mx-auto w-full max-w-[1520px] px-3 pb-[1.275rem] xl:hidden">
         <div className="border-t border-white/40">
           {footerAccordionSections.map((section) => {
             const isOpen = openFooterSection === section.key;
@@ -324,14 +328,14 @@ export function Footer() {
                 <button
                   type="button"
                   onClick={() => setOpenFooterSection(isOpen ? null : section.key)}
-                  className="flex w-full items-center justify-between py-4 text-left"
+                  className="flex w-full items-center justify-between py-[1.1rem] text-left sm:py-4"
                 >
-                  <span className="text-[18px] font-semibold text-white">{section.title}</span>
+                  <span className="text-[19px] font-semibold text-white">{section.title}</span>
                   <ChevronDown className={`size-5 text-white transition-transform ${isOpen ? "rotate-180" : ""}`} />
                 </button>
                 {isOpen && (
-                  <div className="pb-4">
-                    <div className="space-y-2 text-xs text-white/85">
+                  <div className="pb-[1.1rem] sm:pb-4">
+                    <div className="space-y-2.5 text-[13px] leading-relaxed text-white/85 sm:text-xs">
                       {section.links.map((link) => (
                         <a key={`${section.key}-${link}`} href="#" className="block transition hover:text-white">
                           {link}
@@ -348,9 +352,9 @@ export function Footer() {
 
       {/* Bottom Section with Copyright, Social Media, and Links */}
       <div className="border-t border-white/10">
-        <div className="mx-auto max-w-[1520px] px-3 py-4 sm:px-4 lg:px-6">
-          <div className="flex flex-col gap-4 text-xs text-white/80 xl:flex-row xl:items-center xl:justify-between">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+        <div className="mx-auto max-w-[1520px] px-3 py-[1.1rem] sm:px-4 lg:px-6">
+          <div className="flex flex-col gap-[1.1rem] text-sm text-white/80 sm:text-xs xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-col gap-[1.1rem] sm:flex-row sm:items-center sm:justify-center sm:gap-4">
               <p>{t('footer.copyright')}</p>
               <div className="flex items-center justify-center gap-3 text-white">
                 <a href="#" className="transition hover:opacity-80">

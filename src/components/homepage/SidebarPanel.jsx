@@ -15,9 +15,9 @@ function PanelHeading({ title, linkTo }) {
   const { t } = useTranslation();
   
   return (
-    <div className="mb-4 flex items-center justify-between">
-      <h3 className="text-[23px] font-bold tracking-tight text-slate-900">{title}</h3>
-      <Link to={linkTo} className="text-sm font-semibold text-[color:var(--brand-green)] transition hover:text-[color:var(--brand-green-2)]">
+    <div className="mb-[1.1rem] flex items-center justify-between gap-2 md:mb-4">
+      <h3 className="text-[26px] font-bold tracking-tight text-slate-900 xl:text-[23px]">{title}</h3>
+      <Link to={linkTo} className="shrink-0 text-base font-semibold text-[color:var(--brand-green)] transition hover:text-[color:var(--brand-green-2)] xl:text-sm">
         {t('sections.viewAll')}
       </Link>
     </div>
@@ -34,7 +34,7 @@ function SwipeableSection({ children, itemCount, originalChildren }) {
   const controls = useAnimation();
 
   // Calculate single set width for infinite loop
-  const cardWidth = 160;
+  const cardWidth = 280;
   const gap = 12;
   const singleSetWidth = itemCount * (cardWidth + gap);
 
@@ -129,10 +129,10 @@ export function SidebarPanel() {
   const sidebarNewExperiences = [...sidebarTopRated, ...sidebarTopRated.slice(0, 2)];
   
   return (
-    <aside className="space-y-5 overflow-hidden">
+    <aside className="space-y-[1.7rem] overflow-hidden md:space-y-6 xl:space-y-5">
       <Card className="rounded-[18px] border border-slate-200 bg-white shadow-sm overflow-hidden">
         <CardContent className="p-4 overflow-hidden">
-          <PanelHeading title={t('sections.lastMinuteDeals')} linkTo="/tours?category=deals" />
+          <PanelHeading title={t('sections.lastMinuteDeals')} linkTo="/tours?category=last-minute-deals" />
           <SwipeableSection 
             itemCount={lastMinuteDeals.length}
             originalChildren={lastMinuteDeals.map((deal) => (
@@ -142,7 +142,7 @@ export function SidebarPanel() {
             ))}
           >
             {[...lastMinuteDeals, ...lastMinuteDeals, ...lastMinuteDeals].map((deal, index) => (
-              <div key={`${deal.title}-${index}`} className="w-[160px] flex-shrink-0">
+              <div key={`${deal.title}-${index}`} className="w-[280px] flex-shrink-0">
                 <div className="pointer-events-auto">
                   <SidebarDealCard {...deal} />
                 </div>
@@ -154,7 +154,7 @@ export function SidebarPanel() {
 
       <Card className="rounded-[18px] border border-slate-200 bg-white shadow-sm overflow-hidden">
         <CardContent className="p-4 overflow-hidden">
-          <PanelHeading title={t('sections.newExperiences')} linkTo="/tours?category=deals" />
+          <PanelHeading title={t('sections.newExperiences')} linkTo="/tours?category=new-experiences" />
           <SwipeableSection 
             itemCount={sidebarNewExperiences.length}
             originalChildren={sidebarNewExperiences.map((tour, index) => (
@@ -164,7 +164,7 @@ export function SidebarPanel() {
             ))}
           >
             {[...sidebarNewExperiences, ...sidebarNewExperiences, ...sidebarNewExperiences].map((tour, index) => (
-              <div key={`${tour.title}-${index}`} className="w-[160px] flex-shrink-0">
+              <div key={`${tour.title}-${index}`} className="w-[280px] flex-shrink-0">
                 <div className="pointer-events-auto">
                   <CompactTourCard {...tour} />
                 </div>

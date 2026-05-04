@@ -22,10 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AuthModalProvider } from "@/contexts/AuthModalContext";
 import { RecentlyViewedProvider, useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
-import { WishlistProvider } from "@/contexts/WishlistContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { useAuthModal } from "@/contexts/AuthModalContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Mock data - In production, this would come from an API
@@ -85,8 +82,6 @@ function TourDetailContent() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { openAuthModal } = useAuthModal();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { convertPrice } = useCurrency();
   const { addToRecentlyViewed } = useRecentlyViewed();
@@ -111,10 +106,6 @@ function TourDetailContent() {
   const convertedPrice = convertPrice(tourData.price);
 
   const handleWishlistToggle = () => {
-    if (!user) {
-      openAuthModal();
-      return;
-    }
     toggleWishlist({
       title: tourData.name,
       duration: tourData.duration,
@@ -174,7 +165,7 @@ function TourDetailContent() {
                 >
                   <Heart
                     className={`size-6 transition-colors ${
-                      isFavorited ? "fill-red-500 text-red-500" : ""
+                      isFavorited ? "fill-[color:var(--brand-green)] text-[color:var(--brand-green)]" : ""
                     }`}
                   />
                 </button>
@@ -275,18 +266,38 @@ function TourDetailContent() {
               {/* Itinerary */}
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('tourDetail.itinerary')}</h2>
-                <div className="space-y-4">
-                  {tourData.itinerary.map((item, index) => (
-                    <div key={index} className="flex gap-4 p-4 bg-white rounded-lg border border-slate-200">
-                      <div className="flex items-center justify-center size-10 rounded-full bg-[color:var(--brand-green)] text-white font-bold shrink-0">
-                        {item.day}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-slate-900">{t('tourDetail.day')} {item.day}</h3>
-                        <p className="text-slate-600 mt-1">{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
+                <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4 sm:p-6">
+                  <div className="relative space-y-5">
+                    <div className="absolute left-5 top-2 bottom-2 w-px bg-gradient-to-b from-[color:var(--brand-green)]/70 via-slate-300 to-[color:var(--brand-green)]/70" />
+                    {tourData.itinerary.map((item, index) => {
+                      const stage =
+                        index === 0
+                          ? "Departure"
+                          : index === tourData.itinerary.length - 1
+                            ? "Arrival"
+                            : "Transit";
+                      const eta = `${40 + index * 25} min`;
+
+                      return (
+                        <div key={index} className="relative flex gap-4 pl-1">
+                          <div className="relative z-10 mt-1 flex size-9 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 shadow-[0_0_0_4px_rgba(241,245,249,0.9)]">
+                            <MapPin className={`size-4 ${index === 0 || index === tourData.itinerary.length - 1 ? "text-[color:var(--brand-green)]" : "text-slate-500"}`} />
+                          </div>
+
+                          <div className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">{stage}</p>
+                            <h3 className="mt-1 text-lg font-semibold text-slate-900">
+                              {t('tourDetail.day')} {item.day}
+                            </h3>
+                            <p className="mt-1 text-sm text-slate-600">{item.description}</p>
+                            <span className="mt-3 inline-flex rounded-full border border-[color:var(--brand-green)]/40 bg-[color:var(--brand-green)]/15 px-2.5 py-1 text-xs font-semibold text-[color:var(--brand-mint)]">
+                              {eta}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -409,11 +420,9 @@ function TourDetailContent() {
 function TourDetailPage() {
   return (
     <AuthModalProvider>
-      <WishlistProvider>
-        <RecentlyViewedProvider>
-          <TourDetailContent />
-        </RecentlyViewedProvider>
-      </WishlistProvider>
+      <RecentlyViewedProvider>
+        <TourDetailContent />
+      </RecentlyViewedProvider>
     </AuthModalProvider>
   );
 }

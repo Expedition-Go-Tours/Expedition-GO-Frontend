@@ -1,16 +1,145 @@
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, SlidersHorizontal } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, SlidersHorizontal, X, CircleCheck, Star, Heart } from "lucide-react";
 import { Navbar } from "@/components/homepage/Navbar";
 import { Footer } from "@/components/homepage/Footer";
 import { TourCard } from "@/components/homepage/TourCard";
 import { DestinationCard } from "@/components/homepage/DestinationCard";
 import { Calendar } from "@/components/ui/calendar";
-import { pickupTours, recommendedTours, topRatedTours, leisureTours, destinations } from "@/components/homepage/data";
+import {
+  pickupTours,
+  recommendedTours,
+  topRatedTours,
+  leisureTours,
+  destinations,
+  lastMinuteDeals,
+  sidebarTopRated,
+} from "@/components/homepage/data";
 import { AuthModalProvider } from "@/contexts/AuthModalContext";
 import { AuthModal } from "@/components/ui/auth-modal";
 import { useAuthModal } from "@/contexts/AuthModalContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+
+function MobileAllToursCard({ item }) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { convertPrice } = useCurrency();
+  const [showDescription, setShowDescription] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const isFavorited = isInWishlist(item.title);
+  const convertedPrice = convertPrice(item.price);
+
+  const descriptionText = `Visit the castles of cape coast and explore the adventures of Kakum National Park with this guided tour from Accra. You'll learn and discover the history of Cape Coast Castle and Elmina Castle and also undertake the canopy walkway experience at Kakum National Park.`;
+  const showReadMore = descriptionText.length > 170;
+
+  const handleTouchStart = (event) => {
+    setTouchStartX(event.touches[0]?.clientX ?? null);
+  };
+
+  const handleTouchEnd = (event) => {
+    if (touchStartX === null) return;
+    const endX = event.changedTouches[0]?.clientX ?? touchStartX;
+    const deltaX = endX - touchStartX;
+    if (deltaX < -40) setShowDescription(true);
+    if (deltaX > 40) setShowDescription(false);
+    setTouchStartX(null);
+  };
+
+  return (
+    <article
+      className="overflow-hidden rounded-md border border-slate-300 bg-white"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div
+        className={`flex w-[200%] transition-transform duration-300 ease-out ${showDescription ? "-translate-x-1/2" : "translate-x-0"}`}
+      >
+        <div className="w-1/2">
+          <div className="flex h-[188px]">
+            <div className="relative w-[38%] overflow-hidden">
+              <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+              <span className="absolute left-2 top-2 rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-bold text-white shadow-sm">
+                {item.duration || "11 to 15 hours"}
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  toggleWishlist({
+                    title: item.title,
+                    duration: item.duration,
+                    price: item.price,
+                    rating: item.rating,
+                    reviews: item.reviews,
+                    image: item.image,
+                    discount: item.discount,
+                  })
+                }
+                className="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-white/92 text-slate-700 shadow"
+              >
+                <Heart className={`size-4 ${isFavorited ? "fill-[color:var(--brand-green)] text-[color:var(--brand-green)]" : ""}`} />
+              </button>
+            </div>
+
+            <div className="flex h-full w-[62%] flex-col bg-slate-100/80 p-2.5">
+              <span className="inline-flex rounded-full bg-[color:var(--brand-mint)] px-3 py-1 text-xs font-semibold text-[color:var(--brand-green)]">
+                Best Seller
+              </span>
+              <h3 className="mt-2 line-clamp-3 text-[14px] font-semibold leading-5 text-slate-900">{item.title}</h3>
+              <div className="mt-2.5 space-y-1.5 text-[13px] text-slate-900">
+                <p className="flex items-center gap-2">
+                  <CircleCheck className="size-4" />
+                  {t("features.freeCancellation")}
+                </p>
+                <p className="flex items-center gap-2">
+                  <CircleCheck className="size-4" />
+                  {t("tourDetail.pickupIncluded")}
+                </p>
+              </div>
+              <div className="mt-auto mb-1 flex items-end justify-between">
+                <div className="flex items-center gap-1 text-slate-800">
+                  <Star className="size-4 fill-current text-emerald-500" />
+                  <span className="text-[22px] leading-none text-emerald-500">4.8</span>
+                  <span className="text-[14px] text-slate-700">({item.reviews})</span>
+                </div>
+                <div className="text-right">
+                  <p className="text-[12px] text-slate-600">from</p>
+                  <p className="text-[20px] font-bold leading-[0.95] text-slate-900">{convertedPrice.formatted}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="h-[188px] w-1/2 overflow-hidden bg-slate-100/60 p-3">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setShowDescription(false)}
+              className="rounded p-1 text-slate-600"
+              aria-label="Close description"
+            >
+              <X className="size-6" />
+            </button>
+          </div>
+          <p className="mt-3 line-clamp-5 text-[14px] leading-6 text-slate-700">{descriptionText}</p>
+          {showReadMore && (
+            <button
+              type="button"
+              onClick={() => navigate(`/tour/${encodeURIComponent(item.title)}`)}
+              className="mt-2 text-sm font-semibold text-slate-800 underline"
+            >
+              Read more
+            </button>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
 
 function AllToursPageContent() {
   const CARDS_PER_PAGE = 8;
@@ -19,6 +148,10 @@ function AllToursPageContent() {
   const searchParams = new URLSearchParams(location.search);
   const category = searchParams.get("category") || "all";
   const initialSearch = searchParams.get("search") || "";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [category]);
   const { isAuthModalOpen, closeAuthModal } = useAuthModal();
   const [sortBy, setSortBy] = useState("featured");
   const [searchQuery, setSearchQuery] = useState(initialSearch);
@@ -74,11 +207,15 @@ function AllToursPageContent() {
   const ratingMenuRef = useRef(null);
   const [ratingMenuPosition, setRatingMenuPosition] = useState({ top: 0, left: 0 });
 
+  const sidebarNewExperiences = [...sidebarTopRated, ...sidebarTopRated.slice(0, 2)];
+
   const categoryMap = {
     tours: { title: "Pick up from where you left off", items: pickupTours, type: "tours" },
     recommended: { title: "Recommended for You", items: recommendedTours, type: "tours" },
     deals: { title: "Top Rated by Travellers", items: topRatedTours, type: "tours" },
     leisure: { title: "Leisure & Relaxation", items: leisureTours, type: "tours" },
+    "last-minute-deals": { title: "Last Minute Deals", items: lastMinuteDeals, type: "tours" },
+    "new-experiences": { title: "New Experiences", items: sidebarNewExperiences, type: "tours" },
     destinations: { title: "Popular Destinations", items: destinations, type: "destinations" },
     all: { title: "All Tours", items: [...pickupTours, ...recommendedTours, ...topRatedTours, ...leisureTours], type: "tours" },
   };
@@ -602,15 +739,20 @@ function AllToursPageContent() {
               </div>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory sm:grid sm:overflow-visible sm:pb-0 sm:snap-none sm:gap-x-1.5 sm:gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 pb-2 sm:pb-0 sm:gap-x-1.5 sm:gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {paginatedItems.map((item, index) =>
                 type === "destinations" ? (
-                  <div key={`${item.title}-${index}`} className="w-[86%] shrink-0 snap-start sm:w-full sm:shrink">
+                  <div key={`${item.title}-${index}`} className="w-full">
                     <DestinationCard {...item} variant="allTours" />
                   </div>
                 ) : (
-                  <div key={`${item.title}-${index}`} className="w-[86%] shrink-0 snap-start sm:w-full sm:shrink">
-                    <TourCard {...item} variant="allTours" />
+                  <div key={`${item.title}-${index}`} className="w-full">
+                    <div className="sm:hidden">
+                      <MobileAllToursCard item={item} />
+                    </div>
+                    <div className="hidden sm:block">
+                      <TourCard {...item} variant="allTours" />
+                    </div>
                   </div>
                 )
               )}

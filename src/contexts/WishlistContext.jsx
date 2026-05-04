@@ -1,64 +1,77 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import { toast } from "sonner";
 
 const WishlistContext = createContext();
 
 export function WishlistProvider({ children }) {
-  const [wishlist, setWishlist] = useState([]);
-
-  // Load wishlist from localStorage on mount
-  useEffect(() => {
+  const [wishlist, setWishlist] = useState(() => {
     const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) {
-      try {
-        setWishlist(JSON.parse(savedWishlist));
-      } catch (error) {
-        console.error("Error loading wishlist:", error);
-      }
+    if (!savedWishlist) return [];
+    try {
+      return JSON.parse(savedWishlist);
+    } catch (error) {
+      console.error("Error loading wishlist:", error);
+      return [];
     }
-  }, []);
+  });
 
   // Save wishlist to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
-  const addToWishlist = (item) => {
+  const addToWishlist = useCallback((item) => {
     setWishlist((prev) => {
-      // Check if item already exists
       const exists = prev.some((i) => i.title === item.title);
+      if (exists) return prev;
+      return [...prev, { ...item, addedAt: new Date().toISOString() }];
+    });
+  }, []);
+
+  const removeFromWishlist = useCallback((itemTitle) => {
+    setWishlist((prev) => prev.filter((item) => item.title !== itemTitle));
+  }, []);
+
+  const wishlistTitles = useMemo(() => new Set(wishlist.map((item) => item.title)), [wishlist]);
+
+  const isInWishlist = useCallback((itemTitle) => wishlistTitles.has(itemTitle), [wishlistTitles]);
+
+  const toggleWishlist = useCallback((item) => {
+    const exists = wishlistTitles.has(item.title);
+
+    setWishlist((prev) => {
       if (exists) {
-        return prev;
+        return prev.filter((i) => i.title !== item.title);
       }
       return [...prev, { ...item, addedAt: new Date().toISOString() }];
     });
-  };
 
-  const removeFromWishlist = (itemTitle) => {
-    setWishlist((prev) => prev.filter((item) => item.title !== itemTitle));
-  };
-
-  const isInWishlist = (itemTitle) => {
-    return wishlist.some((item) => item.title === itemTitle);
-  };
-
-  const toggleWishlist = (item) => {
-    if (isInWishlist(item.title)) {
-      removeFromWishlist(item.title);
+    if (exists) {
+      toast.error("Removed from WishList", {
+        style: {
+          background: "#FEF2F2",
+          color: "#B91C1C",
+          border: "1px solid rgba(185, 28, 28, 0.25)",
+        },
+      });
     } else {
-      addToWishlist(item);
+      toast.success("Added to Wishlist");
     }
-  };
+  }, [wishlistTitles]);
+
+  const value = useMemo(
+    () => ({
+      wishlist,
+      addToWishlist,
+      removeFromWishlist,
+      isInWishlist,
+      toggleWishlist,
+    }),
+    [wishlist, addToWishlist, removeFromWishlist, isInWishlist, toggleWishlist]
+  );
 
   return (
-    <WishlistContext.Provider
-      value={{
-        wishlist,
-        addToWishlist,
-        removeFromWishlist,
-        isInWishlist,
-        toggleWishlist,
-      }}
-    >
+    <WishlistContext.Provider value={value}>
       {children}
     </WishlistContext.Provider>
   );

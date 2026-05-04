@@ -24,7 +24,7 @@ export function NewsletterSection() {
 
   return (
     <section
-      className="py-8 sm:py-12"
+      className="py-[2.125rem] sm:py-12"
     >
       <div className="grid gap-0 lg:grid-cols-2 items-stretch rounded-2xl overflow-hidden border border-slate-200 shadow-lg">
         {/* Image Side */}
@@ -41,13 +41,13 @@ export function NewsletterSection() {
 
         {/* Content Side */}
         <div
-          className="bg-[color:var(--brand-mist)] p-8 sm:p-10 lg:p-12 flex flex-col justify-center"
+          className="bg-[color:var(--brand-mist)] p-[1.7rem] sm:p-10 lg:p-12 flex flex-col justify-center"
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
+          <h2 className="mb-[1.1rem] text-3xl font-bold text-slate-900 sm:mb-3">
             {t('newsletter.title')}
           </h2>
           
-          <p className="text-slate-700 text-sm sm:text-base mb-6">
+          <p className="mb-[1.7rem] text-base text-slate-700 sm:mb-6">
             {t('newsletter.description')}
           </p>
 
@@ -80,7 +80,7 @@ export function NewsletterSection() {
             </p>
           )}
 
-          <p className="mt-4 text-xs text-slate-600">
+          <p className="mt-[1.1rem] text-sm text-slate-600 sm:mt-4 sm:text-xs">
             {t('newsletter.privacy')}{" "}
             <a href="#" className="text-[color:var(--brand-green)] hover:underline">{t('newsletter.privacyLink')}</a>.
           </p>

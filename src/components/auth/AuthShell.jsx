@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import companyLogo from "@/assets/images/new_comp_pic.png";
+import companyLogo from "@/assets/images/new_logo.png";
 
 function AuthShell({ title, description, badgeLabel, children, footerText, footerLinkLabel, footerLinkTo }) {
   const { t, i18n } = useTranslation();
@@ -90,7 +90,7 @@ function AuthShell({ title, description, badgeLabel, children, footerText, foote
               <img
                 src={companyLogo}
                 alt="Expedition-Go Group Limited"
-                className="h-auto w-[200px] sm:w-[240px] xl:w-[280px] object-contain"
+                className="h-auto w-[136px] xl:w-[190px] object-contain"
               />
             </Link>
 

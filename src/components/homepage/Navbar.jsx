@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import companyPic from "@/assets/images/company_pic.jpg";
+import companyPic from "@/assets/images/new_logo.png";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -155,7 +155,7 @@ export function Navbar({
           <img
             src={companyPic}
             alt="Expedition-Go Group Limited"
-            className="h-auto w-[140px] object-contain sm:w-[180px] md:w-[220px] lg:w-[260px] xl:w-[320px]"
+            className="h-auto w-[69px] object-contain sm:w-[88px] md:w-[108px] lg:w-[86px] xl:w-[106px]"
           />
         </button>
 

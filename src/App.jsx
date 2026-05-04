@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { WishlistProvider } from "@/contexts/WishlistContext";
@@ -18,6 +19,17 @@ function App() {
     <AuthProvider>
       <CurrencyProvider>
         <WishlistProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 1400,
+              style: {
+                background: "var(--brand-mist)",
+                color: "var(--brand-green)",
+                border: "1px solid rgba(9, 106, 79, 0.18)",
+              },
+            }}
+          />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/tours" element={<AllToursPage />} />

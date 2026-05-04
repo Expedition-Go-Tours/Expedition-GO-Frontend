@@ -1,5 +1,4 @@
-import { useRef, useState, useEffect } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { destinations } from "./data";
@@ -10,13 +9,7 @@ export function DestinationsSection() {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scrollContainerRef = useRef(null);
-  const dragContainerRef = useRef(null);
-  const contentRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [x, setX] = useState(0);
-  const [dragStartX, setDragStartX] = useState(0);
-  const [dragStartTime, setDragStartTime] = useState(0);
-  const controls = useAnimation();
+  const mobileScrollRef = useRef(null);
 
   // Triple the items for infinite loop
   const infiniteDestinations = [...destinations, ...destinations, ...destinations];
@@ -24,85 +17,29 @@ export function DestinationsSection() {
   const gap = 12;
   const singleSetWidth = destinations.length * (cardWidth + gap);
 
-  useEffect(() => {
-    // Start at the middle set
-    setX(-singleSetWidth);
-    controls.set({ x: -singleSetWidth });
-  }, [singleSetWidth, controls]);
+  const nudgeMobileInfiniteLoop = useCallback(() => {
+    const container = mobileScrollRef.current;
+    if (!container || destinations.length === 0) return;
 
-  const handleDragStart = (event, info) => {
-    setIsDragging(true);
-    setDragStartX(info.point.x);
-    setDragStartTime(Date.now());
-  };
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    const maxScroll = scrollWidth - clientWidth;
 
-  const handleDrag = (event, info) => {
-    const newX = x + info.delta.x;
-    setX(newX);
-    // Update controls immediately for smooth dragging
-    controls.set({ x: newX });
-  };
+    if (maxScroll <= 0) return;
 
-  const handleDragEnd = (event, info) => {
-    setIsDragging(false);
-    
-    // Calculate velocity for momentum
-    const dragEndTime = Date.now();
-    const timeDelta = dragEndTime - dragStartTime;
-    const distance = info.point.x - dragStartX;
-    const velocity = distance / timeDelta;
-    
-    // Apply momentum based on velocity (reduced for smoother feel)
-    const momentumDistance = velocity * 150;
-    let finalX = x + info.offset.x + momentumDistance;
-    
-    // Infinite loop logic with slower return
-    let needsReset = false;
-    let resetX = finalX;
-    
-    if (finalX > -cardWidth) {
-      resetX = finalX - singleSetWidth;
-      needsReset = true;
-    } else if (finalX < -(singleSetWidth * 2) + cardWidth) {
-      resetX = finalX + singleSetWidth;
-      needsReset = true;
+    const threshold = Math.max(8, cardWidth * 0.15);
+
+    if (scrollLeft <= threshold) {
+      container.scrollLeft = scrollLeft + singleSetWidth;
+    } else if (scrollLeft >= maxScroll - threshold) {
+      container.scrollLeft = scrollLeft - singleSetWidth;
     }
-    
-    if (needsReset) {
-      // Slower transition when looping back
-      controls.start({ 
-        x: finalX, 
-        transition: { 
-          type: "spring", 
-          stiffness: 150,
-          damping: 30,
-          mass: 1
-        } 
-      }).then(() => {
-        // Instantly reset position after animation
-        setX(resetX);
-        controls.set({ x: resetX });
-      });
-    } else {
-      setX(finalX);
-      controls.start({ 
-        x: finalX, 
-        transition: { 
-          type: "spring", 
-          stiffness: 200, 
-          damping: 25,
-          mass: 0.8
-        } 
-      });
-    }
-  };
+  }, [cardWidth, singleSetWidth]);
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
       const scrollAmount = 320;
       const currentScroll = container.scrollLeft;
-      const maxScroll = container.scrollWidth - container.clientWidth;
       
       let newScrollPosition;
       
@@ -136,20 +73,46 @@ export function DestinationsSection() {
     }
   }, [singleSetWidth]);
 
+  // Initialize mobile scroll position to middle set (native momentum scrolling)
+  useLayoutEffect(() => {
+    const el = mobileScrollRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 0) return;
+    el.scrollLeft = Math.min(singleSetWidth, maxScroll);
+  }, [singleSetWidth]);
+
+  useEffect(() => {
+    const el = mobileScrollRef.current;
+    if (!el) return;
+
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        nudgeMobileInfiniteLoop();
+      });
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      el.removeEventListener("scroll", onScroll);
+    };
+  }, [nudgeMobileInfiniteLoop]);
+
   return (
-    <section 
-      id="destinations" 
-      className="py-2.5 xl:py-3"
-    >
-      <div className="mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
+    <section id="destinations" className="py-[1.275rem] md:py-4 xl:py-5">
+      <div className="mb-[0.6375rem] md:mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-[17px] font-bold tracking-tight text-slate-900 sm:text-[18px] xl:text-[22px]">{t('sections.destinations')}</h2>
+          <h2 className="text-[19px] font-bold tracking-tight text-slate-900 sm:text-[18px] xl:text-[22px]">{t('sections.destinations')}</h2>
         </div>
 
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-1 text-[13px] font-semibold text-slate-900 transition hover:text-slate-700"
+            className="inline-flex items-center gap-1 text-[15px] font-semibold text-slate-900 transition hover:text-slate-700 sm:text-[13px] xl:text-[14px]"
           >
             {t('sections.viewAll')}
             <ChevronRight className="size-4" />
@@ -189,39 +152,19 @@ export function DestinationsSection() {
       </div>
 
       {/* Mobile/Tablet: Swipeable carousel */}
-      <div 
-        ref={dragContainerRef}
-        className="xl:hidden overflow-hidden"
+      <div
+        ref={mobileScrollRef}
+        className="-mx-1 flex touch-pan-x snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide xl:hidden"
+        style={{ WebkitOverflowScrolling: "touch" }}
       >
-        <motion.div
-          ref={contentRef}
-          drag="x"
-          dragConstraints={{ left: -Infinity, right: Infinity }}
-          dragElastic={0.05}
-          dragMomentum={false}
-          onDragStart={handleDragStart}
-          onDrag={handleDrag}
-          onDragEnd={handleDragEnd}
-          animate={controls}
-          className={`flex gap-3 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
-          style={{ 
-            touchAction: 'pan-y', 
-            x,
-            WebkitOverflowScrolling: 'touch',
-            willChange: 'transform'
-          }}
-        >
-          {infiniteDestinations.map((item, index) => (
-            <div
-              key={`${item.title}-${index}`}
-              className="w-[280px] flex-shrink-0"
-            >
-              <div className={isDragging ? 'pointer-events-none' : ''}>
-                <DestinationCard {...item} />
-              </div>
-            </div>
-          ))}
-        </motion.div>
+        {infiniteDestinations.map((item, index) => (
+          <div
+            key={`${item.title}-${index}`}
+            className="w-[280px] min-w-[280px] shrink-0 snap-start"
+          >
+            <DestinationCard {...item} />
+          </div>
+        ))}
       </div>
 
       <DestinationsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

@@ -130,7 +130,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
     setShowCalendar(prev => !prev);
   };
   return (
-    <section id="home" className="relative overflow-visible bg-(--brand-green) text-white pb-10 sm:pb-12.5 md:pb-25.5">
+    <section id="home" className="relative overflow-visible bg-(--brand-green) text-white pb-[2.55rem] sm:pb-12.5 md:pb-25.5">
       <div className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1800&q=80"
@@ -140,28 +140,28 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.18)_25%,rgba(122,69,11,0.14)_60%,rgba(0,0,0,0.2)),radial-gradient(circle_at_center,rgba(255,174,58,0.28),transparent_42%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-380 px-4 py-4 sm:px-6 sm:py-5 md:py-7 overflow-visible">
+      <div className="relative mx-auto max-w-380 px-4 py-[1.1rem] sm:px-6 sm:py-5 md:py-7 overflow-visible">
         <div className="mx-auto max-w-4xl text-center">
           <div className="flex justify-center">
-            <Badge variant="soft" className="border-white/15 bg-white/10 text-white backdrop-blur text-[11px] px-2 py-0.5">
+            <Badge variant="soft" className="border-white/15 bg-white/10 text-white backdrop-blur text-[12px] px-2.5 py-1 sm:text-[11px] sm:px-2 sm:py-0.5">
               {t('hero.badge')}
             </Badge>
           </div>
 
-          <h1 className="mt-2 text-xl font-black tracking-tight text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)] sm:text-2xl md:text-3xl">
+          <h1 className="mt-3 text-2xl font-black tracking-tight text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)] sm:text-2xl md:text-3xl">
             {t('hero.title')}
           </h1>
-          <p className="mt-0.5 text-xs font-medium text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-sm md:text-base">
+          <p className="mt-1.5 text-sm font-medium text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-sm md:text-base">
             {t('hero.subtitle')}
           </p>
 
-          <div className="mx-auto mt-3 sm:mt-3.5 md:mt-4 max-w-4xl overflow-visible">
+          <div className="mx-auto mt-4 sm:mt-3.5 md:mt-4 max-w-4xl overflow-visible">
             <div id="hero-search-bar" className="grid gap-0 overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.28)] sm:grid-cols-[1fr_1fr_auto]">
               <div className="flex items-center gap-2 border-b border-slate-200 px-2.5 py-2 text-left text-slate-900 sm:border-b-0 sm:border-r">
                 <MapPin className="size-3.5 text-(--brand-green)" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold">{t('hero.destination')}</p>
-                  <Input className="h-auto border-0 px-0 py-0.5 text-[11px] shadow-none ring-0 focus:ring-0 caret-(--brand-green)" placeholder={t('hero.destinationPlaceholder')} />
+                  <p className="text-[11px] font-semibold sm:text-[10px]">{t('hero.destination')}</p>
+                  <Input className="h-auto border-0 px-0 py-0.5 text-[12px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) sm:text-[11px]" placeholder={t('hero.destinationPlaceholder')} />
                 </div>
               </div>
               <div className="relative flex items-center gap-2 border-b border-slate-200 px-2.5 py-2 text-left text-slate-900 sm:border-b-0 sm:border-r overflow-visible">
@@ -174,9 +174,9 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                   <CalendarDays className="size-3.5 text-(--brand-green)" />
                 </button>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold">{t('hero.travelDate')}</p>
+                  <p className="text-[11px] font-semibold sm:text-[10px]">{t('hero.travelDate')}</p>
                   <Input
-                    className="h-auto border-0 px-0 py-0.5 text-[11px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) cursor-pointer"
+                    className="h-auto border-0 px-0 py-0.5 text-[12px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) cursor-pointer sm:text-[11px]"
                     placeholder={t('hero.selectDate')}
                     value={formatDateRange(activeDateRange)}
                     onClick={toggleCalendar}
@@ -198,7 +198,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                 )}
               </div>
               <div className="p-1.5">
-                <Button size="sm" className="h-full min-h-8 w-full rounded-lg px-4 text-[11px]">
+                <Button size="sm" className="h-full min-h-9 w-full rounded-lg px-4 text-[12px] sm:min-h-8 sm:text-[11px]">
                   <Search className="size-3" />
                   {t('hero.search')}
                 </Button>
@@ -218,8 +218,8 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
 
         {/* Auto-scrolling carousel - only show if there are items */}
         {carouselItems.length > 0 && (
-          <div className="mt-4 sm:mt-5 md:mt-6 overflow-hidden">
-            <h2 className="mb-2.5 sm:mb-3 text-center text-lg font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:text-xl">
+          <div className="mt-[1.275rem] sm:mt-5 md:mt-6 overflow-visible">
+            <h2 className="mb-[0.6375rem] text-center text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:mb-3 sm:text-xl">
               {t('sections.pickupTitle')}
             </h2>
 

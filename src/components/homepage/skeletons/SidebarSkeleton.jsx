@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 function SidebarDealCardSkeleton() {
   return (
     <div className="overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-sm">
-      <Skeleton className="h-32 w-full" />
+      <Skeleton className="h-36 w-full" />
       <div className="p-3 space-y-2">
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-3 w-3/4" />
@@ -16,7 +16,7 @@ function SidebarDealCardSkeleton() {
 function CompactCardSkeleton() {
   return (
     <div className="overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-sm">
-      <Skeleton className="h-36 w-full" />
+      <Skeleton className="h-40 w-full" />
       <div className="p-3 space-y-2">
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-3 w-2/3" />
@@ -45,7 +45,7 @@ export function SidebarSkeleton() {
           {/* Mobile/Tablet: Show 2 cards */}
           <div className="xl:hidden flex gap-3 overflow-hidden">
             {[...Array(2)].map((_, i) => (
-              <div key={i} className="w-[160px] flex-shrink-0">
+              <div key={i} className="w-[280px] flex-shrink-0">
                 <SidebarDealCardSkeleton />
               </div>
             ))}
@@ -62,14 +62,14 @@ export function SidebarSkeleton() {
           </div>
           {/* Desktop: Grid layout */}
           <div className="hidden xl:grid xl:grid-cols-2 xl:gap-3">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(6)].map((_, i) => (
               <CompactCardSkeleton key={i} />
             ))}
           </div>
           {/* Mobile/Tablet: Show 2 cards */}
           <div className="xl:hidden flex gap-3 overflow-hidden">
             {[...Array(2)].map((_, i) => (
-              <div key={i} className="w-[160px] flex-shrink-0">
+              <div key={i} className="w-[280px] flex-shrink-0">
                 <CompactCardSkeleton />
               </div>
             ))}

@@ -276,8 +276,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                 className="md:hidden overflow-x-auto scrollbar-hide"
                 style={{ 
                   scrollSnapType: 'x mandatory',
-                  WebkitOverflowScrolling: 'touch',
-                  scrollBehavior: 'smooth'
+                  WebkitOverflowScrolling: 'touch'
                 }}
               >
                 <div className={`flex gap-2.5 ${carouselItems.length <= 4 ? 'justify-center' : 'px-4'}`}>

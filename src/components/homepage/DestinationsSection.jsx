@@ -10,8 +10,6 @@ export function DestinationsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scrollContainerRef = useRef(null);
   const mobileScrollRef = useRef(null);
-  const isScrollingRef = useRef(false);
-  const scrollTimeoutRef = useRef(null);
 
   // Triple the items for infinite loop
   const infiniteDestinations = [...destinations, ...destinations, ...destinations];
@@ -96,23 +94,23 @@ export function DestinationsSection() {
     const el = mobileScrollRef.current;
     if (!el) return;
 
+    let rafId = null;
+
     const onScroll = () => {
-      isScrollingRef.current = true;
-      
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
       }
       
-      scrollTimeoutRef.current = setTimeout(() => {
-        isScrollingRef.current = false;
+      rafId = requestAnimationFrame(() => {
         nudgeMobileInfiniteLoop();
-      }, 150);
+        rafId = null;
+      });
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
       }
       el.removeEventListener("scroll", onScroll);
     };
@@ -179,8 +177,7 @@ export function DestinationsSection() {
         className="-mx-1 flex touch-pan-x gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide xl:hidden"
         style={{ 
           WebkitOverflowScrolling: "touch",
-          scrollSnapType: "x mandatory",
-          scrollBehavior: "smooth"
+          scrollSnapType: "x mandatory"
         }}
       >
         {infiniteDestinations.map((item, index) => (

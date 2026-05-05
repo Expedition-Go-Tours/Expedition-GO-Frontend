@@ -33,13 +33,27 @@ function HomePageContent() {
   }, []);
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setShowScrollTop((prev) => { const next = window.scrollY > 480; return prev === next ? prev : next; });
+      const scrollY = window.scrollY;
+      const shouldShow = scrollY > 480;
+      setShowScrollTop((prev) => prev !== shouldShow ? shouldShow : prev);
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   if (isLoading) {

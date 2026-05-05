@@ -48,7 +48,7 @@ function HomePageContent() {
 
   return (
     <>
-      <div className="min-h-screen bg-[color:var(--page-bg)] text-slate-900">
+      <div className="min-h-screen bg-[color:var(--page-bg)] text-slate-900 overflow-x-hidden">
         <Navbar
           sharedDateRange={sharedHeroDateRange}
           onSharedDateRangeChange={setSharedHeroDateRange}
@@ -76,12 +76,12 @@ function HomePageContent() {
         </main>
 
         {/* Newsletter Section - Full Width */}
-        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-[3.4rem] md:mb-14">
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-[3.4rem] md:mb-14 overflow-hidden">
           <NewsletterSection />
         </div>
 
         {/* Features Section - Full Width before footer */}
-        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-[3.4rem] md:mb-14">
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-[3.4rem] md:mb-14 overflow-hidden">
           <FeaturesSection />
         </div>
 

@@ -10,6 +10,8 @@ export function DestinationsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scrollContainerRef = useRef(null);
   const mobileScrollRef = useRef(null);
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
 
   // Triple the items for infinite loop
   const infiniteDestinations = [...destinations, ...destinations, ...destinations];
@@ -19,19 +21,27 @@ export function DestinationsSection() {
 
   const nudgeMobileInfiniteLoop = useCallback(() => {
     const container = mobileScrollRef.current;
-    if (!container || destinations.length === 0) return;
+    if (!container || destinations.length === 0 || isScrollingRef.current) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = container;
     const maxScroll = scrollWidth - clientWidth;
 
     if (maxScroll <= 0) return;
 
-    const threshold = Math.max(8, cardWidth * 0.15);
+    const threshold = cardWidth * 0.5;
 
     if (scrollLeft <= threshold) {
+      isScrollingRef.current = true;
       container.scrollLeft = scrollLeft + singleSetWidth;
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 100);
     } else if (scrollLeft >= maxScroll - threshold) {
+      isScrollingRef.current = true;
       container.scrollLeft = scrollLeft - singleSetWidth;
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 100);
     }
   }, [cardWidth, singleSetWidth]);
 
@@ -86,18 +96,24 @@ export function DestinationsSection() {
     const el = mobileScrollRef.current;
     if (!el) return;
 
-    let raf = 0;
     const onScroll = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        raf = 0;
+      isScrollingRef.current = true;
+      
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
         nudgeMobileInfiniteLoop();
-      });
+      }, 150);
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      if (raf) cancelAnimationFrame(raf);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
       el.removeEventListener("scroll", onScroll);
     };
   }, [nudgeMobileInfiniteLoop]);
@@ -106,7 +122,7 @@ export function DestinationsSection() {
     <section id="destinations" className="py-[1.275rem] md:py-4 xl:py-5">
       <div className="mb-[0.6375rem] md:mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-[20px] leading-[26px] font-bold tracking-tight text-slate-900 sm:text-[18px] sm:leading-[24px] xl:text-[22px] xl:leading-[28px]">{t('sections.destinations')}</h2>
+          <h2 className="text-[7px] leading-[10.5px] font-bold tracking-tight text-slate-900 sm:text-[18px] sm:leading-[24px] xl:text-[22px] xl:leading-[28px]">{t('sections.destinations')}</h2>
         </div>
 
         <div className="flex items-center gap-3">
@@ -143,12 +159,14 @@ export function DestinationsSection() {
       {/* Desktop: Horizontal scroll with arrow buttons */}
       <div 
         ref={scrollContainerRef}
-        className="hidden xl:flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth"
+        className="hidden xl:flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth"
+        style={{ scrollSnapType: "x mandatory" }}
       >
         {infiniteDestinations.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
-            className="min-w-[280px] snap-start flex-shrink-0"
+            className="min-w-[280px] flex-shrink-0"
+            style={{ scrollSnapAlign: "start" }}
           >
             <DestinationCard {...item} />
           </div>
@@ -158,13 +176,18 @@ export function DestinationsSection() {
       {/* Mobile/Tablet: Swipeable carousel */}
       <div
         ref={mobileScrollRef}
-        className="-mx-1 flex touch-pan-x snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide xl:hidden"
-        style={{ WebkitOverflowScrolling: "touch" }}
+        className="-mx-1 flex touch-pan-x gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide xl:hidden"
+        style={{ 
+          WebkitOverflowScrolling: "touch",
+          scrollSnapType: "x mandatory",
+          scrollBehavior: "smooth"
+        }}
       >
         {infiniteDestinations.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
-            className="w-[280px] min-w-[280px] shrink-0 snap-start"
+            className="w-[280px] min-w-[280px] shrink-0"
+            style={{ scrollSnapAlign: "start" }}
           >
             <DestinationCard {...item} />
           </div>

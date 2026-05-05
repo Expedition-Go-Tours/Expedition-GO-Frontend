@@ -4,6 +4,8 @@ import { SectionHeading } from "./SectionHeading";
 
 export function TourCarouselSection({ id, title, subtitle, items }) {
   const scrollContainerRef = useRef(null);
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
 
   const infiniteItems = [...items, ...items, ...items];
   const cardWidth = 280;
@@ -12,19 +14,27 @@ export function TourCarouselSection({ id, title, subtitle, items }) {
 
   const nudgeInfiniteLoop = useCallback(() => {
     const container = scrollContainerRef.current;
-    if (!container || items.length === 0) return;
+    if (!container || items.length === 0 || isScrollingRef.current) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = container;
     const maxScroll = scrollWidth - clientWidth;
 
     if (maxScroll <= 0) return;
 
-    const threshold = Math.max(8, cardWidth * 0.15);
+    const threshold = cardWidth * 0.5;
 
     if (scrollLeft <= threshold) {
+      isScrollingRef.current = true;
       container.scrollLeft = scrollLeft + singleSetWidth;
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 100);
     } else if (scrollLeft >= maxScroll - threshold) {
+      isScrollingRef.current = true;
       container.scrollLeft = scrollLeft - singleSetWidth;
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 100);
     }
   }, [items.length, singleSetWidth, cardWidth]);
 
@@ -70,18 +80,24 @@ export function TourCarouselSection({ id, title, subtitle, items }) {
     const el = scrollContainerRef.current;
     if (!el) return;
 
-    let raf = 0;
     const onScroll = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        raf = 0;
+      isScrollingRef.current = true;
+      
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
         nudgeInfiniteLoop();
-      });
+      }, 150);
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      if (raf) cancelAnimationFrame(raf);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
       el.removeEventListener("scroll", onScroll);
     };
   }, [nudgeInfiniteLoop]);
@@ -99,13 +115,18 @@ export function TourCarouselSection({ id, title, subtitle, items }) {
       {/* Native momentum scrolling on mobile; same track + infinite loop for all breakpoints */}
       <div
         ref={scrollContainerRef}
-        className="-mx-1 flex touch-pan-x snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide"
-        style={{ WebkitOverflowScrolling: "touch" }}
+        className="-mx-1 flex touch-pan-x gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide"
+        style={{ 
+          WebkitOverflowScrolling: "touch",
+          scrollSnapType: "x mandatory",
+          scrollBehavior: "smooth"
+        }}
       >
         {infiniteItems.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
-            className="w-[280px] min-w-[280px] shrink-0 snap-start"
+            className="w-[280px] min-w-[280px] shrink-0"
+            style={{ scrollSnapAlign: "start" }}
           >
             <TourCard {...item} />
           </div>

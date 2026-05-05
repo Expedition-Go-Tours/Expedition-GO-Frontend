@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,12 +23,12 @@ export function NewsletterSection() {
 
   return (
     <section
-      className="py-[2.125rem] sm:py-12"
+      className="py-8 sm:py-12"
     >
-      <div className="grid gap-0 lg:grid-cols-2 items-stretch rounded-2xl overflow-hidden border border-slate-200 shadow-lg">
+      <div className="grid items-stretch gap-0 overflow-hidden rounded-xl border border-slate-200 shadow-lg sm:rounded-2xl lg:grid-cols-2">
         {/* Image Side */}
         <div
-          className="relative h-[280px] lg:h-auto overflow-hidden"
+          className="relative h-[220px] overflow-hidden sm:h-[260px] lg:h-auto"
         >
           <img
             src="https://www.beingchristinajane.com/wp-content/uploads/2024/02/tour-sites-in-ghana-scaled.jpg"
@@ -41,31 +40,31 @@ export function NewsletterSection() {
 
         {/* Content Side */}
         <div
-          className="bg-[color:var(--brand-mist)] p-[1.7rem] sm:p-10 lg:p-12 flex flex-col justify-center"
+          className="min-w-0 flex flex-col justify-center bg-[color:var(--brand-mist)] p-5 sm:p-8 lg:p-12"
         >
-          <h2 className="mb-[1.1rem] text-3xl font-bold text-slate-900 sm:mb-3">
+          <h2 className="mb-3 text-[clamp(14px,5.2vw,30px)] leading-tight font-bold text-slate-900 break-words">
             {t('newsletter.title')}
           </h2>
           
-          <p className="mb-[1.7rem] text-base text-slate-700 sm:mb-6">
+          <p className="mb-5 break-words text-sm leading-6 text-slate-700 sm:mb-6 sm:text-base">
             {t('newsletter.description')}
           </p>
 
           {/* Subscription Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3 lg:flex-row">
+            <div className="relative min-w-0 flex-1">
               <Input
                 type="email"
                 placeholder={t('newsletter.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-12 border-slate-300 bg-white focus:border-[color:var(--brand-green)] focus:ring-[color:var(--brand-green)]"
+                className="h-11 border-slate-300 bg-white text-sm focus:border-[color:var(--brand-green)] focus:ring-[color:var(--brand-green)] sm:h-12"
               />
             </div>
             <Button
               type="submit"
-              className="h-12 px-8 bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)]/90 !text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg"
+              className="h-11 w-full rounded-lg bg-[color:var(--brand-green)] px-6 text-center text-sm font-semibold !text-white transition-all duration-300 hover:bg-[color:var(--brand-green)]/90 hover:shadow-lg sm:h-12 lg:w-auto lg:shrink-0 lg:px-8"
               disabled={isSubscribed}
             >
               {isSubscribed ? t('newsletter.subscribed') : t('newsletter.signUp')}
@@ -74,13 +73,13 @@ export function NewsletterSection() {
 
           {isSubscribed && (
             <p
-              className="mt-3 text-sm text-[color:var(--brand-green)] font-medium"
+              className="mt-3 break-words text-sm font-medium text-[color:var(--brand-green)]"
             >
               ✓ Thank you for subscribing! Check your inbox for exclusive deals.
             </p>
           )}
 
-          <p className="mt-[1.1rem] text-sm text-slate-600 sm:mt-4 sm:text-xs">
+          <p className="mt-4 break-words text-xs leading-5 text-slate-600 sm:text-sm">
             {t('newsletter.privacy')}{" "}
             <a href="#" className="text-[color:var(--brand-green)] hover:underline">{t('newsletter.privacyLink')}</a>.
           </p>

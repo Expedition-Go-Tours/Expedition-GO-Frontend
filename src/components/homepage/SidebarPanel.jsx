@@ -110,15 +110,16 @@ function SwipeableSection({ children, itemCount, originalChildren }) {
           ref={contentRef}
           drag="x"
           dragConstraints={{ left: -Infinity, right: Infinity }}
-          dragElastic={0.05}
-          dragMomentum={false}
+          dragElastic={0.1}
+          dragMomentum={true}
+          dragTransition={{ bounceDamping: 10, bounceStiffness: 100 }}
           onDragStart={handleDragStart}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
           animate={controls}
           className={`flex gap-3 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
           style={{ 
-            touchAction: 'pan-y', 
+            touchAction: 'none', 
             x,
             WebkitOverflowScrolling: 'touch',
             willChange: 'transform'

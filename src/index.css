@@ -41,6 +41,7 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -51,9 +52,15 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   max-width: 100vw;
+  position: relative;
   /* Optimize rendering for smooth scrolling */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Optimize scroll performance */
@@ -74,7 +81,7 @@ h4 {
   h2,
   h3,
   h4 {
-    white-space: nowrap;
+    white-space: normal;
   }
 }
 
@@ -114,4 +121,26 @@ input {
   100% {
     transform: translateX(100%);
   }
+}
+
+/* Optimize scrolling performance */
+.touch-pan-x {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent layout shifts during scroll */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth scroll containers */
+.overflow-x-auto {
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optimize card rendering */
+.group {
+  contain: layout style paint;
 }

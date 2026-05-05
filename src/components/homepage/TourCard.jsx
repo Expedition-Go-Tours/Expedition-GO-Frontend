@@ -1,6 +1,7 @@
 import { Heart, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useRef } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -12,6 +13,7 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { convertPrice } = useCurrency();
   const isFavorited = isInWishlist(title);
+  const touchStartRef = useRef({ x: 0, y: 0 });
 
   // Convert price
   const convertedPrice = convertPrice(price);
@@ -21,9 +23,26 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
     toggleWishlist({ title, duration, price, rating, reviews, image, discount });
   };
 
-  const handleCardClick = () => {
+  const handleTouchStart = (e) => {
+    touchStartRef.current = {
+      x: e.touches?.[0].clientX || 0,
+      y: e.touches?.[0].clientY || 0
+    };
+  };
+
+  const handleCardClick = (e) => {
+    // On mobile, check if this was a scroll or a tap
+    if (touchStartRef.current.x !== 0 || touchStartRef.current.y !== 0) {
+      const moveX = Math.abs((e.clientX || 0) - touchStartRef.current.x);
+      const moveY = Math.abs((e.clientY || 0) - touchStartRef.current.y);
+      // If movement > 10px, treat as scroll, not tap
+      if (moveX > 10 || moveY > 10) {
+        touchStartRef.current = { x: 0, y: 0 };
+        return;
+      }
+      touchStartRef.current = { x: 0, y: 0 };
+    }
     // Navigate to tour detail page
-    // Tracking will happen on the detail page when user actually views it
     navigate(`/tour/${encodeURIComponent(title)}`);
   };
   const imageHeightClass =
@@ -32,7 +51,9 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
   return (
     <Card 
       onClick={handleCardClick}
+      onTouchStart={handleTouchStart}
       className="group overflow-hidden rounded-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-0.5 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)] cursor-pointer"
+      style={{ touchAction: 'auto' }}
     >
       <div className={`relative ${imageHeightClass} overflow-hidden`}>
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-500 xl:group-hover:scale-105" />

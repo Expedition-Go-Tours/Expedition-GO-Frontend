@@ -41,7 +41,7 @@ export function AutoScrollCarousel({ items, title }) {
     <section className="py-6 overflow-hidden">
       <div className="mx-auto max-w-[1520px] px-4 sm:px-6">
         {title && (
-          <h2 className="mb-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <h2 className="mb-4 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
             {title}
           </h2>
         )}

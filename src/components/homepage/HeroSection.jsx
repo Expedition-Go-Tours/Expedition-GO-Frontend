@@ -223,7 +223,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
         {/* Auto-scrolling carousel - only show if there are items */}
         {carouselItems.length > 0 && (
           <div className="mt-[1.275rem] sm:mt-5 md:mt-6 overflow-visible">
-            <h2 className="mb-[0.6375rem] text-center text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:mb-3 sm:text-xl">
+            <h2 className="mb-[0.6375rem] text-center text-[12px] font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:mb-3 sm:text-lg">
               {t('sections.pickupTitle')}
             </h2>
 

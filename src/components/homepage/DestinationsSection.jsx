@@ -120,20 +120,20 @@ export function DestinationsSection() {
     <section id="destinations" className="py-[1.275rem] md:py-4 xl:py-5">
       <div className="mb-[0.6375rem] md:mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-[7px] leading-[10.5px] font-bold tracking-tight text-slate-900 sm:text-[18px] sm:leading-[24px] xl:text-[22px] xl:leading-[28px]">{t('sections.destinations')}</h2>
+          <h2 className="text-[12px] leading-[16px] font-bold tracking-tight text-slate-900 sm:text-[16px] sm:leading-[22px] xl:text-[20px] xl:leading-[28px] whitespace-nowrap">{t('sections.destinations')}</h2>
         </div>
 
         <div className="flex items-center gap-3">
           <button 
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="group inline-flex items-center gap-1 text-[15px] font-semibold text-[color:var(--brand-green)] transition hover:text-slate-950 sm:text-[13px] xl:text-[14px]"
+            className="group inline-flex items-center gap-1 whitespace-nowrap text-[15px] font-semibold text-slate-700 transition hover:text-slate-950 sm:text-[13px] xl:text-[14px]"
           >
             <span className="relative">
               {t('sections.viewAll')}
               <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
             </span>
-            <ChevronRight className="size-4 transition group-hover:text-[color:var(--brand-green)]" />
+            <ChevronRight className="size-4 transition text-slate-500 group-hover:text-[color:var(--brand-green)]" />
           </button>
           <div className="hidden items-center gap-2 xl:flex">
             <button 

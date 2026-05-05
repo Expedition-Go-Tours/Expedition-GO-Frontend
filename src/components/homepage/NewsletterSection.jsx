@@ -42,7 +42,7 @@ export function NewsletterSection() {
         <div
           className="min-w-0 flex flex-col justify-center bg-[color:var(--brand-mist)] p-5 sm:p-8 lg:p-12"
         >
-          <h2 className="mb-3 text-[clamp(14px,5.2vw,30px)] leading-tight font-bold text-slate-900 break-words">
+          <h2 className="mb-3 text-[clamp(12px,5.2vw,28px)] leading-tight font-bold text-slate-900 break-words">
             {t('newsletter.title')}
           </h2>
           

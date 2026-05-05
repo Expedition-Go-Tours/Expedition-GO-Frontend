@@ -152,8 +152,11 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
           <h1 className="mt-3 text-2xl font-black tracking-tight text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)] sm:text-2xl md:text-3xl">
             {t('hero.title')}
           </h1>
-          <p className="mt-1.5 text-sm font-medium text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-sm md:text-base">
+          <p className="mt-1.5 text-[18px] font-medium text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-[18px] md:text-[21px]">
             {t('hero.subtitle')}
+          </p>
+          <p className="mt-1 text-[15px] font-medium text-white/80 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-[15px] md:text-[18px]">
+            {t('hero.availability')}
           </p>
 
           <div className="mx-auto mt-4 sm:mt-3.5 md:mt-4 max-w-4xl overflow-visible">

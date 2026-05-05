@@ -371,7 +371,7 @@ export function Footer() {
                 </a>
               </div>
             </div>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] leading-4 sm:flex-nowrap sm:justify-start sm:gap-3 sm:text-xs">
               <a href="#" className="transition hover:text-white">{t('footer.termsConditions')}</a>
               <span>|</span>
               <a href="#" className="transition hover:text-white">{t('footer.privacyPolicy')}</a>

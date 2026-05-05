@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
+import heroPic from "@/assets/images/hero_pic.jpg";
 import { TourCard } from "./TourCard";
 import { heroStats } from "./data";
 import { useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
@@ -133,7 +134,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
     <section id="home" className="relative overflow-visible bg-(--brand-green) text-white pb-[2.55rem] sm:pb-12.5 md:pb-25.5">
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1800&q=80"
+          src={heroPic}
           alt="African safari landscape at sunset"
           className="h-full w-full object-cover opacity-60"
         />
@@ -272,12 +273,11 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
               {/* Mobile/Tablet: Simple horizontal scroll */}
               <div 
                 ref={scrollContainerRef}
-                className="md:hidden overflow-x-auto scrollbar-hide scroll-smooth"
+                className="md:hidden overflow-x-auto scrollbar-hide"
                 style={{ 
                   scrollSnapType: 'x mandatory',
                   WebkitOverflowScrolling: 'touch',
-                  scrollBehavior: 'smooth',
-                  willChange: 'scroll-position'
+                  scrollBehavior: 'smooth'
                 }}
               >
                 <div className={`flex gap-2.5 ${carouselItems.length <= 4 ? 'justify-center' : 'px-4'}`}>

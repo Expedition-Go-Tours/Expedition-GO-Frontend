@@ -61,11 +61,19 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
           variant === "allTours" ? "p-[0.85rem] xl:p-[0.85rem]" : "p-4 xl:p-4"
         }
       >
-        <p className="line-clamp-2 text-base font-bold leading-tight tracking-tight text-slate-900 xl:text-[15px]">{title}</p>
         <p
           className={
             variant === "allTours"
-              ? "mt-[0.425rem] line-clamp-2 text-[13px] font-medium text-slate-700 xl:text-[12px]"
+              ? "line-clamp-2 text-[17px] font-bold leading-tight tracking-tight text-slate-900 xl:text-[16px]"
+              : "line-clamp-2 text-base font-bold leading-tight tracking-tight text-slate-900 xl:text-[15px]"
+          }
+        >
+          {title}
+        </p>
+        <p
+          className={
+            variant === "allTours"
+              ? "mt-[0.425rem] line-clamp-2 text-[14px] font-medium text-slate-700 xl:text-[13px]"
               : "mt-2 line-clamp-2 text-[13px] font-medium text-slate-700 xl:text-[12px]"
           }
         >
@@ -78,13 +86,19 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
               : "mt-3 flex items-end justify-between gap-3"
           }
         >
-          <div className="flex items-center gap-1 text-[13px] text-amber-500 xl:text-[12px]">
+          <div
+            className={
+              variant === "allTours"
+                ? "flex items-center gap-1 text-[13px] text-amber-500 xl:text-[12px]"
+                : "flex items-center gap-1 text-[13px] text-amber-500 xl:text-[12px]"
+            }
+          >
             <Star className="size-4 fill-current" />
-            <span className="text-[15px] font-semibold text-slate-900 xl:text-[14px]">{rating}</span>
-            <span className="text-[13px] text-slate-500 xl:text-[12px]">({reviews})</span>
+            <span className={variant === "allTours" ? "text-[15px] font-semibold text-slate-900 xl:text-[14px]" : "text-[15px] font-semibold text-slate-900 xl:text-[14px]"}>{rating}</span>
+            <span className={variant === "allTours" ? "text-[13px] text-slate-500 xl:text-[12px]" : "text-[13px] text-slate-500 xl:text-[12px]"}>({reviews})</span>
           </div>
-          <p className="text-[13px] font-semibold text-slate-500 xl:text-[12px]">
-            {t('common.from')} <span className="text-base text-slate-900 xl:text-[15px]">{convertedPrice.formatted}</span>
+          <p className={variant === "allTours" ? "text-[13px] font-semibold text-slate-500 xl:text-[12px]" : "text-[13px] font-semibold text-slate-500 xl:text-[12px]"}>
+            {t('common.from')} <span className={variant === "allTours" ? "text-base text-slate-900 xl:text-[15px]" : "text-base text-slate-900 xl:text-[15px]"}>{convertedPrice.formatted}</span>
           </p>
         </div>
       </CardContent>

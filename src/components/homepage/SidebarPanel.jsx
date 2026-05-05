@@ -16,9 +16,16 @@ function PanelHeading({ title, linkTo }) {
   
   return (
     <div className="mb-[1.1rem] flex items-center justify-between gap-2 md:mb-4">
-      <h3 className="text-[26px] font-bold tracking-tight text-slate-900 xl:text-[23px]">{title}</h3>
-      <Link to={linkTo} className="shrink-0 text-base font-semibold text-[color:var(--brand-green)] transition hover:text-[color:var(--brand-green-2)] xl:text-sm">
-        {t('sections.viewAll')}
+      <h3 className="text-[20px] font-bold tracking-tight text-slate-900 sm:text-[22px] xl:text-[23px]">{title}</h3>
+      <Link
+        to={linkTo}
+        onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
+        className="group shrink-0 text-base font-semibold text-[color:var(--brand-green)] transition hover:text-slate-950 xl:text-sm"
+      >
+        <span className="relative">
+          {t('sections.viewAll')}
+          <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
+        </span>
       </Link>
     </div>
   );

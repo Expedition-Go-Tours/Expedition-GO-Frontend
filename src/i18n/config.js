@@ -38,6 +38,8 @@ const resources = {
         destinations: "Popular Destinations",
         newExperiences: "New Experiences",
         lastMinuteDeals: "Last Minute Deals",
+        leisureTitle: "Leisure & Relaxation",
+        allToursTitle: "All Tours",
         viewAll: "View all"
       },
       stats: {
@@ -236,6 +238,8 @@ const resources = {
         destinations: "Destinos populares",
         newExperiences: "Nuevas experiencias",
         lastMinuteDeals: "Ofertas de último minuto",
+        leisureTitle: "Ocio y relajación",
+        allToursTitle: "Todos los tours",
         viewAll: "Ver todo"
       },
       stats: {
@@ -434,6 +438,8 @@ const resources = {
         destinations: "Destinations populaires",
         newExperiences: "Nouvelles expériences",
         lastMinuteDeals: "Offres de dernière minute",
+        leisureTitle: "Loisirs et détente",
+        allToursTitle: "Toutes les visites",
         viewAll: "Voir tout"
       },
       stats: {
@@ -632,6 +638,8 @@ const resources = {
         destinations: "Beliebte Reiseziele",
         newExperiences: "Neue Erlebnisse",
         lastMinuteDeals: "Last-Minute-Angebote",
+        leisureTitle: "Freizeit und Entspannung",
+        allToursTitle: "Alle Touren",
         viewAll: "Alle anzeigen"
       },
       stats: {
@@ -830,6 +838,8 @@ const resources = {
         destinations: "Populaire bestemmingen",
         newExperiences: "Nieuwe ervaringen",
         lastMinuteDeals: "Last-minute aanbiedingen",
+        leisureTitle: "Vrije tijd en ontspanning",
+        allToursTitle: "Alle tours",
         viewAll: "Bekijk alles"
       },
       stats: {

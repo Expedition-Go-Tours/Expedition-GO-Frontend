@@ -62,7 +62,7 @@ function MobileAllToursCard({ item }) {
           <div className="flex h-[188px]">
             <div className="relative w-[38%] overflow-hidden">
               <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
-              <span className="absolute left-2 top-2 rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-bold text-white shadow-sm">
+              <span className="absolute left-2 top-2 rounded-md bg-slate-900/80 px-2 py-1 text-[8px] font-bold text-white shadow-sm">
                 {item.duration || "11 to 15 hours"}
               </span>
               <button
@@ -85,11 +85,11 @@ function MobileAllToursCard({ item }) {
             </div>
 
             <div className="flex h-full w-[62%] flex-col bg-slate-100/80 p-2.5">
-              <span className="inline-flex rounded-full bg-[color:var(--brand-mint)] px-3 py-1 text-xs font-semibold text-[color:var(--brand-green)]">
+              <span className="inline-flex rounded-full bg-[color:var(--brand-mint)] px-3 py-1 text-[10px] font-semibold text-[color:var(--brand-green)]">
                 Best Seller
               </span>
-              <h3 className="mt-2 line-clamp-3 text-[14px] font-semibold leading-5 text-slate-900">{item.title}</h3>
-              <div className="mt-2.5 space-y-1.5 text-[13px] text-slate-900">
+              <h3 className="mt-2 line-clamp-3 text-[11px] font-semibold leading-4 text-slate-900">{item.title}</h3>
+              <div className="mt-2.5 space-y-1.5 text-[10px] text-slate-900">
                 <p className="flex items-center gap-2">
                   <CircleCheck className="size-4" />
                   {t("features.freeCancellation")}
@@ -102,12 +102,12 @@ function MobileAllToursCard({ item }) {
               <div className="mt-auto mb-1 flex items-end justify-between">
                 <div className="flex items-center gap-1 text-slate-800">
                   <Star className="size-4 fill-current text-emerald-500" />
-                  <span className="text-[22px] leading-none text-emerald-500">4.8</span>
-                  <span className="text-[14px] text-slate-700">({item.reviews})</span>
+                  <span className="text-[18px] leading-none text-emerald-500">4.8</span>
+                  <span className="text-[11px] text-slate-700">({item.reviews})</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-[12px] text-slate-600">from</p>
-                  <p className="text-[20px] font-bold leading-[0.95] text-slate-900">{convertedPrice.formatted}</p>
+                  <p className="text-[10px] text-slate-600">from</p>
+                  <p className="text-[16px] font-bold leading-[0.95] text-slate-900">{convertedPrice.formatted}</p>
                 </div>
               </div>
             </div>
@@ -125,12 +125,12 @@ function MobileAllToursCard({ item }) {
               <X className="size-6" />
             </button>
           </div>
-          <p className="mt-3 line-clamp-5 text-[14px] leading-6 text-slate-700">{descriptionText}</p>
+          <p className="mt-3 line-clamp-5 text-[11px] leading-5 text-slate-700">{descriptionText}</p>
           {showReadMore && (
             <button
               type="button"
               onClick={() => navigate(`/tour/${encodeURIComponent(item.title)}`)}
-              className="mt-2 text-sm font-semibold text-slate-800 underline"
+              className="mt-2 text-[11px] font-semibold text-slate-800 underline"
             >
               Read more
             </button>
@@ -210,14 +210,14 @@ function AllToursPageContent() {
   const sidebarNewExperiences = [...sidebarTopRated, ...sidebarTopRated.slice(0, 2)];
 
   const categoryMap = {
-    tours: { title: "Pick up from where you left off", items: pickupTours, type: "tours" },
-    recommended: { title: "Recommended for You", items: recommendedTours, type: "tours" },
-    deals: { title: "Top Rated by Travellers", items: topRatedTours, type: "tours" },
-    leisure: { title: "Leisure & Relaxation", items: leisureTours, type: "tours" },
-    "last-minute-deals": { title: "Last Minute Deals", items: lastMinuteDeals, type: "tours" },
-    "new-experiences": { title: "New Experiences", items: sidebarNewExperiences, type: "tours" },
-    destinations: { title: "Popular Destinations", items: destinations, type: "destinations" },
-    all: { title: "All Tours", items: [...pickupTours, ...recommendedTours, ...topRatedTours, ...leisureTours], type: "tours" },
+    tours: { title: t("sections.pickupTitle"), items: pickupTours, type: "tours" },
+    recommended: { title: t("sections.recommendedTitle"), items: recommendedTours, type: "tours" },
+    deals: { title: t("sections.topRatedTitle"), items: topRatedTours, type: "tours" },
+    leisure: { title: t("sections.leisureTitle", { defaultValue: "Leisure & Relaxation" }), items: leisureTours, type: "tours" },
+    "last-minute-deals": { title: t("sections.lastMinuteDeals"), items: lastMinuteDeals, type: "tours" },
+    "new-experiences": { title: t("sections.newExperiences"), items: sidebarNewExperiences, type: "tours" },
+    destinations: { title: t("sections.destinations"), items: destinations, type: "destinations" },
+    all: { title: t("sections.allToursTitle", { defaultValue: "All Tours" }), items: [...pickupTours, ...recommendedTours, ...topRatedTours, ...leisureTours], type: "tours" },
   };
   const peopleReviews = [
     {
@@ -791,7 +791,7 @@ function AllToursPageContent() {
                   >
                     <div className="mb-4 flex items-start gap-4">
                       <img src={review.image} alt={review.title} className="h-16 w-16 rounded-lg object-cover" />
-                      <h3 className="line-clamp-3 text-[22px] font-semibold leading-tight text-slate-900">{review.title}</h3>
+                      <h3 className="line-clamp-3 text-[17px] font-semibold leading-tight text-slate-900 sm:text-[19px] lg:text-[22px]">{review.title}</h3>
                     </div>
 
                     <p className="mb-2 text-xl text-emerald-500">★★★★★</p>

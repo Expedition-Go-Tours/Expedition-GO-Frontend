@@ -16,23 +16,23 @@ function WishlistPageContent() {
     <div className="min-h-screen bg-[color:var(--page-bg)] text-slate-900">
       <Navbar />
 
-      <main className="mx-auto max-w-[1520px] px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-[1520px] px-4 py-6 sm:px-6 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-[color:var(--brand-green)] transition mb-4"
+            className="mb-3 inline-flex items-center gap-2 text-sm text-slate-600 transition hover:text-[color:var(--brand-green)] sm:mb-4"
           >
             <ArrowLeft className="size-4" />
             {t('common.backToHome')}
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="grid size-12 place-items-center rounded-full bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]">
-              <Heart className="size-6 fill-current" />
+          <div className="flex items-start gap-3 sm:items-center">
+            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] sm:size-12">
+              <Heart className="size-5 fill-current sm:size-6" />
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">{t('wishlist.title')}</h1>
-              <p className="text-sm text-slate-600 mt-1">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">{t('wishlist.title')}</h1>
+              <p className="mt-1 text-sm text-slate-600">
                 {wishlist.length} {wishlist.length === 1 ? t('wishlist.tourSaved') : t('wishlist.toursSaved')}
               </p>
             </div>
@@ -41,23 +41,23 @@ function WishlistPageContent() {
 
         {/* Wishlist Content */}
         {wishlist.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="grid size-24 place-items-center rounded-full bg-slate-100 text-slate-400 mb-6">
-              <Heart className="size-12" />
+          <div className="flex flex-col items-center justify-center py-14 text-center sm:py-20">
+            <div className="mb-5 grid size-20 place-items-center rounded-full bg-slate-100 text-slate-400 sm:mb-6 sm:size-24">
+              <Heart className="size-10 sm:size-12" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('wishlist.empty')}</h2>
-            <p className="text-slate-600 mb-6 text-center max-w-md">
+            <h2 className="mb-2 text-xl font-bold text-slate-900 sm:text-2xl">{t('wishlist.empty')}</h2>
+            <p className="mb-6 max-w-md px-2 text-sm text-slate-600 sm:text-base">
               {t('wishlist.emptyDesc')}
             </p>
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[color:var(--brand-green)] !text-white rounded-lg font-semibold hover:bg-[color:var(--brand-green)]/90 transition"
+              className="inline-flex items-center gap-2 rounded-lg bg-[color:var(--brand-green)] px-5 py-2.5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-green)]/90 sm:px-6 sm:py-3 sm:text-base"
             >
               {t('wishlist.exploreTours')}
             </Link>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {wishlist.map((item, index) => (
               <TourCard key={`${item.title}-${index}`} {...item} />
             ))}

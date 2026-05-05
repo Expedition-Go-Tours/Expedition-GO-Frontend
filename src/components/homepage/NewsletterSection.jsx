@@ -32,7 +32,7 @@ export function NewsletterSection() {
           className="relative h-[280px] lg:h-auto overflow-hidden"
         >
           <img
-            src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80"
+            src="https://www.beingchristinajane.com/wp-content/uploads/2024/02/tour-sites-in-ghana-scaled.jpg"
             alt="Travel adventure"
             className="w-full h-full object-cover"
           />

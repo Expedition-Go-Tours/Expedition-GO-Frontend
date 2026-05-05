@@ -32,67 +32,7 @@ function PanelHeading({ title, linkTo }) {
 }
 
 function SwipeableSection({ children, itemCount, originalChildren }) {
-  const dragContainerRef = useRef(null);
-  const contentRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [x, setX] = useState(0);
-  const [dragStartX, setDragStartX] = useState(0);
-  const [dragStartTime, setDragStartTime] = useState(0);
-  const controls = useAnimation();
-
-  // Calculate single set width for infinite loop
-  const cardWidth = 280;
-  const gap = 12;
-  const singleSetWidth = itemCount * (cardWidth + gap);
-
-  useEffect(() => {
-    // Start at the middle set
-    setX(-singleSetWidth);
-    controls.set({ x: -singleSetWidth });
-  }, [singleSetWidth, controls]);
-
-  const handleDragStart = (event, info) => {
-    setIsDragging(true);
-    setDragStartX(info.point.x);
-    setDragStartTime(Date.now());
-  };
-
-  const handleDrag = (event, info) => {
-    const newX = x + info.delta.x;
-    setX(newX);
-  };
-
-  const handleDragEnd = (event, info) => {
-    setIsDragging(false);
-    
-    // Calculate velocity for momentum
-    const dragEndTime = Date.now();
-    const timeDelta = dragEndTime - dragStartTime;
-    const distance = info.point.x - dragStartX;
-    const velocity = distance / timeDelta;
-    
-    // Apply momentum based on velocity
-    const momentumDistance = velocity * 200;
-    let finalX = x + info.offset.x + momentumDistance;
-    
-    // Loop logic: seamlessly wrap around
-    if (finalX > -cardWidth) {
-      finalX = finalX - singleSetWidth;
-    } else if (finalX < -(singleSetWidth * 2) + cardWidth) {
-      finalX = finalX + singleSetWidth;
-    }
-    
-    setX(finalX);
-    controls.start({ 
-      x: finalX, 
-      transition: { 
-        type: "spring", 
-        stiffness: 200, 
-        damping: 25,
-        mass: 0.8
-      } 
-    });
-  };
+  const scrollRef = useRef(null);
 
   return (
     <>
@@ -101,32 +41,17 @@ function SwipeableSection({ children, itemCount, originalChildren }) {
         {originalChildren}
       </div>
 
-      {/* Mobile/Tablet: Swipeable carousel - show tripled items */}
+      {/* Mobile/Tablet: Native horizontal scroll */}
       <div 
-        ref={dragContainerRef}
-        className="xl:hidden overflow-hidden relative"
+        ref={scrollRef}
+        className="xl:hidden overflow-x-auto overflow-y-hidden flex gap-3 snap-x snap-mandatory scrollbar-hide"
+        style={{ 
+          touchAction: 'pan-x',
+          WebkitOverflowScrolling: 'touch',
+          scrollSnapType: 'x mandatory'
+        }}
       >
-        <motion.div
-          ref={contentRef}
-          drag="x"
-          dragConstraints={{ left: -Infinity, right: Infinity }}
-          dragElastic={0.1}
-          dragMomentum={true}
-          dragTransition={{ bounceDamping: 10, bounceStiffness: 100 }}
-          onDragStart={handleDragStart}
-          onDrag={handleDrag}
-          onDragEnd={handleDragEnd}
-          animate={controls}
-          className={`flex gap-3 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
-          style={{ 
-            touchAction: 'none', 
-            x,
-            WebkitOverflowScrolling: 'touch',
-            willChange: 'transform'
-          }}
-        >
-          {children}
-        </motion.div>
+        {children}
       </div>
     </>
   );
@@ -149,8 +74,8 @@ export function SidebarPanel() {
               </div>
             ))}
           >
-            {[...lastMinuteDeals, ...lastMinuteDeals, ...lastMinuteDeals].map((deal, index) => (
-              <div key={`${deal.title}-${index}`} className="w-[280px] flex-shrink-0">
+            {lastMinuteDeals.map((deal, index) => (
+              <div key={`${deal.title}-${index}`} className="w-[280px] flex-shrink-0 snap-start">
                 <div className="pointer-events-auto">
                   <SidebarDealCard {...deal} />
                 </div>
@@ -171,8 +96,8 @@ export function SidebarPanel() {
               </div>
             ))}
           >
-            {[...sidebarNewExperiences, ...sidebarNewExperiences, ...sidebarNewExperiences].map((tour, index) => (
-              <div key={`${tour.title}-${index}`} className="w-[280px] flex-shrink-0">
+            {sidebarNewExperiences.map((tour, index) => (
+              <div key={`${tour.title}-${index}`} className="w-[280px] flex-shrink-0 snap-start">
                 <div className="pointer-events-auto">
                   <CompactTourCard {...tour} />
                 </div>

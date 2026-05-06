@@ -113,7 +113,7 @@ export function TourCarouselSection({ id, title, subtitle, items }) {
       {/* Native momentum scrolling on mobile; same track + infinite loop for all breakpoints */}
       <div
         ref={scrollContainerRef}
-        className="-mx-1 flex touch-pan-x gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide"
+        className="-mx-1 flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: "touch",
           scrollSnapType: "x mandatory"

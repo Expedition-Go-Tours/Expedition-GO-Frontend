@@ -32,7 +32,7 @@ export function NewExperiencesSection({ items }) {
       viewport={{ once: true, amount: 0.2 }}
       variants={containerVariants}
     >
-      <SectionHeading>New Experiences</SectionHeading>
+      <SectionHeading title="New Experiences" />
 
       {/* Grid layout: 3 columns on desktop, 2 on tablet, 1 on mobile */}
       <div className="grid gap-2 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:gap-3">

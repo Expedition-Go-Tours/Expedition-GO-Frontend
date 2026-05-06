@@ -119,21 +119,24 @@ export function DestinationsSection() {
   return (
     <section id="destinations" className="py-[1.275rem] md:py-4 xl:py-5">
       <div className="mb-[0.6375rem] md:mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-[12px] leading-[16px] font-bold tracking-tight text-slate-900 sm:text-[16px] sm:leading-[22px] xl:text-[20px] xl:leading-[28px] whitespace-nowrap">{t('sections.destinations')}</h2>
-        </div>
+<h2
+  className="font-bold tracking-tight text-slate-900 leading-[1.15] whitespace-nowrap"
+  style={{ fontSize: 'clamp(1.5rem, 1.2vw + 0.5rem, 1.375rem)' }}
+>
+  {t('sections.destinations')}
+</h2>
 
         <div className="flex items-center gap-3">
           <button 
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="group inline-flex items-center gap-1 whitespace-nowrap text-[15px] font-semibold text-slate-700 transition hover:text-slate-950 sm:text-[13px] xl:text-[14px]"
+            className="group inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[13px] font-semibold text-slate-700 transition hover:text-slate-950 sm:text-[13px] xl:text-[14px]"
           >
-            <span className="relative">
-              {t('sections.viewAll')}
-              <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
-            </span>
-            <ChevronRight className="size-4 transition text-slate-500 group-hover:text-[color:var(--brand-green)]" />
+          <span className="relative">
+            {t("sections.viewAll")}
+            <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
+          </span>
+            <ChevronRight className="size-4 text-slate-500 transition group-hover:text-[color:var(--brand-green)]" />
           </button>
           <div className="hidden items-center gap-2 xl:flex">
             <button 
@@ -174,7 +177,7 @@ export function DestinationsSection() {
       {/* Mobile/Tablet: Swipeable carousel */}
       <div
         ref={mobileScrollRef}
-        className="-mx-1 flex touch-pan-x gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide xl:hidden"
+        className="-mx-1 flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide xl:hidden"
         style={{ 
           WebkitOverflowScrolling: "touch",
           scrollSnapType: "x mandatory"

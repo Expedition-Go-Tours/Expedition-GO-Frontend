@@ -13,7 +13,8 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { convertPrice } = useCurrency();
   const isFavorited = isInWishlist(title);
-  const touchStartRef = useRef({ x: 0, y: 0 });
+  const pointerStartRef = useRef({ x: 0, y: 0 });
+  const isDraggingRef = useRef(false);
 
   // Convert price
   const convertedPrice = convertPrice(price);
@@ -23,37 +24,45 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
     toggleWishlist({ title, duration, price, rating, reviews, image, discount });
   };
 
-  const handleTouchStart = (e) => {
-    touchStartRef.current = {
-      x: e.touches?.[0].clientX || 0,
-      y: e.touches?.[0].clientY || 0
+  const handlePointerDown = (e) => {
+    pointerStartRef.current = {
+      x: e.clientX,
+      y: e.clientY
     };
+    isDraggingRef.current = false;
+  };
+
+  const handlePointerMove = (e) => {
+    if (pointerStartRef.current.x === 0 && pointerStartRef.current.y === 0) return;
+    
+    const deltaX = Math.abs(e.clientX - pointerStartRef.current.x);
+    const deltaY = Math.abs(e.clientY - pointerStartRef.current.y);
+    
+    // Only consider it dragging if horizontal movement is significant
+    // and greater than vertical movement (horizontal scroll)
+    if (deltaX > 5 && deltaX > deltaY) {
+      isDraggingRef.current = true;
+    }
   };
 
   const handleCardClick = (e) => {
-    // On mobile, check if this was a scroll or a tap
-    if (touchStartRef.current.x !== 0 || touchStartRef.current.y !== 0) {
-      const moveX = Math.abs((e.clientX || 0) - touchStartRef.current.x);
-      const moveY = Math.abs((e.clientY || 0) - touchStartRef.current.y);
-      // If movement > 10px, treat as scroll, not tap
-      if (moveX > 10 || moveY > 10) {
-        touchStartRef.current = { x: 0, y: 0 };
-        return;
-      }
-      touchStartRef.current = { x: 0, y: 0 };
+    // Don't navigate if user was dragging/scrolling horizontally
+    if (isDraggingRef.current) {
+      return;
     }
     // Navigate to tour detail page
     navigate(`/tour/${encodeURIComponent(title)}`);
   };
+  
   const imageHeightClass =
     variant === "allTours" ? "h-[10.25rem] xl:h-[11.1rem]" : "h-40 xl:h-44";
 
   return (
     <Card 
       onClick={handleCardClick}
-      onTouchStart={handleTouchStart}
-      className="group overflow-hidden rounded-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-0.5 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)] cursor-pointer"
-      style={{ touchAction: 'auto' }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      className="group overflow-hidden rounded-b-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-0.5 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)] cursor-pointer"
     >
       <div className={`relative ${imageHeightClass} overflow-hidden`}>
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-500 xl:group-hover:scale-105" />
@@ -85,21 +94,29 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
         <p
           className={
             variant === "allTours"
-              ? "line-clamp-2 text-[17px] font-bold leading-tight tracking-tight text-slate-900 xl:text-[16px]"
-              : "line-clamp-2 text-base font-bold leading-tight tracking-tight text-slate-900 xl:text-[15px]"
+              ? "line-clamp-2 font-bold leading-tight tracking-tight text-slate-900"
+              : "line-clamp-2 font-bold leading-tight tracking-tight text-slate-900"
           }
+          style={{ fontSize: variant === "allTours" ? 'clamp(0.9375rem, 0.8vw + 0.5rem, 1rem)' : 'clamp(0.875rem, 0.7vw + 0.5rem, 0.9375rem)' }}
         >
           {title}
         </p>
-        <p
+        <div
           className={
             variant === "allTours"
-              ? "mt-[0.425rem] line-clamp-2 text-[14px] font-medium text-slate-700 xl:text-[13px]"
-              : "mt-2 line-clamp-2 text-[13px] font-medium text-slate-700 xl:text-[12px]"
+              ? "mt-[0.425rem] flex flex-col gap-0.5"
+              : "mt-2 flex items-center gap-1"
           }
+          style={{ fontSize: variant === "allTours" ? 'clamp(0.75rem, 0.6vw + 0.4rem, 0.8125rem)' : 'clamp(0.6875rem, 0.5vw + 0.4rem, 0.75rem)' }}
         >
-          {t("features.freeCancellation")} • {t("tourDetail.pickupIncluded")}
-        </p>
+          <span className="font-medium text-slate-700">
+            {t("features.freeCancellation")}
+          </span>
+          {variant === "allTours" ? null : <span className="font-medium text-slate-700">•</span>}
+          <span className="font-medium text-slate-700">
+            {t("tourDetail.pickupIncluded")}
+          </span>
+        </div>
         <div
           className={
             variant === "allTours"
@@ -126,4 +143,3 @@ export function TourCard({ title, duration, price, rating, reviews, image, disco
     </Card>
   );
 }
-

@@ -88,7 +88,7 @@ function MobileAllToursCard({ item }) {
               <span className="inline-flex rounded-full bg-[color:var(--brand-mint)] px-3 py-1 text-[10px] font-semibold text-[color:var(--brand-green)]">
                 Best Seller
               </span>
-              <h3 className="mt-2 line-clamp-3 text-[11px] font-semibold leading-4 text-slate-900">{item.title}</h3>
+              <h3 className="mt-2 line-clamp-3 font-semibold leading-4 text-slate-900" style={{ fontSize: 'clamp(0.8875rem, 0.7vw + 0.4rem, 0.8125rem)' }}>{item.title}</h3>
               <div className="mt-2.5 space-y-1.5 text-[10px] text-slate-900">
                 <p className="flex items-center gap-2">
                   <CircleCheck className="size-4" />
@@ -102,8 +102,8 @@ function MobileAllToursCard({ item }) {
               <div className="mt-auto mb-1 flex items-end justify-between">
                 <div className="flex items-center gap-1 text-slate-800">
                   <Star className="size-4 fill-current text-emerald-500" />
-                  <span className="text-[18px] leading-none text-emerald-500">4.8</span>
-                  <span className="text-[11px] text-slate-700">({item.reviews})</span>
+                  <span className="text-[12px] leading-none text-emerald-500">4.8</span>
+                  <span className="text-[10px] text-slate-700">({item.reviews})</span>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] text-slate-600">from</p>
@@ -210,10 +210,10 @@ function AllToursPageContent() {
   const sidebarNewExperiences = [...sidebarTopRated, ...sidebarTopRated.slice(0, 2)];
 
   const categoryMap = {
-    tours: { title: t("sections.pickupTitle"), items: pickupTours, type: "tours" },
+    tours: { title: t("sections.featuredTitle"), items: pickupTours, type: "tours" },
     recommended: { title: t("sections.recommendedTitle"), items: recommendedTours, type: "tours" },
     deals: { title: t("sections.topRatedTitle"), items: topRatedTours, type: "tours" },
-    leisure: { title: t("sections.leisureTitle", { defaultValue: "Leisure & Relaxation" }), items: leisureTours, type: "tours" },
+    leisure: { title: t("sections.likelyToSellOut"), items: leisureTours, type: "tours" },
     "last-minute-deals": { title: t("sections.lastMinuteDeals"), items: lastMinuteDeals, type: "tours" },
     "new-experiences": { title: t("sections.newExperiences"), items: sidebarNewExperiences, type: "tours" },
     destinations: { title: t("sections.destinations"), items: destinations, type: "destinations" },
@@ -606,7 +606,7 @@ function AllToursPageContent() {
 
         <main className="mx-auto flex-1 w-full max-w-[1520px] overflow-x-hidden bg-white px-4 py-6 sm:px-6 lg:px-8">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">{title}</h1>
+            <h1 className="font-bold tracking-tight text-slate-900" style={{ fontSize: 'clamp(1.75rem, 3vw + 0.5rem, 2.75rem)' }}>{title}</h1>
           </div>
 
           <div className="w-full">

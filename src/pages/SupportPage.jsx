@@ -81,8 +81,8 @@ export default function SupportPage() {
       <main className="flex-1 bg-white">
         <div className="mx-auto max-w-[1520px] px-4 py-12 sm:px-6 lg:px-8">
           <div className="mb-12">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-4">Support Center</h1>
-            <p className="text-lg text-slate-600">
+            <h1 className="font-bold tracking-tight text-slate-900 mb-4" style={{ fontSize: 'clamp(1.75rem, 3vw + 0.5rem, 2.75rem)' }}>Support Center</h1>
+            <p className="text-slate-600" style={{ fontSize: 'clamp(1rem, 1.2vw + 0.5rem, 1.25rem)' }}>
               We're here to help. Use Start Chat below to begin a conversation with our support team.
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function SupportPage() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {/* FAQ Section */}
             <div className="rounded-lg border border-slate-200 p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
+              <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.125rem, 1.5vw + 0.5rem, 1.5rem)' }}>Frequently Asked Questions</h2>
               <ul className="space-y-3 text-slate-700">
                 <li className="flex items-start gap-2">
                   <span className="text-[color:var(--brand-green)] font-bold">•</span>
@@ -113,7 +113,7 @@ export default function SupportPage() {
 
             {/* Contact Information */}
             <div className="rounded-lg border border-slate-200 p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Contact Information</h2>
+              <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.125rem, 1.5vw + 0.5rem, 1.5rem)' }}>Contact Information</h2>
               <div className="space-y-4 text-slate-700">
                 <div>
                   <p className="font-semibold text-slate-900">Email</p>
@@ -132,7 +132,7 @@ export default function SupportPage() {
 
             {/* Live Chat */}
             <div className="rounded-lg border border-slate-200 p-6 bg-[color:var(--brand-mist)]">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Live Chat Support</h2>
+              <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.125rem, 1.5vw + 0.5rem, 1.5rem)' }}>Live Chat Support</h2>
               <p className="text-slate-700 mb-4">
                 Our support team is available 24/7 to assist you. Click Start Chat to begin.
               </p>
@@ -148,7 +148,7 @@ export default function SupportPage() {
 
           {/* Help Topics */}
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Help Topics</h2>
+            <h2 className="font-bold text-slate-900 mb-6" style={{ fontSize: 'clamp(1.375rem, 2vw + 0.5rem, 1.875rem)' }}>Help Topics</h2>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-lg border border-slate-200 p-4 hover:border-[color:var(--brand-green)] transition cursor-pointer">
                 <h3 className="font-semibold text-slate-900">Booking & Reservations</h3>

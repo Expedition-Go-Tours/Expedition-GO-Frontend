@@ -28,6 +28,13 @@ function App() {
         body: JSON.stringify({ sessionId, runId, timestamp: Date.now(), ...payload }),
       }).catch(() => {});
 
+    send({
+      hypothesisId: "M",
+      location: "src/App.jsx:useEffect",
+      message: "instrumentation mounted",
+      data: { userAgent: navigator.userAgent },
+    });
+
     const closestCarousel = (el) => {
       if (!(el instanceof Element)) return null;
       return (

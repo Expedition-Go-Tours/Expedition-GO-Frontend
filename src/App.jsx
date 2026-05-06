@@ -14,6 +14,7 @@ import SignInPage from "@/pages/SignInPage";
 import SignOutPage from "@/pages/SignOutPage";
 import SupportPage from "@/pages/SupportPage";
 import SettingsPage from "@/pages/SettingsPage";
+import AdminRoutes from "@/routes/AdminRoutes";
 
 function App() {
   useEffect(() => {
@@ -176,6 +177,7 @@ function App() {
             <Route path="/signout" element={<SignOutPage />} />
             <Route path="/support" element={<SupportPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/admin/*" element={<AdminRoutes />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </WishlistProvider>

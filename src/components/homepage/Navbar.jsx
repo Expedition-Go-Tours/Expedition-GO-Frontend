@@ -157,7 +157,7 @@ export function Navbar({
 >
   <img
     src={companyPic}
-    alt="Expedition-Go Group Limited"
+    alt="Expedition-o Group Limited"
     className="block w-auto object-contain"
     style={{ height: "clamp(40px, 4vw, 72px)" }}
   />

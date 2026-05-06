@@ -193,8 +193,8 @@ function TourDetailContent() {
             <div className="mt-8">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-900">{tourData.name}</h1>
-                  <p className="text-lg text-slate-600 mt-2">{tourData.summary}</p>
+                  <h1 className="font-bold text-slate-900" style={{ fontSize: 'clamp(1.75rem, 2.5vw + 0.5rem, 2.25rem)' }}>{tourData.name}</h1>
+                  <p className="text-slate-600 mt-2" style={{ fontSize: 'clamp(1rem, 1.2vw + 0.5rem, 1.25rem)' }}>{tourData.summary}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="size-5 fill-orange-400 text-orange-400" />
@@ -246,13 +246,13 @@ function TourDetailContent() {
 
               {/* Description */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('tourDetail.aboutTour')}</h2>
+                <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.375rem, 2vw + 0.5rem, 1.875rem)' }}>{t('tourDetail.aboutTour')}</h2>
                 <p className="text-slate-700 leading-relaxed">{tourData.description}</p>
               </div>
 
               {/* Highlights */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('tourDetail.highlights')}</h2>
+                <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.375rem, 2vw + 0.5rem, 1.875rem)' }}>{t('tourDetail.highlights')}</h2>
                 <ul className="space-y-3">
                   {tourData.highlights.map((highlight, index) => (
                     <li key={index} className="flex items-start gap-3">
@@ -265,7 +265,7 @@ function TourDetailContent() {
 
               {/* Itinerary */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('tourDetail.itinerary')}</h2>
+                <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.375rem, 2vw + 0.5rem, 1.875rem)' }}>{t('tourDetail.itinerary')}</h2>
                 <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4 sm:p-6">
                   <div className="relative space-y-5">
                     <div className="absolute left-5 top-2 bottom-2 w-px bg-gradient-to-b from-[color:var(--brand-green)]/70 via-slate-300 to-[color:var(--brand-green)]/70" />
@@ -286,7 +286,7 @@ function TourDetailContent() {
 
                           <div className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">{stage}</p>
-                            <h3 className="mt-1 text-lg font-semibold text-slate-900">
+                            <h3 className="mt-1 font-semibold text-slate-900" style={{ fontSize: 'clamp(1rem, 1.2vw + 0.5rem, 1.25rem)' }}>
                               {t('tourDetail.day')} {item.day}
                             </h3>
                             <p className="mt-1 text-sm text-slate-600">{item.description}</p>
@@ -303,7 +303,7 @@ function TourDetailContent() {
 
               {/* What's Included */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('tourDetail.whatsIncluded')}</h2>
+                <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.375rem, 2vw + 0.5rem, 1.875rem)' }}>{t('tourDetail.whatsIncluded')}</h2>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {tourData.includes.map((item, index) => (
                     <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200">
@@ -316,7 +316,7 @@ function TourDetailContent() {
 
               {/* Not Suitable For */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('tourDetail.notSuitableFor')}</h2>
+                <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.375rem, 2vw + 0.5rem, 1.875rem)' }}>{t('tourDetail.notSuitableFor')}</h2>
                 <div className="space-y-3">
                   {tourData.notSuitableFor.map((item, index) => (
                     <div key={index} className="flex items-start gap-3">
@@ -329,7 +329,7 @@ function TourDetailContent() {
 
               {/* Important Information */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('tourDetail.importantInfo')}</h2>
+                <h2 className="font-bold text-slate-900 mb-4" style={{ fontSize: 'clamp(1.375rem, 2vw + 0.5rem, 1.875rem)' }}>{t('tourDetail.importantInfo')}</h2>
                 <div className="space-y-3">
                   {tourData.importantInfo.map((info, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">

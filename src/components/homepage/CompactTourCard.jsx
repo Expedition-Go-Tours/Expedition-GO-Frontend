@@ -49,7 +49,6 @@ export function CompactTourCard({ title, duration, price, rating, reviews, image
       onClick={handleCardClick}
       onTouchStart={handleTouchStart}
       className="flex h-full min-h-[260px] flex-col overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)] cursor-pointer"
-      style={{ touchAction: 'auto' }}
     >
       <div className="relative h-40 overflow-hidden">
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-500 xl:hover:scale-105" />

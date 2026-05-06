@@ -57,7 +57,6 @@ export function SidebarDealCard({ title, oldPrice, price, discount, countdown, i
       onClick={handleCardClick}
       onTouchStart={handleTouchStart}
       className="overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)] cursor-pointer"
-      style={{ touchAction: 'auto' }}
     >
       <div className="relative h-36 overflow-hidden">
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-500 xl:hover:scale-105" />
@@ -75,10 +74,29 @@ export function SidebarDealCard({ title, oldPrice, price, discount, countdown, i
       </div>
       <CardContent className="p-4 xl:p-3.5">
         <p className="line-clamp-2 text-[15px] font-semibold leading-tight text-slate-900 xl:text-[14px]">{title}</p>
-        <p className="mt-2.5 text-base text-slate-500 xl:text-sm">
-          {t('common.from')} <span className="line-through">{convertedOldPrice.formatted}</span> <span className="font-bold text-[color:var(--brand-green)]">{convertedPrice.formatted}</span>
-        </p>
-        <p className="mt-2.5 text-[13px] font-semibold text-orange-500 xl:text-[12px]">{countdown}</p>
+        
+        {/* Price and Timer Row */}
+        <div className="mt-3 flex items-end justify-between gap-2">
+          {/* Price Section */}
+          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+            <span className="text-[9px] font-medium text-slate-500 uppercase tracking-wide">{t('common.from')}</span>
+            <div className="flex items-baseline gap-1 flex-wrap">
+              <span className="text-[8px] text-slate-400 line-through decoration-slate-300">{convertedOldPrice.formatted}</span>
+              <span 
+                className="font-bold text-[color:var(--brand-green)]"
+                style={{ fontSize: 'clamp(0.625rem, 0.6vw + 0.2rem, 0.6875rem)' }}
+              >{convertedPrice.formatted}</span>
+            </div>
+          </div>
+          
+          {/* Timer Badge */}
+          <div className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-50 to-red-50 px-2 py-0.5 border border-orange-200/50 shrink-0">
+            <svg className="size-2.5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+            </svg>
+            <span className="text-[9px] font-semibold text-orange-600 whitespace-nowrap">{countdown}</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

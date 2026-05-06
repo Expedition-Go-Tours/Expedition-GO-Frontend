@@ -35,8 +35,8 @@ export function FeaturesSection() {
                 <Icon className="size-4 sm:size-5 lg:size-6" />
               </div>
               <div className="mt-2.5 sm:mt-3">
-                <p className="text-[13px] sm:text-[12px] lg:text-[13px] font-bold text-slate-900">{t(`features.${feature.titleKey}`)}</p>
-                <p className="mt-1 sm:mt-1 text-[11px] sm:text-[10px] lg:text-[11px] leading-relaxed sm:leading-4 font-medium text-slate-500">{t(`features.${feature.descKey}`)}</p>
+                <p className="font-bold text-slate-900" style={{ fontSize: 'clamp(0.75rem, 0.8vw + 0.4rem, 0.9375rem)' }}>{t(`features.${feature.titleKey}`)}</p>
+                <p className="mt-1 sm:mt-1 leading-relaxed sm:leading-4 font-medium text-slate-500" style={{ fontSize: 'clamp(0.6875rem, 0.6vw + 0.35rem, 0.8125rem)' }}>{t(`features.${feature.descKey}`)}</p>
               </div>
             </div>
           );

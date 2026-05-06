@@ -130,10 +130,10 @@ export function Footer() {
         {/* Language & Currency Section */}
         <div className="col-span-2 space-y-[1.0625rem] xl:col-span-1 md:space-y-4">
           <div className="relative">
-            <p className="mb-2 text-base font-semibold sm:text-sm">Language</p>
+            <p className="mb-2 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>Language</p>
             <button
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-              className="w-full rounded-md border border-white/15 bg-white px-3 py-2 text-left text-[13px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
+              className="w-full rounded-md border border-white/15 bg-white px-1 py-2 text-left text-[10px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
             >
               <span>{getCurrentLanguageName()}</span>
               <ChevronDown className={`size-4 text-slate-500 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
@@ -144,7 +144,7 @@ export function Footer() {
                   className="fixed inset-0 z-40" 
                   onClick={() => setIsLanguageOpen(false)}
                 />
-                <div className="absolute bottom-full left-0 mb-2 z-50 w-full min-w-[200px] rounded-lg border border-slate-200 bg-white shadow-xl">
+                <div className="absolute  bottom-full left-0 mb-2 z-50 w-full min-w-[200px] rounded-lg border border-slate-200 bg-white shadow-xl">
                   <div className="max-h-[300px] overflow-y-auto p-2">
                     {languages.map((lang) => (
                       <button
@@ -170,7 +170,7 @@ export function Footer() {
             )}
           </div>
           <div className="relative">
-            <p className="mb-2 text-base font-semibold sm:text-sm">Currency</p>
+            <p className="mb-2 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>Currency</p>
             <button
               onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
               className="w-full rounded-md border border-white/15 bg-white px-3 py-2 text-left text-[13px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
@@ -216,7 +216,7 @@ export function Footer() {
 
         {/* Ways You Can Pay */}
         <div className="col-span-1 sm:col-span-1">
-          <p className="mb-3 text-base font-semibold sm:text-sm">{t('footer.waysYouCanPay')}</p>
+          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.waysYouCanPay')}</p>
           <div className="grid w-full max-w-[170px] grid-cols-3 gap-1">
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
               <img src={viiviPay} alt="Viivi" className="h-full w-full scale-125 object-contain" />
@@ -241,7 +241,7 @@ export function Footer() {
 
         {/* Mobile (Download App) */}
         <div className="col-span-1 sm:col-span-1">
-          <p className="mb-3 text-base font-semibold sm:text-sm">Mobile</p>
+          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>Mobile</p>
           <div className="space-y-2">
             <a 
               href="#" 
@@ -268,7 +268,7 @@ export function Footer() {
 
         {/* Support */}
         <div className="hidden xl:block">
-          <p className="mb-3 text-sm font-semibold">{t('footer.support')}</p>
+          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.support')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.helpCentre')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.contactUs')}</a>
@@ -281,7 +281,7 @@ export function Footer() {
 
         {/* Company */}
         <div className="hidden xl:block">
-          <p className="mb-3 text-sm font-semibold">{t('footer.company')}</p>
+          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.company')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.aboutUs')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.careers')}</a>
@@ -296,7 +296,7 @@ export function Footer() {
 
         {/* Supplier Zone */}
         <div className="hidden xl:block">
-          <p className="mb-3 text-sm font-semibold">{t('footer.supplierZone')}</p>
+          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.supplierZone')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.listYourTours')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.becomeOperator')}</a>
@@ -308,7 +308,7 @@ export function Footer() {
 
         {/* Explore Section */}
         <div className="hidden xl:block">
-          <p className="mb-3 text-sm font-semibold">{t('footer.explore')}</p>
+          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.explore')}</p>
           <div className="space-y-2 text-xs text-white/80">
             <a href="#" className="block transition hover:text-white">{t('footer.home')}</a>
             <a href="#" className="block transition hover:text-white">{t('footer.tours')}</a>
@@ -330,7 +330,7 @@ export function Footer() {
                   onClick={() => setOpenFooterSection(isOpen ? null : section.key)}
                   className="flex w-full items-center justify-between py-[1.1rem] text-left sm:py-4"
                 >
-                  <span className="text-[19px] font-semibold text-white">{section.title}</span>
+                  <span className="font-semibold text-white" style={{ fontSize: 'clamp(1.0625rem, 1.2vw + 0.5rem, 1.25rem)' }}>{section.title}</span>
                   <ChevronDown className={`size-5 text-white transition-transform ${isOpen ? "rotate-180" : ""}`} />
                 </button>
                 {isOpen && (

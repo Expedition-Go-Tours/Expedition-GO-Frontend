@@ -15,12 +15,17 @@ function PanelHeading({ title, linkTo }) {
   const { t } = useTranslation();
   
   return (
-    <div className="mb-[1.1rem] flex items-center justify-between gap-2 md:mb-4">
-      <h3 className="text-[8px] font-bold tracking-tight text-slate-900 sm:text-[22px] xl:text-[23px]">{title}</h3>
+    <div className="mb-[0.6375rem] flex items-center justify-between gap-2 md:mb-2.5 xl:mb-3">
+      <h3 
+        className="font-bold tracking-tight text-slate-900 leading-[1.15]"
+        style={{ fontSize: 'clamp(1.2rem, 1.2vw + 0.5rem, 1.375rem)' }}
+      >
+        {title}
+      </h3>
       <Link
         to={linkTo}
         onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
-        className="group shrink-0 whitespace-nowrap text-base font-semibold text-slate-700 transition hover:text-slate-950 xl:text-sm"
+        className="group inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[13px] font-semibold text-slate-700 transition hover:text-slate-950 sm:text-[13px] xl:text-[14px]"
       >
         <span className="relative">
           {t('sections.viewAll')}
@@ -46,7 +51,6 @@ function SwipeableSection({ children, itemCount, originalChildren }) {
         ref={scrollRef}
         className="xl:hidden overflow-x-auto overflow-y-hidden flex gap-3 snap-x snap-mandatory scrollbar-hide"
         style={{ 
-          touchAction: 'pan-x',
           WebkitOverflowScrolling: 'touch',
           scrollSnapType: 'x mandatory'
         }}

@@ -83,7 +83,7 @@ export default function SettingsPage() {
 
       <main className="flex-1 bg-white">
         <div className="mx-auto max-w-[1520px] px-4 py-8 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-8">Settings</h1>
+          <h1 className="font-bold text-slate-900 mb-8" style={{ fontSize: 'clamp(1.75rem, 2.5vw + 0.5rem, 2.25rem)' }}>Settings</h1>
 
           <div className="grid gap-6 lg:grid-cols-4">
             {/* Sidebar */}
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                       {user?.name?.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <h2 className="text-xl font-bold">{user?.name || "User"}</h2>
+                  <h2 className="font-bold text-slate-900" style={{ fontSize: 'clamp(1.25rem, 2vw + 0.5rem, 1.75rem)' }}>{user?.name || "User"}</h2>
                   <p className="text-sm text-white/80">Account</p>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function SettingsPage() {
               {/* Personal Details Tab */}
               {activeTab === "personal" && (
                 <div className="rounded-lg border border-slate-200 bg-white p-6 sm:p-8">
-                  <h2 className="mb-6 text-2xl font-bold text-slate-900">Profile Details</h2>
+                  <h2 className="mb-6 font-bold text-slate-900" style={{ fontSize: 'clamp(1.25rem, 1.8vw + 0.5rem, 1.75rem)' }}>Profile Details</h2>
 
                   {/* Name Fields */}
                   <div className="mb-8">
@@ -185,7 +185,7 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Contact Details */}
-                  <h3 className="mb-4 text-lg font-bold text-slate-900">Contact Details</h3>
+                  <h3 className="mb-4 font-bold text-slate-900" style={{ fontSize: 'clamp(1rem, 1.2vw + 0.5rem, 1.25rem)' }}>Contact Details</h3>
                   <div className="mb-8 space-y-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-900 mb-2">
@@ -212,7 +212,7 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Date of Birth */}
-                  <h3 className="mb-4 text-lg font-bold text-slate-900">Date of birth</h3>
+                  <h3 className="mb-4 font-bold text-slate-900" style={{ fontSize: 'clamp(1rem, 1.2vw + 0.5rem, 1.25rem)' }}>Date of birth</h3>
                   <div className="mb-8 grid gap-4 sm:grid-cols-3">
                     <div>
                       <label className="block text-sm font-semibold text-slate-900 mb-2">
@@ -289,7 +289,7 @@ export default function SettingsPage() {
               {/* Notifications Tab */}
               {activeTab === "notifications" && (
                 <div className="rounded-lg border border-slate-200 bg-white p-6 sm:p-8">
-                  <h2 className="mb-6 text-2xl font-bold text-slate-900">Notification Preferences</h2>
+                  <h2 className="mb-6 font-bold text-slate-900" style={{ fontSize: 'clamp(1.25rem, 1.8vw + 0.5rem, 1.75rem)' }}>Notification Preferences</h2>
                   <div className="space-y-4 mb-6">
                     <label className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 cursor-pointer hover:bg-slate-50 transition">
                       <input 
@@ -345,7 +345,7 @@ export default function SettingsPage() {
               {/* Payment Tab */}
               {activeTab === "payment" && (
                 <div className="rounded-lg border border-slate-200 bg-white p-6 sm:p-8">
-                  <h2 className="mb-6 text-2xl font-bold text-slate-900">Saved Cards</h2>
+                  <h2 className="mb-6 font-bold text-slate-900" style={{ fontSize: 'clamp(1.25rem, 1.8vw + 0.5rem, 1.75rem)' }}>Saved Cards</h2>
                   <div className="space-y-4">
                     <div className="rounded-lg border border-slate-200 p-4">
                       <div className="flex items-center justify-between">

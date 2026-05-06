@@ -149,17 +149,21 @@ export function Navbar({
   }, [showMobileCalendar]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 !bg-white shadow-sm dark:!bg-white dark:border-slate-200">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80  shadow-sm backdrop-blur-md bg-white">
       <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-2 px-3 py-2 text-slate-950 sm:gap-4 sm:px-4 sm:py-3 lg:px-6 dark:text-slate-950">
-        <button onClick={handleBrandClick} className="block shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
-          <img
-            src={companyPic}
-            alt="Expedition-Go Group Limited"
-            className="h-auto w-[69px] object-contain sm:w-[88px] md:w-[108px] lg:w-[86px] xl:w-[106px]"
-          />
-        </button>
+<button
+  onClick={handleBrandClick}
+  className="flex shrink-0 items-center cursor-pointer transition-opacity hover:opacity-80"
+>
+  <img
+    src={companyPic}
+    alt="Expedition-o Group Limited"
+    className="block w-auto object-contain"
+    style={{ height: "clamp(40px, 4vw, 72px)" }}
+  />
+</button>
 
-        {(showCompactSearch || forceShowCompactSearch) && (
+        {/* {(showCompactSearch || forceShowCompactSearch) && (
           <div className="hidden flex-1 justify-center lg:flex">
             <form
               onSubmit={handleCompactSearchSubmit}
@@ -180,19 +184,19 @@ export function Navbar({
               />
             </form>
           </div>
-        )}
+        )} */}
 
         <div className="hidden items-center gap-6 lg:flex">
           <Link to="/wishlist" className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer">
             <Heart className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
-            <span className="text-xs relative">
+            <span className="text-xs font-semibold relative">
               {t('nav.wishlist')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
             </span>
           </Link>
           <button className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer">
             <ShoppingCart className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
-            <span className="text-xs relative">
+            <span className="text-xs font-semibold  relative">
               {t('nav.cart')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
             </span>
@@ -201,7 +205,7 @@ export function Navbar({
             <svg className="size-5 transition group-hover:text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span className="text-xs relative">
+            <span className="text-xs relative font-semibold ">
               {t('nav.bookings')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
             </span>
@@ -209,10 +213,10 @@ export function Navbar({
           <div className="relative">
             <button 
               onClick={() => setIsLanguageCurrencyOpen(!isLanguageCurrencyOpen)}
-              className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer"
+              className="group font-semibold  flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer"
             >
               <Globe className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
-              <span className="text-xs relative">
+              <span className="text-xs relative font-semibold ">
                 {getCurrentLanguageLabel()}/{currency} {availableCurrencies.find(c => c.code === currency)?.symbol}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
               </span>
@@ -389,9 +393,9 @@ export function Navbar({
               <div className="relative">
                 <button 
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-950 transition hover:border-[color:var(--brand-green)] hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)]"
+                  className="flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:border-[color:var(--brand-green)] hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)]"
                 >
-                  <UserCircle2 className="size-4" />
+                  <UserCircle2 className="size-4 " />
                   {t('nav.profile')}
                   <ChevronDown className="size-4" />
                 </button>

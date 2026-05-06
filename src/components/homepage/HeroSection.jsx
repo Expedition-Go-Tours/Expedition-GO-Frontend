@@ -22,6 +22,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
   const scrollContainerRef = useRef(null);
   const controls = useAnimation();
   const { recentlyViewed } = useRecentlyViewed();
+
   const activeDateRange = sharedDateRange ?? selectedDate;
   const setActiveDateRange = onSharedDateRangeChange ?? setSelectedDate;
 
@@ -31,6 +32,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
   const infiniteItems = carouselItems.length > 4
     ? [...carouselItems, ...carouselItems, ...carouselItems]
     : carouselItems;
+
   const cardWidth = 224;
   const gap = 10;
 
@@ -50,10 +52,6 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
     };
   }, [showCalendar]);
 
-  const handleDragEnd = (event, info) => {
-    // Not used for mobile/tablet - they use native scroll
-  };
-
   useEffect(() => {
     if (carouselItems.length > 4) {
       // Start at the middle set for seamless infinite scroll (desktop only)
@@ -63,19 +61,22 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
     }
   }, [carouselItems.length]);
 
+  const handleDragEnd = (event, info) => {
+    // Not used for mobile/tablet - they use native scroll
+  };
+
   const handlePrevious = () => {
     if (carouselItems.length <= 4) return;
-    
+
     const newIndex = currentIndex - 1;
     const targetX = -newIndex * (cardWidth + gap);
-    
+
     controls.start({
       x: targetX,
-      transition: { type: "spring", stiffness: 300, damping: 30 }
+      transition: { type: "spring", stiffness: 300, damping: 30 },
     });
-    
     setCurrentIndex(newIndex);
-    
+
     // Reset to middle set if we've scrolled too far left
     if (newIndex <= 0) {
       setTimeout(() => {
@@ -88,17 +89,16 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
 
   const handleNext = () => {
     if (carouselItems.length <= 4) return;
-    
+
     const newIndex = currentIndex + 1;
     const targetX = -newIndex * (cardWidth + gap);
-    
+
     controls.start({
       x: targetX,
-      transition: { type: "spring", stiffness: 300, damping: 30 }
+      transition: { type: "spring", stiffness: 300, damping: 30 },
     });
-    
     setCurrentIndex(newIndex);
-    
+
     // Reset to middle set if we've scrolled too far right
     if (newIndex >= carouselItems.length * 2) {
       setTimeout(() => {
@@ -130,44 +130,75 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
     e.stopPropagation();
     setShowCalendar(prev => !prev);
   };
+
   return (
-    <section id="home" className="relative overflow-visible bg-(--brand-green) text-white pb-[2.55rem] sm:pb-12.5 md:pb-25.5">
+<section
+  id="home"
+  className="relative min-h-[calc(100vh-5rem)] flex items-start pt-[8vh] overflow-visible bg-(--brand-green) text-white"
+>
       <div className="absolute inset-0">
         <img
           src={heroPic}
           alt="African safari landscape at sunset"
-          className="h-full w-full object-cover opacity-60"
+          className="h-full w-full object-cover opacity-80"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.18)_25%,rgba(122,69,11,0.14)_60%,rgba(0,0,0,0.2)),radial-gradient(circle_at_center,rgba(255,174,58,0.28),transparent_42%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-380 px-4 py-[1.1rem] sm:px-6 sm:py-5 md:py-7 overflow-visible">
+      <div className="relative mx-auto w-full max-w-[1520px] px-4 py-10 sm:px-6 sm:py-14 md:py-16 overflow-visible">
         <div className="mx-auto max-w-4xl text-center">
           <div className="flex justify-center">
-            <Badge variant="soft" className="border-white/15 bg-white/10 text-white backdrop-blur text-[12px] px-2.5 py-1 sm:text-[11px] sm:px-2 sm:py-0.5">
-              {t('hero.badge')}
-            </Badge>
           </div>
 
-          <h1 className="mt-3 text-2xl font-black tracking-tight text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)] sm:text-2xl md:text-3xl">
-            {t('hero.title')}
-          </h1>
-          <p className="mt-1.5 text-[18px] font-medium text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-[18px] md:text-[21px]">
+            <h1
+              className="
+                mt-4
+                mx-auto
+                max-w-[20ch]
+                text-center
+
+                font-black
+                leading-[1.05]
+
+                text-[clamp(2rem,4vw+1rem,3.75rem)]
+
+                tracking-[-0.02em] sm:tracking-[-0.015em]
+
+                text-white
+                drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)]
+              "
+            >
+              {t('hero.title')}
+            </h1>
+
+          <p className="mt-1 text-[18px] font-medium text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-[18px] md:text-[18px]">
             {t('hero.subtitle')}
           </p>
-          <p className="mt-1 text-[15px] font-medium text-white/80 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-[15px] md:text-[18px]">
-            {t('hero.availability')}
-          </p>
 
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 backdrop-blur-md">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-green)]" />
+            <p className="text-xs font-medium tracking-wide text-white/80">
+              {t("hero.availability")}
+            </p>
+          </div>
           <div className="mx-auto mt-4 sm:mt-3.5 md:mt-4 max-w-4xl overflow-visible">
-            <div id="hero-search-bar" className="grid gap-0 overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.28)] sm:grid-cols-[1fr_1fr_auto]">
+            <div
+              id="hero-search-bar"
+              className="grid gap-0 overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.28)] sm:grid-cols-[1fr_1fr_auto]"
+            >
               <div className="flex items-center gap-2 border-b border-slate-200 px-2.5 py-2 text-left text-slate-900 sm:border-b-0 sm:border-r">
                 <MapPin className="size-3.5 text-(--brand-green)" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold sm:text-[10px]">{t('hero.destination')}</p>
-                  <Input className="h-auto border-0 px-0 py-0.5 text-[12px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) sm:text-[11px]" placeholder={t('hero.destinationPlaceholder')} />
+                  <p className="text-[11px] font-semibold sm:text-[10px]">
+                    {t('hero.destination')}
+                  </p>
+                  <Input
+                    className="h-auto border-0 px-0 py-0.5 text-[12px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) sm:text-[11px]"
+                    placeholder={t('hero.destinationPlaceholder')}
+                  />
                 </div>
               </div>
+
               <div className="relative flex items-center gap-2 border-b border-slate-200 px-2.5 py-2 text-left text-slate-900 sm:border-b-0 sm:border-r overflow-visible">
                 <button
                   onClick={toggleCalendar}
@@ -177,8 +208,11 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                 >
                   <CalendarDays className="size-3.5 text-(--brand-green)" />
                 </button>
+
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold sm:text-[10px]">{t('hero.travelDate')}</p>
+                  <p className="text-[11px] font-semibold sm:text-[10px]">
+                    {t('hero.travelDate')}
+                  </p>
                   <Input
                     className="h-auto border-0 px-0 py-0.5 text-[12px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) cursor-pointer sm:text-[11px]"
                     placeholder={t('hero.selectDate')}
@@ -187,6 +221,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                     readOnly
                   />
                 </div>
+
                 {showCalendar && (
                   <div
                     ref={calendarRef}
@@ -201,8 +236,12 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                   </div>
                 )}
               </div>
+
               <div className="p-1.5">
-                <Button size="sm" className="h-full min-h-9 w-full rounded-lg px-4 text-[12px] sm:min-h-8 sm:text-[11px]">
+                <Button
+                  size="sm"
+                  className="h-full min-h-9 w-full rounded-lg px-4 text-[12px] sm:min-h-8 sm:text-[11px]"
+                >
                   <Search className="size-3" />
                   {t('hero.search')}
                 </Button>
@@ -212,23 +251,27 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
 
           <div className="mt-3 sm:mt-3.5 md:mt-4 hidden grid-cols-3 gap-2 md:grid">
             {heroStats.map((stat) => (
-              <div key={stat.label} className="rounded-lg border border-white/10 bg-black/20 px-2.5 py-2 backdrop-blur-sm">
+              <div
+                key={stat.label}
+                className="rounded-lg border border-white/10 bg-black/20 px-2.5 py-2 backdrop-blur-sm"
+              >
                 <p className="text-base font-black">{stat.value}</p>
-                <p className="mt-0.5 text-[10px] text-white/70">{t(`stats.${stat.translationKey}`)}</p>
+                <p className="mt-0.5 text-[10px] text-white/70">
+                  {t(`stats.${stat.translationKey}`)}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Auto-scrolling carousel - only show if there are items */}
-        {carouselItems.length > 0 && (
+        {/* {carouselItems.length > 0 && (
           <div className="mt-[1.275rem] sm:mt-5 md:mt-6 overflow-visible">
             <h2 className="mb-[0.6375rem] text-center text-[12px] font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:mb-3 sm:text-lg">
               {t('sections.pickupTitle')}
             </h2>
 
             <div className="relative px-0 md:px-16 overflow-visible">
-              {/* Navigation arrows - only show on desktop if we have more than 4 items */}
               {carouselItems.length > 4 && (
                 <>
                   <button
@@ -238,6 +281,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                   >
                     <ChevronLeft className="size-5" />
                   </button>
+
                   <button
                     onClick={handleNext}
                     className="hidden md:grid absolute right-2 top-1/2 z-20 -translate-y-1/2 size-10 place-items-center rounded-full bg-white/90 text-slate-900 shadow-lg backdrop-blur transition hover:bg-white hover:scale-110"
@@ -248,7 +292,6 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                 </>
               )}
 
-              {/* Desktop: Infinite loop with motion.div */}
               <div className="hidden md:block overflow-hidden pb-8">
                 <motion.div
                   animate={controls}
@@ -273,11 +316,10 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
                 </motion.div>
               </div>
 
-              {/* Mobile/Tablet: Simple horizontal scroll */}
-              <div 
+              <div
                 ref={scrollContainerRef}
                 className="md:hidden overflow-x-auto scrollbar-hide"
-                style={{ 
+                style={{
                   scrollSnapType: 'x mandatory',
                   WebkitOverflowScrolling: 'touch'
                 }}
@@ -296,7 +338,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </section>
   );

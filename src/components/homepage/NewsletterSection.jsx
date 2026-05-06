@@ -42,11 +42,11 @@ export function NewsletterSection() {
         <div
           className="min-w-0 flex flex-col justify-center bg-[color:var(--brand-mist)] p-5 sm:p-8 lg:p-12"
         >
-          <h2 className="mb-3 text-[clamp(12px,5.2vw,28px)] leading-tight font-bold text-slate-900 break-words">
+          <h2 className="mb-3 leading-tight font-bold text-slate-900 break-words" style={{ fontSize: 'clamp(1.25rem, 2.5vw + 0.5rem, 2rem)' }}>
             {t('newsletter.title')}
           </h2>
           
-          <p className="mb-5 break-words text-sm leading-6 text-slate-700 sm:mb-6 sm:text-base">
+          <p className="mb-5 break-words leading-6 text-slate-700 sm:mb-6" style={{ fontSize: 'clamp(0.875rem, 1vw + 0.5rem, 1.125rem)' }}>
             {t('newsletter.description')}
           </p>
 

@@ -31,8 +31,8 @@ function WishlistPageContent() {
               <Heart className="size-5 fill-current sm:size-6" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">{t('wishlist.title')}</h1>
-              <p className="mt-1 text-sm text-slate-600">
+              <h1 className="leading-tight text-slate-900" style={{ fontSize: 'clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem)' }}>{t('wishlist.title')}</h1>
+              <p className="mt-1 text-slate-600" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>
                 {wishlist.length} {wishlist.length === 1 ? t('wishlist.tourSaved') : t('wishlist.toursSaved')}
               </p>
             </div>
@@ -45,8 +45,8 @@ function WishlistPageContent() {
             <div className="mb-5 grid size-20 place-items-center rounded-full bg-slate-100 text-slate-400 sm:mb-6 sm:size-24">
               <Heart className="size-10 sm:size-12" />
             </div>
-            <h2 className="mb-2 text-xl font-bold text-slate-900 sm:text-2xl">{t('wishlist.empty')}</h2>
-            <p className="mb-6 max-w-md px-2 text-sm text-slate-600 sm:text-base">
+            <h2 className="mb-2 font-bold text-slate-900" style={{ fontSize: 'clamp(1.25rem, 1.8vw + 0.5rem, 1.75rem)' }}>{t('wishlist.empty')}</h2>
+            <p className="mb-6 max-w-md px-2 text-slate-600" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1.0625rem)' }}>
               {t('wishlist.emptyDesc')}
             </p>
             <Link

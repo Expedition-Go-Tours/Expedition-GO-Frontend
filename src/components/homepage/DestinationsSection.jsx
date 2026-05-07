@@ -10,6 +10,7 @@ export function DestinationsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scrollContainerRef = useRef(null);
   const mobileScrollRef = useRef(null);
+  const isScrollingRef = useRef(false);
 
   // Triple the items for infinite loop
   const infiniteDestinations = [...destinations, ...destinations, ...destinations];

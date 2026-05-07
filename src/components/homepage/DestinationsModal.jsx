@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Search, ChevronDown } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import { destinations } from "./data";
 import { DestinationCard } from "./DestinationCard";
 
 export function DestinationsModal({ isOpen, onClose }) {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("all");
 
   // Prevent body scroll when modal is open
@@ -29,10 +28,6 @@ export function DestinationsModal({ isOpen, onClose }) {
     { id: "europe", name: "Europe" },
     { id: "north-america", name: "North America" }
   ];
-
-  const filteredDestinations = destinations.filter(dest =>
-    dest.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <AnimatePresence>
@@ -58,7 +53,7 @@ export function DestinationsModal({ isOpen, onClose }) {
           >
         {/* Header - Fixed */}
         <div className="border-b border-slate-200 bg-white px-6 py-4 flex-shrink-0">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-slate-900">Where to next?</h2>
             <button
               onClick={onClose}
@@ -68,18 +63,6 @@ export function DestinationsModal({ isOpen, onClose }) {
               <X className="size-6 text-slate-600" />
             </button>
           </div>
-
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search destinations"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg bg-slate-100 pl-10 pr-4 py-2.5 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--brand-green)]"
-            />
-          </div>
         </div>
 
         {/* Content - Scrollable with visible scrollbar */}
@@ -88,7 +71,7 @@ export function DestinationsModal({ isOpen, onClose }) {
           <div className="mb-8">
             <h3 className="mb-4 text-lg font-bold text-slate-900">Popular destinations</h3>
             <div className="grid grid-cols-2 gap-4 mb-6">
-              {filteredDestinations.slice(0, 6).map((dest, index) => (
+              {destinations.slice(0, 6).map((dest, index) => (
                 <div key={`${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
                   <DestinationCard {...dest} />
                 </div>
@@ -127,7 +110,7 @@ export function DestinationsModal({ isOpen, onClose }) {
               </a>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {filteredDestinations.slice(0, 2).map((dest, index) => (
+              {destinations.slice(0, 2).map((dest, index) => (
                 <div key={`region-${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
                   <DestinationCard {...dest} />
                 </div>
@@ -144,7 +127,7 @@ export function DestinationsModal({ isOpen, onClose }) {
               </a>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {filteredDestinations.slice(2, 4).map((dest, index) => (
+              {destinations.slice(2, 4).map((dest, index) => (
                 <div key={`sea-${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
                   <DestinationCard {...dest} />
                 </div>
@@ -160,7 +143,7 @@ export function DestinationsModal({ isOpen, onClose }) {
               </a>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {filteredDestinations.slice(4, 6).map((dest, index) => (
+              {destinations.slice(4, 6).map((dest, index) => (
                 <div key={`eu-${dest.title}-${index}`} className="cursor-pointer hover:opacity-80 transition">
                   <DestinationCard {...dest} />
                 </div>

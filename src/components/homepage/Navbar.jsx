@@ -105,6 +105,11 @@ export function Navbar({
 
   useEffect(() => {
     const handleScroll = () => {
+      // If forceShowCompactSearch is true, don't hide the search bar
+      if (forceShowCompactSearch) {
+        return;
+      }
+      
       if (location.pathname !== "/") {
         setShowCompactSearch((prev) => (prev ? false : prev));
         return;
@@ -127,7 +132,7 @@ export function Navbar({
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
-  }, [location.pathname]);
+  }, [location.pathname, forceShowCompactSearch]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -149,27 +154,26 @@ export function Navbar({
   }, [showMobileCalendar]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80  shadow-sm backdrop-blur-md bg-white">
-      <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-2 px-3 py-2 text-slate-950 sm:gap-4 sm:px-4 sm:py-3 lg:px-6 dark:text-slate-950">
+    <header className="fixed top-0 z-50 w-full border-b border-slate-200/80 shadow-sm backdrop-blur-md bg-white transition-all duration-300">
+      <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-2 px-3 py-1.5 text-slate-950 sm:gap-4 sm:px-4 sm:py-2 lg:px-6 dark:text-slate-950">
 <button
   onClick={handleBrandClick}
   className="flex shrink-0 items-center cursor-pointer transition-opacity hover:opacity-80"
 >
-  <img
-    src={companyPic}
-    alt="Expedition-o Group Limited"
-    className="block w-auto object-contain"
-    style={{ height: "clamp(40px, 4vw, 72px)" }}
-  />
+<img
+  src={companyPic}
+  alt="Expedition-Go Group Limited"
+  className="block w-auto object-contain leading-none h-14 sm:h-20 md:h-24 lg:h-24"
+/>
 </button>
 
-        {/* {(showCompactSearch || forceShowCompactSearch) && (
-          <div className="hidden flex-1 justify-center lg:flex">
+        {(showCompactSearch || forceShowCompactSearch) && (
+          <div className="flex-1 justify-center hidden lg:flex">
             <form
               onSubmit={handleCompactSearchSubmit}
-              className={`flex w-full ${compactSearchMaxWidthClass} items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-3 py-2`}
+              className="flex w-full max-w-[600px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm hover:shadow-md"
             >
-              <Search className="size-4 text-slate-500" />
+              <Search className="size-4 text-(--brand-green)" />
               <input
                 value={compactSearchValue}
                 onChange={(e) => {
@@ -179,26 +183,33 @@ export function Navbar({
                     setCompactSearchQuery(e.target.value);
                   }
                 }}
-                placeholder="Search tours"
-                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-500"
+                placeholder="Where are you going?"
+                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                style={{ caretColor: '#01311a' }}
               />
+              <button
+                type="submit"
+                className="rounded-md bg-(--brand-green) px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-(--brand-green-2)"
+              >
+                Search
+              </button>
             </form>
           </div>
-        )} */}
+        )}
 
         <div className="hidden items-center gap-6 lg:flex">
           <Link to="/wishlist" className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer">
             <Heart className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
             <span className="text-xs font-semibold relative">
               {t('nav.wishlist')}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
             </span>
           </Link>
           <Link to="/cart" className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer">
             <ShoppingCart className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
             <span className="text-xs font-semibold  relative">
               {t('nav.cart')}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
             </span>
           </Link>
           <button className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer">
@@ -207,7 +218,7 @@ export function Navbar({
             </svg>
             <span className="text-xs relative font-semibold ">
               {t('nav.bookings')}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
             </span>
           </button>
           <div className="relative">
@@ -218,7 +229,7 @@ export function Navbar({
               <Globe className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
               <span className="text-xs relative font-semibold ">
                 {getCurrentLanguageLabel()}/{currency} {availableCurrencies.find(c => c.code === currency)?.symbol}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
               </span>
             </button>
             {isLanguageCurrencyOpen && (
@@ -354,7 +365,7 @@ export function Navbar({
                         <Link 
                           to="/settings"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                          className="flex w-full items-center gap-3 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <UserCircle2 className="size-4" />
                           <span>{t('nav.settings')}</span>
@@ -451,63 +462,7 @@ export function Navbar({
         </button>
       </div>
 
-      {(showCompactSearch || forceShowCompactSearch) && (
-        <div className="px-3 py-2 lg:hidden">
-          <div className="mx-auto max-w-[1520px] sm:px-1">
-            <form
-              onSubmit={handleCompactSearchSubmit}
-              className="flex w-full items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 shadow-sm"
-            >
-              <Search className="size-4 text-slate-600" />
-              <input
-                value={compactSearchValue}
-                onChange={(e) => {
-                  if (isExternalSearchMode) {
-                    onExternalSearchChange(e.target.value);
-                  } else {
-                    setCompactSearchQuery(e.target.value);
-                  }
-                }}
-                placeholder="Search tours"
-                className="w-full bg-transparent text-sm font-medium text-slate-900 outline-none placeholder:text-slate-500"
-              />
-              <span className="h-5 w-px bg-slate-300" />
-              <button
-                ref={mobileDateButtonRef}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowMobileCalendar((value) => !value);
-                }}
-                className="inline-flex items-center gap-2 rounded-md px-1 py-0.5 text-slate-900"
-                aria-label="Open date range calendar"
-              >
-                <CalendarDays className="size-4 text-slate-700" />
-                <span className="whitespace-nowrap text-sm font-semibold text-slate-900">{mobileDateLabel}</span>
-              </button>
-            </form>
-            {showMobileCalendar && (
-              <div className="fixed inset-0 z-[80] grid place-items-center px-3">
-                <button
-                  type="button"
-                  aria-label="Close calendar"
-                  className="absolute inset-0 bg-black/20"
-                  onClick={() => setShowMobileCalendar(false)}
-                />
-                <div ref={mobileCalendarRef} className="relative z-[81]">
-                  <Calendar
-                    mode="range"
-                    selected={activeMobileDateRange}
-                    onSelect={setActiveMobileDateRange}
-                    onClose={() => setShowMobileCalendar(false)}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Mobile Search Bar - Removed, using hero search bar on mobile instead */}
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (

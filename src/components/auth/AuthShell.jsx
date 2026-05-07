@@ -81,9 +81,9 @@ function AuthShell({ title, description, badgeLabel, children, footerText, foote
           <img
             src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1600&q=80"
             alt="Sunset safari landscape"
-            className="absolute inset-0 h-full w-full object-cover opacity-45"
+            className="absolute inset-0 h-full w-full object-cover opacity-100"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.45),rgba(1,49,26,0.78)),radial-gradient(circle_at_top,rgba(255,185,71,0.2),transparent_35%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.65)),radial-gradient(circle_at_top,rgba(255,185,71,0.15),transparent_40%)]" />
 
           <div className="relative flex w-full flex-col justify-between p-10 xl:p-14">
             <Link to="/" className="inline-flex items-center gap-3 self-start">

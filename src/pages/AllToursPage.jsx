@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, SlidersHorizontal, X, CircleCheck, Star, Heart } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, SlidersHorizontal, X, CircleCheck, Star, Heart, Search } from "lucide-react";
 import { Navbar } from "@/components/homepage/Navbar";
 import { Footer } from "@/components/homepage/Footer";
 import { TourCard } from "@/components/homepage/TourCard";
@@ -596,16 +596,48 @@ function AllToursPageContent() {
   return (
     <>
       <div className="flex min-h-screen flex-col">
-        <div className="bg-white text-slate-900">
+        {/* Navbar - hidden on mobile, visible on desktop */}
+        <div className="hidden lg:block bg-white text-slate-900">
           <Navbar
             forceShowCompactSearch={true}
             externalSearchQuery={searchQuery}
             onExternalSearchChange={setSearchQuery}
           />
         </div>
+        
+        {/* Navbar spacer - only on desktop */}
+        <div className="hidden lg:block h-[104px]" />
+        
+        {/* Mobile search bar - fixed at top on mobile, hidden on desktop */}
+        <div className="fixed top-0 left-0 right-0 z-60 px-3 py-2 bg-white border-b border-slate-200 lg:hidden">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+            className="flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 shadow-sm"
+          >
+            <Search className="size-3.5 text-(--brand-green)" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Where are you going?"
+              className="w-full bg-transparent text-xs text-slate-900 outline-none placeholder:text-slate-400"
+              style={{ caretColor: '#01311a' }}
+            />
+            <button
+              type="submit"
+              className="rounded-md bg-(--brand-green) px-3 py-1 text-[10px] font-semibold text-white transition hover:bg-(--brand-green-2)"
+            >
+              Search
+            </button>
+          </form>
+        </div>
+        
+        {/* Mobile spacer for fixed search bar */}
+        <div className="lg:hidden h-[52px]" />
 
-        <main className="mx-auto flex-1 w-full max-w-[1520px] overflow-x-hidden bg-white px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mb-8">
+        <main className="mx-auto flex-1 w-full max-w-[1520px] overflow-x-hidden bg-white px-4 pt-2 pb-6 sm:px-6 lg:px-8 lg:py-6">
+          <div className="mb-8 mt-4">
             <h1 className="font-bold tracking-tight text-slate-900" style={{ fontSize: 'clamp(1.75rem, 3vw + 0.5rem, 2.75rem)' }}>{title}</h1>
           </div>
 
@@ -781,34 +813,38 @@ function AllToursPageContent() {
               </div>
             )}
 
-            <section className="relative mt-12 px-8 pb-2">
-              <h2 className="mb-6 text-3xl font-semibold tracking-tight text-slate-900">What are people saying about Ghana</h2>
+            <section className="relative mt-12 px-2 sm:px-4 pb-2">
+              <h2 className="mb-6 font-semibold tracking-tight text-slate-900 text-center" style={{ fontSize: 'clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem)' }}>What are people saying about Ghana</h2>
               <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory sm:grid sm:overflow-visible sm:pb-0 sm:snap-none sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
                 {paginatedReviews.map((review, idx) => (
                   <article
                     key={`${review.title}-${idx}`}
-                    className="min-h-[390px] w-[86%] shrink-0 snap-start rounded-xl border border-slate-300 bg-white p-6 sm:w-auto sm:shrink"
+                    className="min-h-[390px] w-[86%] shrink-0 snap-start rounded-xl border border-slate-300 bg-white p-4 sm:p-5 md:p-6 sm:w-auto sm:shrink"
                   >
-                    <div className="mb-4 flex items-start gap-4">
-                      <img src={review.image} alt={review.title} className="h-16 w-16 rounded-lg object-cover" />
-                      <h3 className="line-clamp-3 text-[17px] font-semibold leading-tight text-slate-900 sm:text-[19px] lg:text-[22px]">{review.title}</h3>
+                    <div className="mb-4 flex items-start gap-3 sm:gap-4">
+                      <img 
+                        src={review.image} 
+                        alt={review.title} 
+                        className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-lg object-cover shrink-0" 
+                      />
+                      <h3 className="line-clamp-3 font-semibold leading-tight text-slate-900" style={{ fontSize: 'clamp(0.9375rem, 1.2vw + 0.5rem, 1.125rem)' }}>{review.title}</h3>
                     </div>
 
                     <p className="mb-2 text-xl text-emerald-500">★★★★★</p>
-                    <p className="mb-4 text-sm text-slate-600">{review.author}</p>
-                    <p className="mb-1 text-[15px] font-semibold text-slate-800">{review.headline}</p>
-                    <p className="line-clamp-3 text-[14px] text-slate-700">{review.body}</p>
+                    <p className="mb-4 text-xs sm:text-sm text-slate-600">{review.author}</p>
+                    <p className="mb-1 font-semibold text-slate-800" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.4rem, 0.9375rem)' }}>{review.headline}</p>
+                    <p className="line-clamp-3 text-slate-700" style={{ fontSize: 'clamp(0.8125rem, 0.6vw + 0.4rem, 0.875rem)' }}>{review.body}</p>
                     <button
                       type="button"
                       onClick={() => setActiveReview(review)}
-                      className="mt-2 text-[14px] font-semibold text-slate-900 underline"
+                      className="mt-2 font-semibold text-slate-900 underline" style={{ fontSize: 'clamp(0.8125rem, 0.6vw + 0.4rem, 0.875rem)' }}
                     >
                       Read more
                     </button>
                     <div className="mt-4">
                       <button
                         type="button"
-                        className="rounded-xl bg-emerald-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
+                        className="rounded-xl bg-emerald-700 px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 font-semibold text-white transition hover:bg-emerald-800" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
                       >
                         View Experience
                       </button>

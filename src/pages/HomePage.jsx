@@ -22,6 +22,7 @@ function HomePageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [sharedHeroDateRange, setSharedHeroDateRange] = useState({ from: null, to: null });
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showCompactSearch, setShowCompactSearch] = useState(false);
 
   useEffect(() => {
     // Simulate loading time for initial page load
@@ -66,10 +67,16 @@ function HomePageContent() {
         <Navbar
           sharedDateRange={sharedHeroDateRange}
           onSharedDateRangeChange={setSharedHeroDateRange}
+          forceShowCompactSearch={showCompactSearch}
         />
+        {/* Navbar spacer - only on desktop where search moves to navbar */}
+        <div className={`hidden lg:block lg:h-[104px]`} />
+        {/* Mobile spacer - for fixed search bar at top */}
+        <div className={`lg:hidden ${showCompactSearch ? 'h-[52px]' : 'h-0'}`} />
         <HeroSection
           sharedDateRange={sharedHeroDateRange}
           onSharedDateRangeChange={setSharedHeroDateRange}
+          onSearchBarVisibilityChange={setShowCompactSearch}
         />
 
         <main className="mx-auto max-w-[1520px] px-4 pb-[3.4rem] sm:px-6 sm:pb-14 overflow-hidden">

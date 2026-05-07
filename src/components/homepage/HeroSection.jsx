@@ -1,4 +1,5 @@
-import { CalendarDays, MapPin, Search, ChevronLeft, ChevronRight } from "lucide-react";
+
+import { MapPin, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -6,25 +7,22 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
 import heroPic from "@/assets/images/hero_pic.jpg";
 import { TourCard } from "./TourCard";
 import { heroStats } from "./data";
 import { useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
 
-export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
+export function HeroSection({ sharedDateRange, onSharedDateRangeChange, onSearchBarVisibilityChange }) {
   const { t } = useTranslation();
-  const [selectedDate, setSelectedDate] = useState({ from: null, to: null });
-  const [showCalendar, setShowCalendar] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const calendarRef = useRef(null);
+  const [isSearchBarSticky, setIsSearchBarSticky] = useState(false);
+  const [searchBarHeight, setSearchBarHeight] = useState(0);
   const scrollContainerRef = useRef(null);
+  const searchBarRef = useRef(null);
+  const searchBarInitialTop = useRef(null);
   const controls = useAnimation();
   const { recentlyViewed } = useRecentlyViewed();
-
-  const activeDateRange = sharedDateRange ?? selectedDate;
-  const setActiveDateRange = onSharedDateRangeChange ?? setSelectedDate;
 
   // Carousel setup
   const carouselItems = recentlyViewed.length > 0 ? recentlyViewed : [];
@@ -37,22 +35,6 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
   const gap = 10;
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-        setShowCalendar(false);
-      }
-    };
-
-    if (showCalendar) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showCalendar]);
-
-  useEffect(() => {
     if (carouselItems.length > 4) {
       // Start at the middle set for seamless infinite scroll (desktop only)
       const middleSetStart = carouselItems.length;
@@ -61,9 +43,42 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
     }
   }, [carouselItems.length]);
 
-  const handleDragEnd = (event, info) => {
-    // Not used for mobile/tablet - they use native scroll
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!searchBarRef.current) return;
+      
+      // Capture initial position and height only once when component mounts
+      if (searchBarInitialTop.current === null) {
+        const rect = searchBarRef.current.getBoundingClientRect();
+        searchBarInitialTop.current = rect.top + window.scrollY;
+        setSearchBarHeight(rect.height);
+      }
+      
+      const scrollPosition = window.scrollY;
+      
+      // Unstick 150px before reaching original position for snappier feel
+      const threshold = searchBarInitialTop.current - 150;
+      const shouldBeSticky = scrollPosition >= threshold;
+      
+      setIsSearchBarSticky(prev => {
+        if (prev !== shouldBeSticky) {
+          if (onSearchBarVisibilityChange) {
+            onSearchBarVisibilityChange(shouldBeSticky);
+          }
+          return shouldBeSticky;
+        }
+        return prev;
+      });
+    };
+
+    // Initial check
+    handleScroll();
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [onSearchBarVisibilityChange]);
 
   const handlePrevious = () => {
     if (carouselItems.length <= 4) return;
@@ -109,33 +124,11 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
     }
   };
 
-  const formatDate = (date) => {
-    if (!date) return "";
-    const options = { month: "short", day: "numeric" };
-    return date.toLocaleDateString("en-US", options);
-  };
-
-  const formatDateRange = (dateRange) => {
-    if (!dateRange || !dateRange.from) return "";
-    if (!dateRange.to) return `${formatDate(dateRange.from)}`;
-    return `${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`;
-  };
-
-  const handleDateSelect = (date) => {
-    setActiveDateRange(date);
-  };
-
-  const toggleCalendar = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setShowCalendar(prev => !prev);
-  };
-
   return (
-<section
-  id="home"
-  className="relative min-h-[calc(100vh-5rem)] flex items-start pt-[8vh] overflow-visible bg-(--brand-green) text-white"
->
+    <section
+      id="home"
+      className="relative min-h-[80vh] lg:min-h-[calc(100vh-5rem)] flex items-start pt-[12vh] overflow-visible bg-(--brand-green) text-white"
+    >
       <div className="absolute inset-0">
         <img
           src={heroPic}
@@ -154,24 +147,37 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
               className="
                 mt-4
                 mx-auto
-                max-w-[20ch]
                 text-center
-
-                font-black
-                leading-[1.05]
-
-                text-[clamp(2rem,4vw+1rem,3.75rem)]
-
-                tracking-[-0.02em] sm:tracking-[-0.015em]
-
                 text-white
                 drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)]
+                whitespace-nowrap
+                overflow-hidden
+                text-ellipsis
+                w-full
+                max-w-none
+                px-2
               "
+              style={{
+                fontFamily: 'var(--font-hero)',
+                fontWeight: 700,
+                fontSize: 'clamp(1.75rem, 6vw, 4rem)',
+                lineHeight: 'clamp(2rem, 6.5vw, 4.25rem)',
+                letterSpacing: '0px'
+              }}
             >
               {t('hero.title')}
             </h1>
 
-          <p className="mt-1 text-[18px] font-medium text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] sm:text-[18px] md:text-[18px]">
+          <p 
+            className="mt-1 text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] px-2 whitespace-nowrap"
+            style={{
+              fontFamily: 'GT Eesti Pro Display, sans-serif',
+              fontWeight: 700,
+              fontSize: 'clamp(11px, 3.5vw, 24px)',
+              lineHeight: 'clamp(16px, 4.5vw, 30px)',
+              letterSpacing: '0px'
+            }}
+          >
             {t('hero.subtitle')}
           </p>
 
@@ -181,70 +187,51 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange }) {
               {t("hero.availability")}
             </p>
           </div>
-          <div className="mx-auto mt-4 sm:mt-3.5 md:mt-4 max-w-4xl overflow-visible">
-            <div
-              id="hero-search-bar"
-              className="grid gap-0 overflow-visible rounded-lg border border-slate-200 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.28)] sm:grid-cols-[1fr_1fr_auto]"
+          
+          {/* Hero Search Bar - On mobile: becomes fixed at top. On desktop: fades out when reaching navbar */}
+          <div 
+            className="relative mt-4 sm:mt-3.5 md:mt-4 max-w-4xl mx-auto"
+            style={{ minHeight: searchBarHeight > 0 ? `${searchBarHeight}px` : 'auto' }}
+          >
+            <div 
+              ref={searchBarRef}
+              className={`${
+                isSearchBarSticky 
+                  ? 'fixed top-0 left-0 right-0 z-[60] px-3 py-2 lg:opacity-0 lg:pointer-events-none lg:static lg:px-0 lg:py-0' 
+                  : 'static opacity-100'
+              }`}
             >
-              <div className="flex items-center gap-2 border-b border-slate-200 px-2.5 py-2 text-left text-slate-900 sm:border-b-0 sm:border-r">
-                <MapPin className="size-3.5 text-(--brand-green)" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold sm:text-[10px]">
-                    {t('hero.destination')}
-                  </p>
-                  <Input
-                    className="h-auto border-0 px-0 py-0.5 text-[12px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) sm:text-[11px]"
-                    placeholder={t('hero.destinationPlaceholder')}
-                  />
-                </div>
-              </div>
-
-              <div className="relative flex items-center gap-2 border-b border-slate-200 px-2.5 py-2 text-left text-slate-900 sm:border-b-0 sm:border-r overflow-visible">
-                <button
-                  onClick={toggleCalendar}
-                  type="button"
-                  className="hidden shrink-0 transition hover:scale-110 focus:outline-none lg:inline-flex"
-                  aria-label="Open calendar"
-                >
-                  <CalendarDays className="size-3.5 text-(--brand-green)" />
-                </button>
-
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold sm:text-[10px]">
-                    {t('hero.travelDate')}
-                  </p>
-                  <Input
-                    className="h-auto border-0 px-0 py-0.5 text-[12px] shadow-none ring-0 focus:ring-0 caret-(--brand-green) cursor-pointer sm:text-[11px]"
-                    placeholder={t('hero.selectDate')}
-                    value={formatDateRange(activeDateRange)}
-                    onClick={toggleCalendar}
-                    readOnly
-                  />
-                </div>
-
-                {showCalendar && (
-                  <div
-                    ref={calendarRef}
-                    className="absolute left-0 top-full z-100 mt-2"
-                  >
-                    <Calendar
-                      mode="range"
-                      selected={activeDateRange}
-                      onSelect={handleDateSelect}
-                      onClose={() => setShowCalendar(false)}
+              <div
+                id="hero-search-bar"
+                className="grid gap-0 rounded-lg border border-slate-200 bg-white sm:grid-cols-[1fr_auto] grid-cols-[1fr_auto] shadow-md max-w-4xl mx-auto"
+              >
+                <div className="flex items-center gap-2 text-left text-slate-900 px-2 py-1.5">
+                  <MapPin className="text-(--brand-green) shrink-0 size-3" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-[9px] sm:text-[10px] mb-0">
+                      {t('hero.destination')}
+                    </p>
+                    <Input
+                      className="h-auto border-0 px-1 py-0 text-[11px] sm:text-[11px] text-slate-900 placeholder:text-slate-400 shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      style={{ 
+                        caretColor: '#01311a',
+                        outline: 'none',
+                        textAlign: 'left'
+                      }}
+                      placeholder={t('hero.destinationPlaceholder')}
                     />
                   </div>
-                )}
-              </div>
+                </div>
 
-              <div className="p-1.5">
-                <Button
-                  size="sm"
-                  className="h-full min-h-9 w-full rounded-lg px-4 text-[12px] sm:min-h-8 sm:text-[11px]"
-                >
-                  <Search className="size-3" />
-                  {t('hero.search')}
-                </Button>
+                <div className="p-1">
+                  <Button
+                    size="sm"
+                    className="h-full w-full rounded-lg min-h-7 text-[10px] px-3 sm:min-h-8 sm:text-[11px] sm:px-4"
+                  >
+                    <Search className="size-2.5 sm:size-3" />
+                    {t('hero.search')}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

@@ -168,23 +168,6 @@ function ThemeToggle() {
   );
 }
 
-function PageTitle() {
-  const location = useLocation();
-  const item = NAV_ITEMS.find(({ to, end }) =>
-    end ? location.pathname === to : location.pathname.startsWith(to),
-  );
-  return (
-    <div>
-      <h1 className="text-xl font-bold tracking-tight text-[color:var(--admin-text)] sm:text-2xl">
-        {item?.label || "Admin"}
-      </h1>
-      <p className="mt-1 text-sm text-[color:var(--admin-muted)]">
-        Real-time view of your operations.
-      </p>
-    </div>
-  );
-}
-
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, signOut } = useAuth();
@@ -283,8 +266,7 @@ export default function DashboardLayout() {
         </header>
 
         <main className="admin-fade-in flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-            <PageTitle />
+          <div className="mb-5 flex flex-wrap items-end justify-end gap-3">
             <StatusPill tone={pillToneForRole(role)}>{role}</StatusPill>
           </div>
           <Outlet />

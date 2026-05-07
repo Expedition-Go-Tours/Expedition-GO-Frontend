@@ -519,15 +519,19 @@ export function Navbar({
                 <Globe className="size-4" />
                 <span className="text-sm">English (US) • USD</span>
               </button>
-              <button className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
+              <Link
+                to="/wishlist"
+                onClick={closeMobileMenu}
+                className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950"
+              >
                 <Heart className="size-4" />
                 <span className="text-sm">{t('nav.wishlist')}</span>
-              </button>
+              </Link>
               <button className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
                 <ShoppingCart className="size-4" />
                 <span className="text-sm">{t('nav.cart')}</span>
               </button>
-              <Link to="/support" className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
+              <Link to="/support" onClick={closeMobileMenu} className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
                 <Headset className="size-4" />
                 <span className="text-sm">{t('nav.support')}</span>
               </Link>

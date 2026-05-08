@@ -239,12 +239,12 @@ export function Navbar({
 </button>
 
         {(showCompactSearch || forceShowCompactSearch) && (
-          <div className="flex-1 justify-center flex">
+          <div className="flex-1 justify-center hidden lg:flex">
             <form
               onSubmit={handleCompactSearchSubmit}
-              className="relative flex w-full max-w-[600px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 sm:px-3 sm:py-2 shadow-sm hover:shadow-md"
+              className="relative flex w-full max-w-[600px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm hover:shadow-md"
             >
-              <Search className="size-3.5 sm:size-4 text-(--brand-green)" />
+              <Search className="size-4 text-(--brand-green)" />
               <input
                 ref={navSearchInputRef}
                 value={compactSearchValue}
@@ -271,7 +271,7 @@ export function Navbar({
                   }, 200);
                 }}
                 placeholder="Where are you going?"
-                className="w-full bg-transparent text-xs sm:text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                 style={{ caretColor: '#01311a' }}
                 autoComplete="off"
               />

@@ -33,162 +33,45 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange, onSearch
   // Get search results
   const searchResults = useSearchAutocomplete(searchQuery);
 
-  // Carousel setup
+  // Carousel setup - Simple finite scroll
   const carouselItems = recentlyViewed.length > 0 ? recentlyViewed : [];
-  // Triple items for infinite loop
-  const infiniteItems = carouselItems.length > 0
-    ? [...carouselItems, ...carouselItems, ...carouselItems]
-    : [];
 
-  const cardWidth = 280; // Horizontal card width (matches GetYourGuide)
+  const cardWidth = 280; // Horizontal card width
   const gap = 12;
-  const singleSetWidth = carouselItems.length * (cardWidth + gap);
 
-  // Desktop infinite scroll nudge (same as TourCarouselSection)
-  const nudgeInfiniteLoop = useCallback(() => {
-    const container = desktopScrollRef.current;
-    if (!container || carouselItems.length === 0 || isScrollingRef.current) return;
-
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    const maxScroll = scrollWidth - clientWidth;
-
-    if (maxScroll <= 0) return;
-
-    const threshold = cardWidth * 0.5;
-
-    if (scrollLeft <= threshold) {
-      isScrollingRef.current = true;
-      container.scrollLeft = scrollLeft + singleSetWidth;
-      setTimeout(() => {
-        isScrollingRef.current = false;
-      }, 100);
-    } else if (scrollLeft >= maxScroll - threshold) {
-      isScrollingRef.current = true;
-      container.scrollLeft = scrollLeft - singleSetWidth;
-      setTimeout(() => {
-        isScrollingRef.current = false;
-      }, 100);
-    }
-  }, [carouselItems.length, singleSetWidth, cardWidth]);
-
-  // Desktop arrow scroll (same as TourCarouselSection)
+  // Simple scroll function for finite carousel
   const scroll = (direction) => {
     const container = desktopScrollRef.current;
     if (!container) return;
 
     const scrollAmount = 320;
     const currentScroll = container.scrollLeft;
-
-    let newScrollPosition;
+    const maxScroll = container.scrollWidth - container.clientWidth;
 
     if (direction === "left") {
-      newScrollPosition = currentScroll - scrollAmount;
-      if (newScrollPosition < scrollAmount) {
-        container.scrollLeft = singleSetWidth + newScrollPosition;
-        return;
-      }
+      const newScrollPosition = Math.max(0, currentScroll - scrollAmount);
+      container.scrollTo({
+        left: newScrollPosition,
+        behavior: "smooth",
+      });
     } else {
-      newScrollPosition = currentScroll + scrollAmount;
-      if (newScrollPosition > singleSetWidth * 2 - scrollAmount) {
-        container.scrollLeft =
-          singleSetWidth + (newScrollPosition - singleSetWidth * 2);
-        return;
-      }
+      const newScrollPosition = Math.min(maxScroll, currentScroll + scrollAmount);
+      container.scrollTo({
+        left: newScrollPosition,
+        behavior: "smooth",
+      });
     }
-
-    container.scrollTo({
-      left: newScrollPosition,
-      behavior: "smooth",
-    });
   };
 
-  // Initialize desktop scroll position
-  useLayoutEffect(() => {
-    const el = desktopScrollRef.current;
-    if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    if (maxScroll <= 0) return;
-    el.scrollLeft = Math.min(singleSetWidth, maxScroll);
-  }, [singleSetWidth]);
-
-  // Desktop scroll listener
+  // Remove infinite scroll initialization and listeners
   useEffect(() => {
-    const el = desktopScrollRef.current;
-    if (!el) return;
+    // No special initialization needed for finite scroll
+  }, []);
 
-    let rafId = null;
-
-    const onScroll = () => {
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-      
-      rafId = requestAnimationFrame(() => {
-        nudgeInfiniteLoop();
-        rafId = null;
-      });
-    };
-
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-      el.removeEventListener("scroll", onScroll);
-    };
-  }, [nudgeInfiniteLoop]);
-
-  // Mobile infinite scroll handler
+  // Simple mobile scroll (no infinite loop)
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || carouselItems.length === 0) return;
-
-    let isResetting = false;
-    let scrollTimeout = null;
-
-    const handleScroll = () => {
-      if (isResetting) return;
-
-      // Clear previous timeout
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-
-      // Debounce the reset check
-      scrollTimeout = setTimeout(() => {
-        const scrollLeft = container.scrollLeft;
-        const itemWidth = cardWidth + gap;
-        const currentIdx = Math.round(scrollLeft / itemWidth);
-        
-        // Reset to middle set if at boundaries
-        if (currentIdx <= 1 || currentIdx >= carouselItems.length * 2 - 1) {
-          isResetting = true;
-          
-          // Calculate which card we're on in the original set
-          const cardInSet = currentIdx % carouselItems.length;
-          const middleSetIndex = carouselItems.length + cardInSet;
-          
-          // Instant jump to middle set
-          container.scrollLeft = middleSetIndex * itemWidth;
-          
-          // Re-enable after a brief delay
-          setTimeout(() => {
-            isResetting = false;
-          }, 100);
-        }
-      }, 150); // Wait for scroll to settle
-    };
-
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Set initial scroll position to middle set
-    container.scrollLeft = carouselItems.length * (cardWidth + gap);
-
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-    };
-  }, [carouselItems.length, cardWidth, gap]);
+    // No special mobile infinite scroll logic needed
+  }, []);
 
   // Handle click outside to close autocomplete
   useEffect(() => {
@@ -273,7 +156,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange, onSearch
   return (
     <section
       id="home"
-      className="relative min-h-[50vh] sm:min-h-[52vh] md:min-h-[50vh] lg:min-h-[52vh] xl:min-h-[60vh] flex items-start pt-[12vh] overflow-visible bg-(--brand-green) text-white pb-8"
+      className="relative min-h-[50vh] sm:min-h-[52vh] md:min-h-[50vh] lg:min-h-[52vh] xl:min-h-[60vh] flex items-start pt-[12vh] overflow-visible bg-(--brand-green) text-white pb-4"
     >
       <div className="absolute inset-0">
         <img
@@ -449,27 +332,29 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange, onSearch
                 </>
               )}
 
-              {/* Desktop carousel - native scroll like TourCarouselSection */}
-              <div
-                ref={desktopScrollRef}
-                className="hidden md:flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide pb-6"
-                style={{
-                  WebkitOverflowScrolling: "touch",
-                  scrollSnapType: "x mandatory"
-                }}
-              >
-                {infiniteItems.map((item, index) => (
-                  <div
-                    key={`${item.title}-${index}`}
-                    className="w-[280px] min-w-[280px] shrink-0"
-                    style={{ scrollSnapAlign: "start" }}
-                  >
-                    <HeroTourCard {...item} disableTracking={true} />
-                  </div>
-                ))}
+              {/* Desktop carousel - finite scroll with centering */}
+              <div className="hidden md:flex justify-center">
+                <div
+                  ref={desktopScrollRef}
+                  className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide pb-6 max-w-full"
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                    scrollSnapType: "x mandatory"
+                  }}
+                >
+                  {carouselItems.map((item, index) => (
+                    <div
+                      key={`${item.title}-${index}`}
+                      className="w-[280px] min-w-[280px] shrink-0"
+                      style={{ scrollSnapAlign: "start" }}
+                    >
+                      <HeroTourCard {...item} disableTracking={true} />
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Mobile carousel - infinite scroll with native snap */}
+              {/* Mobile carousel - finite scroll */}
               <div
                 ref={scrollContainerRef}
                 className="md:hidden overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
@@ -478,7 +363,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange, onSearch
                 }}
               >
                 <div className="flex gap-3 px-4">
-                  {infiniteItems.map((item, index) => (
+                  {carouselItems.map((item, index) => (
                     <div
                       key={`${item.title}-${index}`}
                       className="w-[280px] shrink-0 snap-start"

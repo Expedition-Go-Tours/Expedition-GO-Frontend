@@ -252,6 +252,7 @@ export function Navbar({
                   results={navSearchResults}
                   onSelect={handleNavAutocompleteSelect}
                   isVisible={showNavAutocomplete && !isExternalSearchMode}
+                  searchQuery={compactSearchQuery}
                 />
               </div>
             </form>

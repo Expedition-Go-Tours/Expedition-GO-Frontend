@@ -392,6 +392,7 @@ export function HeroSection({ sharedDateRange, onSharedDateRangeChange, onSearch
                     results={searchResults}
                     onSelect={handleAutocompleteSelect}
                     isVisible={showAutocomplete}
+                    searchQuery={searchQuery}
                   />
                 </div>
               </form>

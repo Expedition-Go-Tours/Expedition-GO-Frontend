@@ -94,7 +94,6 @@ const TOUR_DETAIL_TABS = [
   { key: "details", label: "Details" },
   { key: "itinerary", label: "Itinerary" },
   { key: "reviews", label: "Reviews" },
-  { key: "operator", label: "Operator" },
 ];
 
 const getDateKey = (date) => {
@@ -396,6 +395,38 @@ const tourData = {
   ],
 };
 
+/** Overview tab: Highlights + Full description (accordion bodies). */
+const OVERVIEW_HIGHLIGHTS_DEFAULT = [
+  "Explore Kakum National Park",
+  "Discover Elmina Castle",
+  "Explore Cape Coast Castle",
+  "Walk on the Kakum Canopy Walkway Experience",
+  "Experience the Culture and History of Cape Coast",
+];
+
+const OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT = [
+  {
+    title: "Start Your Journey from Accra to Cape Coast:",
+    body: "Set out from Accra on a scenic drive of approximately three hours along the coast. Along the way you’ll pass villages, palm-lined roads, and ocean views as you head toward one of Ghana’s most historic regions.",
+  },
+  {
+    title: "Experience the Adventure of Kakum National Park:",
+    body: "Trek through lush rainforest and cross the famous canopy walkway suspended high above the forest floor. Your guide will point out birds, butterflies, and the rich biodiversity that makes Kakum a highlight for nature lovers.",
+  },
+  {
+    title: "Discover the History of Elmina Castle:",
+    body: "Visit Elmina Castle (St. George’s Castle), a UNESCO World Heritage site and one of the oldest European buildings in sub-Saharan Africa. Learn about its role in trade and the trans-Atlantic slave trade with time to reflect on this powerful history.",
+  },
+  {
+    title: "Explore Cape Coast Castle and Township:",
+    body: "Continue to Cape Coast Castle to tour the chambers, courtyards, and museum exhibits. Your guide shares stories of resilience and remembrance before you have a chance to explore the surrounding township and coastal atmosphere.",
+  },
+  {
+    title: "Drive Back to Accra:",
+    body: "After a full day of culture, history, and nature, relax on the return drive to Accra with drop-off at your hotel or agreed meeting point, carrying memories of Ghana’s Central Region.",
+  },
+];
+
 function TourDetailContent() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -453,6 +484,11 @@ function TourDetailContent() {
   const [expandedDay, setExpandedDay] = useState(0);
   const [expandedInfoSection, setExpandedInfoSection] = useState("included");
   const [travelerType, setTravelerType] = useState("adults");
+  const [overviewAccordionOpen, setOverviewAccordionOpen] = useState({
+    highlights: true,
+    fullDescription: true,
+  });
+  const [fullDescriptionExpanded, setFullDescriptionExpanded] = useState(false);
   const activeDetailTabIndex = Math.max(0, TOUR_DETAIL_TABS.findIndex((tab) => tab.key === activeDetailTab));
   const reviewBreakdown = useMemo(
     () => buildReviewBreakdown(selectedTourRatingNumber, selectedTourReviewsNumber),
@@ -487,6 +523,8 @@ function TourDetailContent() {
   useEffect(() => {
     setReviewStarFilter(null);
     setReviewSearchQuery("");
+    setOverviewAccordionOpen({ highlights: true, fullDescription: true });
+    setFullDescriptionExpanded(false);
   }, [id]);
 
   useEffect(() => {
@@ -974,18 +1012,16 @@ function TourDetailContent() {
 
   const postedToursAside = (
     <div className="mt-5 rounded-lg border border-slate-200 p-2.5 sm:p-3">
-      <p className="text-[11px] font-black leading-tight text-[color:var(--brand-green)]">Explore our promoted experiences </p>
+      <p className="text-[11px] font-black leading-tight text-[color:var(--brand-green)]">Explore other promoted experiences</p>
       <p className="mt-0.5 text-[9px] leading-snug text-slate-500">Published listings from our catalog—compact for this panel.</p>
       <div className="mt-2 space-y-1">
         {sidebarPostedTours.length === 0 ? (
           <p className="text-[9px] text-slate-500">No other tours to show yet.</p>
         ) : (
           sidebarPostedTours.map((tour) => (
-            <button
+            <div
               key={tour.title}
-              type="button"
-              onClick={() => navigate(`/tour/${encodeURIComponent(tour.title)}`)}
-              className="flex w-full gap-2 rounded-md border border-transparent p-1 text-left transition hover:border-slate-200 hover:bg-slate-50/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
+              className="flex w-full items-center gap-2 rounded-md border border-slate-100 bg-white/50 p-1"
             >
               <img
                 src={tour.image}
@@ -1001,7 +1037,14 @@ function TourDetailContent() {
                 </p>
                 <p className="mt-0.5 text-[9px] font-medium text-slate-400">Posted · {tour.postedLabel}</p>
               </div>
-            </button>
+              <button
+                type="button"
+                onClick={() => navigate(`/tour/${encodeURIComponent(tour.title)}`)}
+                className="shrink-0 rounded-md bg-[color:var(--brand-green)] px-2.5 py-1.5 text-[10px] font-bold text-white shadow-sm transition hover:brightness-95 active:brightness-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
+              >
+                {t("tourDetail.viewPromoted")}
+              </button>
+            </div>
           ))
         )}
       </div>
@@ -1355,6 +1398,86 @@ function TourDetailContent() {
                   </div>
                 ))}
               </div>
+
+              <div className="mt-8 border-t border-slate-200 pt-6">
+                <div className="border-b border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOverviewAccordionOpen((p) => ({ ...p, highlights: !p.highlights }))
+                    }
+                    className="flex w-full items-center justify-between gap-4 py-4 text-left"
+                    aria-expanded={overviewAccordionOpen.highlights}
+                  >
+                    <span className="text-sm font-bold text-slate-900">{t("tourDetail.highlights")}</span>
+                    <span className="flex shrink-0 justify-end">
+                      {overviewAccordionOpen.highlights ? (
+                        <ChevronUp className="size-4 text-[color:var(--brand-green)]" aria-hidden />
+                      ) : (
+                        <ChevronDown className="size-4 text-[color:var(--brand-green)]" aria-hidden />
+                      )}
+                    </span>
+                  </button>
+                  {overviewAccordionOpen.highlights && (
+                    <div className="pb-5">
+                      <ul className="list-disc space-y-1.5 pl-5 text-sm leading-7 text-slate-700">
+                        {OVERVIEW_HIGHLIGHTS_DEFAULT.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-b border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOverviewAccordionOpen((p) => ({ ...p, fullDescription: !p.fullDescription }))
+                    }
+                    className="flex w-full items-center justify-between gap-4 py-4 text-left"
+                    aria-expanded={overviewAccordionOpen.fullDescription}
+                  >
+                    <span className="text-sm font-bold text-slate-900">{t("tourDetail.fullDescription")}</span>
+                    <span className="flex shrink-0 justify-end">
+                      {overviewAccordionOpen.fullDescription ? (
+                        <ChevronUp className="size-4 text-[color:var(--brand-green)]" aria-hidden />
+                      ) : (
+                        <ChevronDown className="size-4 text-[color:var(--brand-green)]" aria-hidden />
+                      )}
+                    </span>
+                  </button>
+                  {overviewAccordionOpen.fullDescription && (
+                    <div className="pb-5">
+                      <div className="min-w-0">
+                        <ol className="list-none space-y-4 pl-0">
+                          {(fullDescriptionExpanded
+                            ? OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT
+                            : OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.slice(0, 2)
+                          ).map((step, index) => (
+                            <li key={step.title} className="flex gap-3">
+                              <span className="mt-0.5 shrink-0 text-sm font-bold text-slate-900">{index + 1}.</span>
+                              <div className="min-w-0 flex-1 text-sm leading-7 text-slate-700">
+                                <p className="font-bold text-slate-900">{step.title}</p>
+                                <p className="mt-1.5">{step.body}</p>
+                              </div>
+                            </li>
+                          ))}
+                        </ol>
+                        {OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.length > 2 && (
+                          <button
+                            type="button"
+                            onClick={() => setFullDescriptionExpanded((v) => !v)}
+                            className="mt-4 text-sm font-semibold text-blue-600 underline decoration-blue-600 underline-offset-2 hover:text-blue-700"
+                          >
+                            {fullDescriptionExpanded ? t("tourDetail.seeLess") : t("tourDetail.seeMore")}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </section>
               </div>
 
@@ -1585,9 +1708,7 @@ function TourDetailContent() {
                 ))}
               </div>
             </section>
-              </div>
 
-              <div className="w-full shrink-0 space-y-8 pr-px">
             <section id="operator" className="border-b border-slate-200 pb-8">
               <h2 className="text-lg font-black text-[color:var(--brand-green)]">About the operator</h2>
               <p className="mt-2 text-sm text-[color:var(--brand-green)]/75">Don't take it from us - here's what people have to say about this operator.</p>
@@ -1605,9 +1726,10 @@ function TourDetailContent() {
                   </article>
                 ))}
               </div>
-              <button className="mt-2 text-xs font-bold underline">See all 853 reviews</button>
+              <button type="button" className="mt-2 text-xs font-bold underline">See all 853 reviews</button>
             </section>
               </div>
+
             </div>
           </div>
 

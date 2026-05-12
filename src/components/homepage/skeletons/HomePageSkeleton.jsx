@@ -22,7 +22,7 @@ export function HomePageSkeleton() {
               <TourCarouselSkeleton delay={200} />
             </div>
           </div>
-          <div className="pt-[1.7rem] min-w-0 md:pt-6 xl:pt-4">
+          <div className="mt-3 pt-[1.7rem] min-w-0 md:pt-6 xl:pt-4">
             <SidebarSkeleton />
           </div>
         </div>

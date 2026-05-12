@@ -35,7 +35,7 @@ export function DestinationsModal({ isOpen, onClose }) {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-40 cursor-pointer bg-black/50"
+            className="fixed inset-0 z-[70] cursor-pointer bg-black/50"
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -45,7 +45,7 @@ export function DestinationsModal({ isOpen, onClose }) {
 
           {/* Slide-out Panel */}
           <motion.div
-            className="fixed right-0 top-0 z-50 h-screen w-full max-w-2xl bg-white shadow-2xl flex flex-col"
+            className="fixed right-0 top-0 z-[80] h-screen w-full max-w-2xl bg-white shadow-2xl flex flex-col"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}

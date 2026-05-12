@@ -1,4 +1,5 @@
 import { getApiBaseUrl, getAuthToken } from "@/lib/auth";
+import { devWarn } from "@/lib/logger";
 
 /**
  * Normalised API error returned to React Query / UI.
@@ -98,6 +99,7 @@ export async function apiRequest(path, options = {}) {
     response = await fetch(url, { method, headers: finalHeaders, body: payload, signal });
   } catch (error) {
     if (error?.name === "AbortError") throw error;
+    devWarn("[api] Network error", url, error);
     throw new ApiError({
       message: error?.message || "Network request failed",
       status: 0,

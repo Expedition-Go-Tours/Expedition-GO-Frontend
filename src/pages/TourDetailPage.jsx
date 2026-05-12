@@ -570,7 +570,7 @@ function TourDetailContent() {
   const [galleryPreviewIndex, setGalleryPreviewIndex] = useState(0);
   const [gallerySlideDirection, setGallerySlideDirection] = useState(0);
   const [galleryModalView, setGalleryModalView] = useState("grid");
-  const [mainImageTouchStartX, setMainImageTouchStartX] = useState(null);
+  const mainImageTouchStartXRef = useRef(null);
   const thumbnailStripImages = useMemo(
     () => mergedImages.slice(0, 4).map((image, index) => ({ image, index })),
     [mergedImages]
@@ -662,26 +662,8 @@ function TourDetailContent() {
       reviews: currentTour?.reviews || String(selectedTourReviewsNumber),
       image: tourImage,
     };
-    
-    console.log('=== ADDING TO RECENTLY VIEWED ===');
-    console.log('Tour ID from URL:', id);
-    console.log('Decoded Title:', selectedTourTitle);
-    console.log('Found actual tour:', currentTour);
-    console.log('Tour Data:', recentTourData);
-    console.log('Image URL:', tourImage);
-    
+
     addToRecentlyViewed(recentTourData);
-    
-    // Check what's in localStorage after adding
-    setTimeout(() => {
-      const stored = localStorage.getItem('recentlyViewed_guest');
-      console.log('LocalStorage after add:', stored);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        console.log('Parsed recently viewed:', parsed);
-        console.log('Number of items:', parsed.length);
-      }
-    }, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]); // Only re-run when the tour ID changes
 
@@ -973,16 +955,21 @@ function TourDetailContent() {
   };
 
   const handleMainImageTouchStart = (event) => {
-    setMainImageTouchStartX(event.touches[0]?.clientX ?? null);
+    mainImageTouchStartXRef.current = event.touches[0]?.clientX ?? null;
   };
 
   const handleMainImageTouchEnd = (event) => {
-    if (mainImageTouchStartX === null) return;
-    const endX = event.changedTouches[0]?.clientX ?? mainImageTouchStartX;
-    const deltaX = endX - mainImageTouchStartX;
-    if (deltaX < -35) showNextMainImage();
-    if (deltaX > 35) showPreviousMainImage();
-    setMainImageTouchStartX(null);
+    const startX = mainImageTouchStartXRef.current;
+    if (startX === null) return;
+    const endX = event.changedTouches[0]?.clientX ?? startX;
+    const deltaX = endX - startX;
+    if (deltaX < -45) showNextMainImage();
+    if (deltaX > 45) showPreviousMainImage();
+    mainImageTouchStartXRef.current = null;
+  };
+
+  const handleMainImageTouchCancel = () => {
+    mainImageTouchStartXRef.current = null;
   };
 
   const viewerSlideVariants = {
@@ -1157,7 +1144,7 @@ function TourDetailContent() {
   const postedToursAside = (
     <div className="mt-5 rounded-lg border border-slate-200 p-2.5 sm:p-3">
       <p className="text-[11px] font-black leading-tight text-[color:var(--brand-green)]">Explore other promoted experiences</p>
-      <p className="mt-0.5 text-[9px] leading-snug text-slate-500">Published listings from our catalog—compact for this panel.</p>
+      {/* <p className="mt-0.5 text-[9px] leading-snug text-slate-500">Published listings from our catalog—compact for this panel.</p> */}
       <div className="mt-2 space-y-1">
         {sidebarPostedTours.length === 0 ? (
           <p className="text-[9px] text-slate-500">No other tours to show yet.</p>
@@ -1285,6 +1272,7 @@ function TourDetailContent() {
             className="relative h-[300px] overflow-hidden rounded-lg bg-slate-100 sm:h-[430px] lg:h-[520px]"
             onTouchStart={handleMainImageTouchStart}
             onTouchEnd={handleMainImageTouchEnd}
+            onTouchCancel={handleMainImageTouchCancel}
           >
             <div className="flex h-full w-full transition-transform duration-300 ease-out" style={{ transform: `translateX(-${selectedImage * 100}%)` }}>
               {mergedImages.map((image, index) => (
@@ -1325,7 +1313,7 @@ function TourDetailContent() {
             <button
               type="button"
               onClick={showPreviousMainImage}
-              className="absolute left-4 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-slate-950 shadow-[0_2px_10px_rgba(15,23,42,0.18)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="absolute left-4 top-1/2 z-10 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-slate-950 shadow-[0_2px_10px_rgba(15,23,42,0.18)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:grid"
               aria-label="Show previous image"
             >
               <ChevronLeft className="size-6" />
@@ -1333,7 +1321,7 @@ function TourDetailContent() {
             <button
               type="button"
               onClick={showNextMainImage}
-              className="absolute right-4 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-slate-950 shadow-[0_2px_10px_rgba(15,23,42,0.18)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="absolute right-4 top-1/2 z-10 hidden size-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-slate-950 shadow-[0_2px_10px_rgba(15,23,42,0.18)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:grid"
               aria-label="Show next image"
             >
               <ChevronRight className="size-6" />

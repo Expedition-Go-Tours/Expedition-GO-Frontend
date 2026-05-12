@@ -16,6 +16,8 @@ import {
   updateProfile,
 } from 'firebase/auth';
 
+import { devError, devLog, devWarn } from '@/lib/logger';
+
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
@@ -37,10 +39,7 @@ if (/^https?:\/\/[^\/]+$/.test(API_BASE)) {
   API_BASE = `${API_BASE}/api`;
 }
 
-console.log('🔧 Auth Service Config:', {
-  provider: AUTH_PROVIDER,
-  apiBase: API_BASE,
-});
+devLog('[auth] provider:', AUTH_PROVIDER, 'apiBase:', API_BASE);
 
 // Firebase configuration
 const firebaseConfig = {
@@ -62,9 +61,9 @@ if (AUTH_PROVIDER === 'firebase') {
     auth = getAuth(app);
     googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: 'select_account' });
-    console.log('✅ Firebase initialized');
+    devLog('[auth] Firebase initialized');
   } catch (error) {
-    console.error('❌ Firebase initialization error:', error);
+    devWarn('[auth] Firebase initialization failed', error);
   }
 }
 
@@ -81,7 +80,7 @@ function storeAuthUser(user) {
     if (user) localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
     else localStorage.removeItem(AUTH_USER_KEY);
   } catch (error) {
-    console.error('Failed to store user:', error);
+    devWarn('[auth] Failed to store user', error);
   }
 }
 
@@ -90,7 +89,7 @@ export function getStoredAuthUser() {
     const stored = localStorage.getItem(AUTH_USER_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch (error) {
-    console.error('Failed to get stored user:', error);
+    devWarn('[auth] Failed to read stored user', error);
     return null;
   }
 }
@@ -99,7 +98,7 @@ function removeAuthUser() {
   try {
     localStorage.removeItem(AUTH_USER_KEY);
   } catch (error) {
-    console.error('Failed to remove user:', error);
+    devWarn('[auth] Failed to remove stored user', error);
   }
 }
 
@@ -125,9 +124,7 @@ function notifyAuthStateChange(user) {
  */
 async function callBackendSignup(idToken, firebaseUser) {
   const endpoint = `${API_BASE}/users/signup`;
-  
-  console.log('📡 Calling backend signup:', endpoint);
-  
+
   const res = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -142,13 +139,12 @@ async function callBackendSignup(idToken, firebaseUser) {
 
   if (!res.ok) {
     const text = await res.text();
-    console.error('❌ Backend signup failed:', res.status, text);
+    devError('[auth] Backend signup HTTP error', res.status, text.slice(0, 300));
     throw new Error(`Backend signup failed: ${res.status} ${text}`);
   }
 
   const payload = await res.json();
-  console.log('✅ Backend signup successful');
-  
+
   // Backend returns: { status: 'success', data: { user: {...} } }
   return payload.data.user;
 }
@@ -216,17 +212,16 @@ export async function subscribeToAuthState(callback) {
         let backendUser = null;
         try {
           backendUser = await callBackendSignup(idToken, firebaseUser);
-        } catch (err) {
-          console.error('Backend signup failed:', err);
-          // Fallback to client-normalized user (offline mode)
+        } catch (error) {
+          devWarn('[auth] Backend signup failed; using client-normalized user', error);
           backendUser = normalizeFirebaseClientUser(firebaseUser);
         }
 
         storeAuthUser(backendUser);
         notifyAuthStateChange(backendUser);
         callback(backendUser);
-      } catch (err) {
-        console.error('Auth state handling error:', err);
+      } catch (error) {
+        devError('[auth] Auth state handling error', error);
         removeAuthUser();
         notifyAuthStateChange(null);
         callback(null);
@@ -265,7 +260,6 @@ export async function signInWithEmail(email, password) {
       notifyAuthStateChange(backendUser);
       return backendUser;
     } catch (error) {
-      console.error('Firebase sign in error:', error);
       let message = 'Failed to sign in. Please try again.';
       if (error.code === 'auth/user-not-found')
         message = 'No account found with this email address.';
@@ -279,6 +273,7 @@ export async function signInWithEmail(email, password) {
         message = 'Too many failed attempts. Please try again later.';
       else if (error.code === 'auth/invalid-credential')
         message = 'Invalid email or password.';
+      devError('[auth] Email sign-in failed', error);
       throw new Error(message);
     }
   }
@@ -301,9 +296,8 @@ export async function signInWithEmail(email, password) {
 export async function registerWithEmail(name, email, password) {
   if (AUTH_PROVIDER === 'firebase' && auth) {
     try {
-      console.log('🔐 Registering with Firebase...');
       const credential = await createUserWithEmailAndPassword(auth, email, password);
-      
+
       // Update Firebase profile with name
       if (name) {
         await updateProfile(credential.user, { displayName: name });
@@ -313,16 +307,13 @@ export async function registerWithEmail(name, email, password) {
       const firebaseUser = auth.currentUser;
       const idToken = await firebaseUser.getIdToken();
 
-      console.log('📡 Creating user in backend...');
       // ⚠️ CRITICAL: Call /signup endpoint
       const backendUser = await callBackendSignup(idToken, firebaseUser);
 
       storeAuthUser(backendUser);
       notifyAuthStateChange(backendUser);
-      console.log('✅ Registration complete!');
       return backendUser;
     } catch (error) {
-      console.error('❌ Firebase registration error:', error);
       let message = 'Failed to create account. Please try again.';
       if (error.code === 'auth/email-already-in-use')
         message = 'An account with this email already exists.';
@@ -332,6 +323,7 @@ export async function registerWithEmail(name, email, password) {
         message = 'Password is too weak. Please use at least 6 characters.';
       else if (error.code === 'auth/operation-not-allowed')
         message = 'Email/password accounts are not enabled.';
+      devError('[auth] Registration failed', error);
       throw new Error(message);
     }
   }
@@ -365,7 +357,6 @@ export async function signInWithGoogle() {
       notifyAuthStateChange(backendUser);
       return backendUser;
     } catch (error) {
-      console.error('Google sign in error:', error);
       let message = 'Failed to sign in with Google. Please try again.';
       if (error.code === 'auth/popup-closed-by-user')
         message = 'Sign in was cancelled. Please try again.';
@@ -375,6 +366,7 @@ export async function signInWithGoogle() {
         message = 'An account already exists with the same email but different sign-in method.';
       else if (error.code === 'auth/operation-not-allowed')
         message = 'Google sign-in is not enabled.';
+      devError('[auth] Google sign-in failed', error);
       throw new Error(message);
     }
   }
@@ -403,7 +395,7 @@ export async function signOutUser() {
       notifyAuthStateChange(null);
       return;
     } catch (error) {
-      console.error('Firebase sign out error:', error);
+      devWarn('[auth] Sign out failed', error);
       throw new Error('Failed to sign out. Please try again.');
     }
   }
@@ -423,7 +415,7 @@ export async function getCurrentUserToken() {
     try {
       return await auth.currentUser.getIdToken();
     } catch (error) {
-      console.error('Failed to get user token:', error);
+      devWarn('[auth] getIdToken failed', error);
       return null;
     }
   }
@@ -466,7 +458,7 @@ export async function updateUserProfile(updates) {
       notifyAuthStateChange(backendUser);
       return backendUser;
     } catch (error) {
-      console.error('Profile update error:', error);
+      devError('[auth] Profile update failed', error);
       throw new Error('Failed to update profile. Please try again.');
     }
   }

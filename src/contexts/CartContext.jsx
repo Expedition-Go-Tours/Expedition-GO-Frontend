@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { devWarn } from "@/lib/logger";
+
 const CART_STORAGE_KEY = "cart_items_v1";
 const CART_ITEM_TTL_MS = 25 * 60 * 1000;
 
@@ -24,7 +26,7 @@ export function CartProvider({ children }) {
       if (!Array.isArray(parsed)) return [];
       return removeExpiredItems(parsed);
     } catch (error) {
-      console.error("Error loading cart:", error);
+      devWarn("[cart] Failed to parse localStorage", error);
       return [];
     }
   });

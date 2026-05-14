@@ -111,8 +111,8 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
 
         <div
           ref={scrollRef}
-          className="min-w-0 flex-1 -mx-1 flex gap-4 overflow-x-auto overflow-y-visible px-1 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] max-sm:snap-x max-sm:snap-mandatory max-sm:touch-pan-x sm:gap-5 md:gap-5 [&::-webkit-scrollbar]:hidden"
-          style={{ WebkitOverflowScrolling: "touch" }}
+          className="min-w-0 flex-1 -mx-1 flex gap-4 overflow-x-auto overflow-y-visible px-1 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] max-sm:snap-x max-sm:snap-mandatory sm:gap-5 md:gap-5 [&::-webkit-scrollbar]:hidden"
+          style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-x pan-y" }}
         >
           {items.map((tour, index) => {
             const detailTo = `/tour/${encodeURIComponent(tour.title)}`;

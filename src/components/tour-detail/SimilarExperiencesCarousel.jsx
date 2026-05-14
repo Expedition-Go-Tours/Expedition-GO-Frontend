@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { animate, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Heart, Star } from "lucide-react";
 
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -28,7 +27,6 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { convertPrice } = useCurrency();
   const scrollRef = useRef(null);
-  const scrollAnimRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -65,19 +63,15 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
   const scrollByDirection = useCallback((dir) => {
     const el = scrollRef.current;
     if (!el) return;
-    scrollAnimRef.current?.stop?.();
 
     const card = window.innerWidth >= 640 ? CARD_WIDTH_MD : CARD_WIDTH_SM;
     const step = card + CARD_GAP_PX;
     const maxScroll = el.scrollWidth - el.clientWidth;
     const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step * 1.35));
 
-    scrollAnimRef.current = animate(el.scrollLeft, target, {
-      duration: 0.4,
-      ease: [0.22, 1, 0.36, 1],
-      onUpdate: (v) => {
-        el.scrollLeft = v;
-      },
+    el.scrollTo({
+      left: target,
+      behavior: "smooth"
     });
   }, []);
 
@@ -93,26 +87,23 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
       </h2>
 
       <div className="mt-6 flex items-center gap-2 sm:gap-3">
-        <motion.button
+        <button
           type="button"
-          initial={false}
-          animate={{
-            opacity: canScrollLeft ? 1 : 0,
-            pointerEvents: canScrollLeft ? "auto" : "none",
-          }}
-          transition={{ duration: 0.2 }}
-          className="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md sm:grid sm:size-10"
+          className="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md transition-opacity duration-200 sm:grid sm:size-10 disabled:opacity-0"
+          style={{ opacity: canScrollLeft ? 1 : 0, pointerEvents: canScrollLeft ? "auto" : "none" }}
           aria-label={t("tourDetail.similarScrollPrev")}
           onClick={() => scrollByDirection(-1)}
-          whileTap={{ scale: 0.94 }}
         >
           <ChevronLeft className="size-5" strokeWidth={2} aria-hidden />
-        </motion.button>
+        </button>
 
         <div
           ref={scrollRef}
-          className="min-w-0 flex-1 -mx-1 flex gap-4 overflow-x-auto overflow-y-visible px-1 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-5 md:gap-5 [&::-webkit-scrollbar]:hidden"
-          style={{ WebkitOverflowScrolling: "touch" }}
+          className="min-w-0 flex-1 -mx-1 flex gap-4 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-5 md:gap-5 [&::-webkit-scrollbar]:hidden"
+          style={{ 
+            WebkitOverflowScrolling: "touch",
+            overflowY: "unset"
+          }}
         >
           {items.map((tour, index) => {
             const detailTo = `/tour/${encodeURIComponent(tour.title)}`;
@@ -123,12 +114,8 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
             const dealDiscount = tour.discount != null && String(tour.discount).trim() ? String(tour.discount).trim() : null;
 
             return (
-              <motion.article
+              <article
                 key={tour.title}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: index * 0.03 }}
                 className="w-[260px] shrink-0 sm:w-[280px]"
               >
                 <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.08)] transition hover:shadow-md">
@@ -221,26 +208,20 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
                     </div>
                   </div>
                 </div>
-              </motion.article>
+              </article>
             );
           })}
         </div>
 
-        <motion.button
+        <button
           type="button"
-          initial={false}
-          animate={{
-            opacity: canScrollRight ? 1 : 0,
-            pointerEvents: canScrollRight ? "auto" : "none",
-          }}
-          transition={{ duration: 0.2 }}
-          className="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md sm:grid sm:size-10"
+          className="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md transition-opacity duration-200 sm:grid sm:size-10 disabled:opacity-0"
+          style={{ opacity: canScrollRight ? 1 : 0, pointerEvents: canScrollRight ? "auto" : "none" }}
           aria-label={t("tourDetail.similarScrollNext")}
           onClick={() => scrollByDirection(1)}
-          whileTap={{ scale: 0.94 }}
         >
           <ChevronRight className="size-5" strokeWidth={2} aria-hidden />
-        </motion.button>
+        </button>
       </div>
     </section>
   );

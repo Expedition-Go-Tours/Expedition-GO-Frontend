@@ -162,7 +162,7 @@ function HomePageContent() {
         />
 
         <main className="mx-auto max-w-[1520px] overflow-x-hidden px-4 pb-[3.4rem] sm:px-6 sm:pb-14">
-          <div className="grid gap-[2.125rem] md:gap-8 xl:gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
+          <div className="grid gap-5 md:gap-8 xl:gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
             <div className="space-y-[1.7rem] pt-[1.4875rem] min-w-0 md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
               <TourCarouselSection id="tours" title={t('sections.featuredTitle')} items={pickupTours} />
               <div className="space-y-[1.7rem] pt-0 md:space-y-6 md:pt-4 xl:space-y-4 xl:pt-5">
@@ -172,7 +172,7 @@ function HomePageContent() {
                 <TourCarouselSection id="leisure" title={t('sections.likelyToSellOut')} items={leisureTours} />
               </div>
             </div>
-            <div className="pt-[1.7rem] min-w-0 md:pt-6 xl:pt-4">
+            <div className="pt-5 min-w-0 md:pt-6 xl:pt-4">
               <SidebarPanel />
             </div>
           </div>

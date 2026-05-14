@@ -51,7 +51,7 @@ function CompactCardSkeleton({ delay = 0 }) {
 
 export function SidebarSkeleton() {
   return (
-    <aside className="mt-13 space-y-[1.7rem] overflow-hidden md:space-y-6 xl:space-y-5">
+    <aside className="space-y-[1.7rem] overflow-hidden md:space-y-6 xl:mt-13 xl:space-y-5">
       {/* Last Minute Deals Section */}
       <div className="rounded-[18px] border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="p-4 overflow-hidden">

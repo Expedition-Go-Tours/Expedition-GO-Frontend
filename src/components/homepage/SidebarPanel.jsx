@@ -70,7 +70,7 @@ export function SidebarPanel() {
   const sidebarNewExperiences = [...sidebarTopRated, ...sidebarTopRated.slice(0, 2)];
   
   return (
-    <aside className="mt-13 space-y-[1.7rem] overflow-hidden md:space-y-6 xl:space-y-5">
+    <aside className="space-y-[1.7rem] overflow-hidden md:space-y-6 xl:mt-13 xl:space-y-5">
       <Card className="rounded-[18px] border border-slate-200 bg-white shadow-sm overflow-hidden">
         <CardContent className="p-4 overflow-hidden">
           <PanelHeading title={t('sections.lastMinuteDeals')} linkTo="/tours?category=last-minute-deals" />

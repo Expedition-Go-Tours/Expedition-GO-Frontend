@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, CalendarDays, Clock3, ShoppingCart, Trash2 } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock3, ShoppingCart, Trash2, ShieldCheck, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Navbar } from "@/components/homepage/Navbar";
@@ -50,91 +50,143 @@ function CartPage() {
   }, [cart]);
 
   return (
-    <div className="min-h-screen bg-[color:var(--page-bg)] text-slate-900">
+    <div className="flex min-h-screen flex-col bg-[color:var(--page-bg)] text-slate-900">
       <Navbar />
-
       <div className="h-[58px] sm:h-[96px] lg:h-[104px]" />
 
-      <main className="mx-auto w-full max-w-[1520px] px-3 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-8">
+      <main className="mx-auto w-full flex-1 max-w-[1520px] px-3 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-8">
+        {/* Header */}
         <div className="mb-6 sm:mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-[color:var(--brand-green)] sm:mb-4 cursor-pointer"
+            className="group mb-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] hover:shadow-md"
           >
-            <ArrowLeft className="size-4" />
+            <ArrowLeft className="size-4 text-[color:var(--brand-green)] transition group-hover:-translate-x-0.5" />
             Back
           </button>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] sm:size-12">
-                <ShoppingCart className="size-5 sm:size-6" />
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] shadow-sm sm:size-14">
+                <ShoppingCart className="size-6 sm:size-7" />
               </div>
               <div className="min-w-0">
-                <h1 className="leading-tight text-slate-900" style={{ fontSize: "clamp(1.4rem, 2.2vw + 0.4rem, 2rem)" }}>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                   {t("nav.cart")}
                 </h1>
-                <p className="text-sm text-slate-600 sm:text-base">{cart.length} item(s)</p>
+                <p className="mt-0.5 text-sm font-medium text-slate-500">
+                  {cart.length} {cart.length === 1 ? "item" : "items"} in your cart
+                </p>
               </div>
             </div>
+
             {cart.length > 0 && (
               <Button
-                variant="outline"
+                variant="ghost"
                 onClick={clearCart}
-                className="w-full border-slate-300 text-slate-700 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 sm:w-auto"
+                className="shrink-0 gap-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
               >
-                Clear cart
+                <Trash2 className="size-4" />
+                <span className="hidden sm:inline">Clear cart</span>
+                <span className="sm:hidden">Clear</span>
               </Button>
             )}
           </div>
         </div>
 
         {cart.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-12 text-center shadow-sm sm:px-8 sm:py-16">
-            <ShoppingCart className="mx-auto mb-4 size-12 text-slate-300 sm:size-14" />
-            <h2 className="mb-2 text-xl font-semibold text-slate-900 sm:text-2xl">No activities in your cart</h2>
-            <p className="mx-auto mb-6 max-w-xl text-sm text-slate-600 sm:text-base">
-              Activities you add to your cart stay here for up to 25 minutes.
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm sm:py-24">
+            <div className="mb-6 grid size-20 place-items-center rounded-full bg-[color:var(--brand-mist)] sm:size-24">
+              <ShoppingCart className="size-10 text-[color:var(--brand-green)] sm:size-12" />
+            </div>
+            <h2 className="mb-2 text-xl font-bold text-slate-900 sm:text-2xl">
+              Your cart is empty
+            </h2>
+            <p className="mb-8 max-w-xs text-sm leading-relaxed text-slate-500 sm:text-base">
+              Activities you add will appear here. You have up to 25 minutes to complete your booking.
             </p>
             <Link
               to="/tours"
-              className="inline-flex items-center justify-center rounded-full border border-[color:var(--brand-green)] px-6 py-2.5 text-sm font-semibold text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)]"
+              className="inline-flex items-center justify-center rounded-full bg-[color:var(--brand-green)] px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-[color:var(--brand-green)]/25 transition hover:bg-[color:var(--brand-green)]/90 hover:shadow-xl hover:shadow-[color:var(--brand-green)]/30"
             >
-              Find things to do
+              Explore activities
             </Link>
           </div>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-            <div className="space-y-3 sm:space-y-4">
+          <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+            {/* Items */}
+            <div className="space-y-4">
               {cart.map((item) => {
                 const remainingMs = Math.max(0, Number(item.expiresAt) - now);
                 const converted = convertPrice(item.price);
+                const isExpired = remainingMs <= 0;
 
                 return (
-                  <article key={item.key} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <div className="flex items-start gap-3 p-3 sm:gap-4 sm:p-4">
-                      <img src={item.image} alt={item.title} className="h-24 w-28 shrink-0 rounded-xl object-cover sm:h-28 sm:w-44" />
+                  <article
+                    key={item.key}
+                    className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md"
+                  >
+                    <div className="absolute left-0 top-0 h-full w-1.5 bg-[color:var(--brand-green)]" />
+                    <div className="flex items-start gap-3 p-3 pl-4 sm:gap-5 sm:p-5 sm:pl-6">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="h-24 w-28 shrink-0 rounded-xl object-cover shadow-sm sm:h-32 sm:w-40"
+                      />
                       <div className="flex min-w-0 flex-1 flex-col">
-                        <h2 className="line-clamp-2 text-base font-semibold text-slate-900 sm:text-lg">{item.title}</h2>
-                        <p className="mt-1 text-sm text-slate-600">{item.duration}</p>
-
-                        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-600">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1">
-                            <CalendarDays className="size-4" />
-                            {formatBookingDateLabel(item.selectedDate, item.selectedDateEnd)}
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-amber-700">
-                            <Clock3 className="size-4" />
-                            Expires in {formatRemainingTime(remainingMs)}
-                          </span>
-                        </div>
-
-                        <div className="mt-4 flex items-center justify-between gap-3">
-                          <p className="text-base font-semibold text-slate-900 sm:text-lg">{converted.formatted}</p>
+                        <div className="flex items-start justify-between gap-2">
+                           <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900 sm:text-base lg:text-lg">
+                            {item.title}
+                          </h2>
                           <button
                             type="button"
                             onClick={() => removeFromCart(item.key)}
-                            className="inline-flex items-center gap-1 text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                            className="hidden shrink-0 rounded-full p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 sm:block"
+                            aria-label="Remove item"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        </div>
+
+                        <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500 sm:text-sm">
+                          <Clock3 className="size-3.5 sm:size-4" />
+                          {item.duration}
+                        </p>
+
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                            <CalendarDays className="size-3.5" />
+                            {formatBookingDateLabel(item.selectedDate, item.selectedDateEnd)}
+                          </span>
+                          {(item.adults || item.seniors || item.youths || item.children || item.infants) && (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                              <Users className="size-3.5" />
+                              {(item.adults || 0) + (item.seniors || 0) + (item.youths || 0) + (item.children || 0) + (item.infants || 0)} travelers
+                            </span>
+                          )}
+                          {!isExpired ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-100 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                              <span className="relative flex size-2">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                                <span className="relative inline-flex size-2 rounded-full bg-amber-500" />
+                              </span>
+                              Expires in {formatRemainingTime(remainingMs)}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
+                              Expired
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between sm:mt-auto sm:pt-4">
+                           <p className="text-base font-bold text-slate-900 sm:text-lg lg:text-xl">
+                            {converted.formatted}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(item.key)}
+                            className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-medium text-rose-600 transition hover:bg-rose-50 sm:hidden"
                           >
                             <Trash2 className="size-4" />
                             Remove
@@ -147,19 +199,50 @@ function CartPage() {
               })}
             </div>
 
-            <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:sticky lg:top-24">
-              <h3 className="text-lg font-semibold text-slate-900">Cart summary</h3>
-              <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
-                <span>Items</span>
-                <span>{cart.length}</span>
+            {/* Summary */}
+            <aside className="h-fit space-y-4 lg:sticky lg:top-28">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <h3 className="text-base font-bold text-slate-900 sm:text-lg lg:text-xl">Order Summary</h3>
+
+                <div className="mt-5 space-y-3">
+                  <div className="flex items-center justify-between text-sm text-slate-600">
+                    <span>Subtotal ({cart.length} {cart.length === 1 ? "item" : "items"})</span>
+                    <span>{convertPrice(total).formatted}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-slate-600">
+                    <span>Taxes & Fees</span>
+                    <span className="text-slate-400">Calculated at checkout</span>
+                  </div>
+                </div>
+
+                <div className="my-4 h-px bg-slate-100" />
+
+                <div className="flex items-center justify-between">
+                  <span className="text-base font-semibold text-slate-900">Total</span>
+                  <span className="text-lg font-bold text-slate-900 sm:text-xl">{convertPrice(total).formatted}</span>
+                </div>
+
+                <Button className="mt-6 w-full bg-[color:var(--brand-green)] py-6 text-base font-semibold !text-white shadow-lg shadow-[color:var(--brand-green)]/20 transition hover:bg-[color:var(--brand-green)]/90 hover:shadow-xl hover:shadow-[color:var(--brand-green)]/30">
+                  Continue to Checkout
+                </Button>
+
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
+                  <ShieldCheck className="size-3.5 text-slate-400" />
+                  <span>Secure checkout &middot; No hidden fees</span>
+                </div>
               </div>
-              <div className="mt-2 flex items-center justify-between font-semibold text-slate-900">
-                <span>Total</span>
-                <span>{convertPrice(total).formatted}</span>
+
+              {/* Trust / Help small card */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <h4 className="mb-3 text-sm font-semibold text-slate-900">Need help?</h4>
+                <p className="text-sm leading-relaxed text-slate-500">
+                  Your items are reserved for 25 minutes. If you have questions, visit our{" "}
+                  <Link to="/help" className="font-medium text-[color:var(--brand-green)] hover:underline">
+                    Help Centre
+                  </Link>
+                  .
+                </p>
               </div>
-              <Button className="mt-5 w-full bg-[color:var(--brand-green)] !text-white hover:bg-[color:var(--brand-green)]/90">
-                Continue
-              </Button>
             </aside>
           </div>
         )}

@@ -38,7 +38,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useCart } from "@/contexts/CartContext";
 import { getTourByTitle } from "@/lib/tourData";
-import { openTawkChat } from "@/lib/tawk";
+import { loadTawkScript, openTawkChat } from "@/lib/tawk";
 import fallbackTourImage from "@/assets/images/hero_pic.jpg";
 
 const EXTERNAL_FALLBACK_IMAGES = [
@@ -625,6 +625,10 @@ function TourDetailContent() {
   }, [id]);
 
   useEffect(() => {
+    loadTawkScript();
+  }, []);
+
+  useEffect(() => {
     setReviewStarFilter(null);
     setReviewSearchQuery("");
     setOverviewAccordionOpen({ highlights: true, fullDescription: true });
@@ -733,7 +737,8 @@ function TourDetailContent() {
       tourId: id,
       title: selectedTourTitle,
       duration: selectedTourDuration,
-      price: selectedTourPriceNumber,
+      price: totalPrice,
+      unitPrice: selectedTourPriceNumber,
       rating: String(selectedTourRatingNumber),
       reviews: String(selectedTourReviewsNumber),
       image: mergedImages[0] || tourData.imageCover,
@@ -1146,12 +1151,12 @@ function TourDetailContent() {
       {/* Navbar spacer */}
       <div className="h-[58px] sm:h-[96px] lg:h-[104px]" />
 
-      <main className="mx-auto max-w-[1520px] px-4 pb-8 pt-3 text-[color:var(--brand-green)] sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[1520px] px-4 pb-8 pt-6 text-[color:var(--brand-green)] sm:px-6 sm:pt-8 lg:px-8">
         <button
           onClick={() => navigate(-1)}
-          className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--brand-green)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
+          className="group mb-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] hover:shadow-md"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-4 text-[color:var(--brand-green)] transition group-hover:-translate-x-0.5" />
           {t("common.back")}
         </button>
 
@@ -1323,7 +1328,7 @@ function TourDetailContent() {
           </div>
         </section>
 
-          <aside className="h-fit rounded-lg border border-slate-200 bg-white p-4 shadow-[0_2px_18px_rgba(15,23,42,0.08)] xl:sticky xl:top-36">
+          <aside className="h-fit rounded-lg border border-slate-200 bg-white p-4 shadow-[0_2px_18px_rgba(15,23,42,0.08)] xl:sticky xl:top-36 xl:z-40">
             <div className="text-sm text-[color:var(--brand-green)]">
               <p><span className="font-black">From {convertedUnitPrice.formatted}</span> per adult <span className="text-xs">(price varies by group size)</span></p>
               <p className="mt-4 font-black">Select date and travelers</p>
@@ -1414,6 +1419,13 @@ function TourDetailContent() {
                   </div>
                 )}
               </div>
+
+              {totalTravelers > 0 && (
+                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+                  <span className="text-sm font-medium text-slate-600">Total ({totalTravelers} {totalTravelers === 1 ? "traveler" : "travelers"})</span>
+                  <span className="text-xl font-bold text-[color:var(--brand-green)]">{convertedTotalPrice.formatted}</span>
+                </div>
+              )}
 
               <Button
                 onClick={handleCheckAvailability}

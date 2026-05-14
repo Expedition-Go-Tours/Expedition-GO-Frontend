@@ -78,7 +78,7 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
   if (items.length === 0) return null;
 
   return (
-    <section className="mt-10 pt-8 lg:mt-12 lg:pt-10">
+    <section className="mt-6 pt-4 lg:mt-8 lg:pt-6">
       <h2
         className="font-bold tracking-tight text-[color:var(--brand-green)]"
         style={{ fontSize: "clamp(1.15rem, 1.5vw + 0.55rem, 1.5rem)" }}

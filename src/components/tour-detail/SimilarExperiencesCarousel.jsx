@@ -130,18 +130,21 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: index * 0.03 }}
                 className="w-[260px] shrink-0 max-sm:snap-start sm:w-[280px]"
+                style={{ touchAction: "pan-y" }}
               >
                 <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.08)] transition hover:shadow-md">
                   <div className="relative">
                     <Link
                       to={detailTo}
                       className="block overflow-hidden rounded-t-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
+                      style={{ touchAction: "pan-y" }}
                     >
-                      <div className="relative aspect-[4/3] bg-slate-100">
+                      <div className="relative aspect-[4/3] bg-slate-100" style={{ touchAction: "pan-y" }}>
                         <img
                           src={tour.image}
                           alt=""
                           className="h-full w-full object-cover"
+                          style={{ touchAction: "pan-y" }}
                           data-fallback-offset={index}
                           onError={onImageError}
                         />
@@ -174,6 +177,7 @@ export function SimilarExperiencesCarousel({ excludeTitle, onImageError }) {
                         })
                       }
                       className="absolute right-2 top-2 z-10 grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-slate-700 shadow-sm transition hover:scale-105"
+                      style={{ touchAction: "pan-y" }}
                       aria-label={t("nav.wishlist")}
                     >
                       <Heart

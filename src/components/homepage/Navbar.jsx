@@ -453,7 +453,7 @@ export function Navbar({
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="grid size-12 place-items-center rounded-full border-2 border-slate-200 text-slate-400 transition hover:border-[color:var(--brand-green)]"
                 >
-                  <UserCircle2 className="size-8" strokeWidth={1.5} />
+                  <UserCircle2 className="size-8 text-black" strokeWidth={1.5} />
                 </button>
                 {isUserMenuOpen && (
                   <>

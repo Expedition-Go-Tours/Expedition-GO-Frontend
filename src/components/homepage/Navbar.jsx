@@ -275,7 +275,7 @@ export function Navbar({
 <img
   src={companyPic}
   alt="Expedition-Go Group Limited"
-          className="block w-auto object-contain leading-none h-14 sm:h-20 md:h-20 lg:h-20 xl:h-24"
+          className="block w-auto object-contain leading-none h-20 sm:h-28 md:h-28 lg:h-28 xl:h-32"
 
 />
 </button>

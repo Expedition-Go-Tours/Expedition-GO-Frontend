@@ -90,7 +90,7 @@ function AuthShell({ title, description, badgeLabel, children, footerText, foote
               <img
                 src={companyLogo}
                 alt="Expedition-Go Group Limited"
-                className="h-auto w-[136px] xl:w-[190px] object-contain"
+                className="h-auto w-[170px] xl:w-[230px] object-contain"
               />
             </Link>
 

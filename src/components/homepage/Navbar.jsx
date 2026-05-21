@@ -1,4 +1,4 @@
-import { Globe, Heart, Headset, Menu, ShoppingCart, Settings, UserCircle2, X, ChevronDown, Search } from "lucide-react";
+import { Globe, Heart, Headset, Menu, ShoppingCart, Settings, Store, UserCircle2, X, ChevronDown, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -417,7 +417,7 @@ export function Navbar({
                           <Settings className="size-4" />
                           <span>{t('nav.settings')}</span>
                         </Link>
-                        <Link 
+                        <Link
                           to="/support"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
@@ -425,16 +425,26 @@ export function Navbar({
                           <Headset className="size-4" />
                           <span>{t('nav.support')}</span>
                         </Link>
-                        <button 
+                        <button
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <Globe className="size-4" />
                           <span>{t('nav.updates')}</span>
                         </button>
+                        <a
+                          href="https://supplier.travioafrica.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                        >
+                          <Store className="size-4" />
+                          <span>Become a supplier</span>
+                        </a>
                       </div>
                       <div className="border-t border-slate-100 p-2">
-                        <Link 
+                        <Link
                           to="/signout" 
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
@@ -464,7 +474,7 @@ export function Navbar({
                     />
                     <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-lg border border-slate-200 bg-white shadow-lg dark:!bg-white">
                       <div className="py-2">
-                        <Link 
+                        <Link
                           to="/support"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
@@ -472,17 +482,27 @@ export function Navbar({
                           <Headset className="size-4" />
                           <span>{t('nav.support')}</span>
                         </Link>
-                        <button 
+                         <button
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <Globe className="size-4" />
                           <span>{t('nav.updates')}</span>
                         </button>
+                        <button
+                          onClick={() => {
+                            setIsUserMenuOpen(false);
+                            window.location.href = "https://supplier.travioafrica.com";
+                          }}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+                        >
+                          <Store className="size-4" />
+                          <span>Become a supplier</span>
+                        </button>
                       </div>
                       <div className="border-t border-slate-100 p-2">
-                        <Link 
-                          to="/signin" 
+                        <Link
+                          to="/signin"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)]"
                         >
@@ -655,6 +675,16 @@ export function Navbar({
                 <Headset className="size-4" />
                 <span className="text-sm">{t('nav.support')}</span>
               </Link>
+              <button
+                onClick={() => {
+                  closeMobileMenu();
+                  window.location.href = "https://supplier.travioafrica.com";
+                }}
+                className="inline-flex w-full items-center gap-2 py-2 text-sm text-slate-700 transition hover:text-slate-950 cursor-pointer"
+              >
+                <Store className="size-4" />
+                <span>Become a supplier</span>
+              </button>
 
               {!loading && user && (
                 <Link to="/settings" onClick={closeMobileMenu} className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">

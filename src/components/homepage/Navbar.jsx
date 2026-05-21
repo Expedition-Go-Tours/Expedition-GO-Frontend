@@ -267,7 +267,7 @@ export function Navbar({
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-slate-200/80 shadow-sm backdrop-blur-md bg-white transition-all duration-300">
-      <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-2 px-3 py-1.5 text-slate-950 sm:gap-4 sm:px-4 sm:py-2 lg:px-6 dark:text-slate-950">
+      <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-2 px-3 py-1 text-slate-950 sm:gap-4 sm:px-4 sm:py-1.5 lg:px-6 dark:text-slate-950">
 <button
   onClick={handleBrandClick}
   className="flex shrink-0 items-center cursor-pointer transition-opacity hover:opacity-80"
@@ -275,7 +275,7 @@ export function Navbar({
 <img
   src={companyPic}
   alt="Expedition-Go Group Limited"
-          className="block w-auto object-contain leading-none h-20 sm:h-28 md:h-28 lg:h-28 xl:h-32"
+          className="block w-auto max-h-[52px] sm:max-h-[64px] md:max-h-[72px] lg:max-h-[84px] xl:max-h-[96px] object-contain leading-none"
 
 />
 </button>

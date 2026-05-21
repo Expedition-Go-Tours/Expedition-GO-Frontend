@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import companyPic from "@/assets/images/new_logo.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { getAuthToken } from "@/lib/auth";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useSearchAutocomplete } from "@/hooks/useSearchAutocomplete";
 import { SearchAutocomplete } from "./SearchAutocomplete";
@@ -432,16 +433,20 @@ export function Navbar({
                           <Globe className="size-4" />
                           <span>{t('nav.updates')}</span>
                         </button>
-                        <a
-                          href="https://supplier.travioafrica.com"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                        <button
+                          onClick={async () => {
+                            setIsUserMenuOpen(false);
+                            const token = await getAuthToken();
+                            const url = token
+                              ? `https://supplier.travioafrica.com?token=${encodeURIComponent(token)}`
+                              : "https://supplier.travioafrica.com";
+                            window.location.href = url;
+                          }}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
                         >
                           <Store className="size-4" />
                           <span>Become a supplier</span>
-                        </a>
+                        </button>
                       </div>
                       <div className="border-t border-slate-100 p-2">
                         <Link
@@ -489,10 +494,14 @@ export function Navbar({
                           <Globe className="size-4" />
                           <span>{t('nav.updates')}</span>
                         </button>
-                        <button
-                          onClick={() => {
+                         <button
+                          onClick={async () => {
                             setIsUserMenuOpen(false);
-                            window.location.href = "https://supplier.travioafrica.com";
+                            const token = await getAuthToken();
+                            const url = token
+                              ? `https://supplier.travioafrica.com?token=${encodeURIComponent(token)}`
+                              : "https://supplier.travioafrica.com";
+                            window.location.href = url;
                           }}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
                         >
@@ -676,9 +685,13 @@ export function Navbar({
                 <span className="text-sm">{t('nav.support')}</span>
               </Link>
               <button
-                onClick={() => {
+                onClick={async () => {
                   closeMobileMenu();
-                  window.location.href = "https://supplier.travioafrica.com";
+                  const token = await getAuthToken();
+                  const url = token
+                    ? `https://supplier.travioafrica.com?token=${encodeURIComponent(token)}`
+                    : "https://supplier.travioafrica.com";
+                  window.location.href = url;
                 }}
                 className="inline-flex w-full items-center gap-2 py-2 text-sm text-slate-700 transition hover:text-slate-950 cursor-pointer"
               >

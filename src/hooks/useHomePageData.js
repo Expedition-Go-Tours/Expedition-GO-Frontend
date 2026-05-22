@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const DEFAULT_INITIAL_DELAY_MS = 250;
 /** Slightly longer after auth handoff so the skeleton is visibly distinct from splash. */
-const POST_AUTH_INITIAL_DELAY_MS = 380;
+const POST_AUTH_INITIAL_DELAY_MS = 150;
 
 /**
  * HomePage loading orchestration.

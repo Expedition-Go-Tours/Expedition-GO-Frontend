@@ -24,7 +24,7 @@ import { useAuthModal } from "@/contexts/AuthModalContext";
 import { useHomePageData } from "@/hooks/useHomePageData";
 
 /** Post–sign-in/register handoff: show brand splash, stay under ~1200ms. */
-const POST_AUTH_SPLASH_MS = 1120;
+const POST_AUTH_SPLASH_MS = 700;
 
 function HomePageContent() {
   const location = useLocation();

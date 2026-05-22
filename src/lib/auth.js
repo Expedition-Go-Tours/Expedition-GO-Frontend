@@ -195,6 +195,12 @@ export async function subscribeToAuthState(callback) {
           return;
         }
 
+        const storedUser = getStoredAuthUser();
+        if (storedUser && storedUser.firebaseUid === firebaseUser.uid) {
+          callback(storedUser);
+          return;
+        }
+
         const idToken = await firebaseUser.getIdToken(false);
 
         let backendUser = null;

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Heart, ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/homepage/Navbar";
@@ -10,6 +10,7 @@ import { RecentlyViewedProvider } from "@/contexts/RecentlyViewedContext";
 
 function WishlistPageContent() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { wishlist } = useWishlist();
 
   return (
@@ -21,13 +22,14 @@ function WishlistPageContent() {
       <main className="mx-auto flex-1 w-full max-w-[1520px] px-3 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-8">
         {/* Header */}
         <div className="mb-5 sm:mb-7">
-          <Link
-            to="/"
-            className="mb-3 inline-flex items-center gap-2 text-sm text-slate-600 transition hover:text-[color:var(--brand-green)] sm:mb-4"
+          <button
+            onClick={() => navigate(-1)}
+            className="group mb-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-base font-semibold text-slate-600 shadow-sm transition hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] hover:shadow-md sm:text-sm"
           >
-            <ArrowLeft className="size-4" />
-            {t('common.backToHome')}
-          </Link>
+            <ArrowLeft className="size-4 text-[color:var(--brand-green)] transition group-hover:-translate-x-0.5" />
+            Back
+          </button>
+
           <div className="flex items-start gap-2.5 sm:items-center sm:gap-3">
             <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] sm:size-12">
               <Heart className="size-5 fill-current sm:size-6" />

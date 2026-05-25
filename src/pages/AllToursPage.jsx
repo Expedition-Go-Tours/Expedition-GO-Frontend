@@ -518,6 +518,22 @@ function AllToursPageContent() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (showDateCalendar) setShowDateCalendar(false);
+      if (showTravelers) setShowTravelers(false);
+      if (showTimeOfDayMenu) setShowTimeOfDayMenu(false);
+      if (showPriceMenu) setShowPriceMenu(false);
+      if (showRatingMenu) setShowRatingMenu(false);
+      if (showFiltersMenu) setShowFiltersMenu(false);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [showDateCalendar, showTravelers, showTimeOfDayMenu, showPriceMenu, showRatingMenu, showFiltersMenu]);
+
   const handleBackToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

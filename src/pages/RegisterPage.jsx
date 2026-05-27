@@ -1,3 +1,9 @@
+/**
+ * @file RegisterPage.jsx
+ * @description Consumer registration route (/register). Wraps AuthForm in AuthShell layout.
+ *
+ * @see lib/auth.js — registerWithEmail
+ */
 import { useTranslation } from "react-i18next";
 import AuthShell from "@/components/auth/AuthShell";
 import { AuthForm } from "@/components/auth/AuthForm";

@@ -1,3 +1,8 @@
+/**
+ * @file avatar.jsx
+ * @description Radix Avatar primitive — image with fallback for profile pictures.
+ *   Part of the shared UI kit (components/ui/). Style via className + cn().
+ */
 import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 

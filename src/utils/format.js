@@ -1,3 +1,10 @@
+/**
+ * @file format.js
+ * @description Shared formatting helpers for dates, currency, numbers, and percentages.
+ *   Used by supplier dashboard views and any API-driven numeric display.
+ *
+ * All formatters return "—" for invalid/missing date inputs.
+ */
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 
 export function safeNumber(value, fallback = 0) {

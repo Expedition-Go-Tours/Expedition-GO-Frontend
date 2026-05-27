@@ -1,3 +1,9 @@
+/**
+ * @file WishlistPage.jsx
+ * @description Saved tours page (/wishlist). Reads from WishlistContext (localStorage).
+ *
+ * @see contexts/WishlistContext.jsx
+ */
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";

@@ -1,3 +1,11 @@
+/**
+ * @file AuthForm.jsx
+ * @description Reusable sign-in / register form with email, password, and Google OAuth.
+ *   Used by SignInPage, RegisterPage, and auth-modal.jsx.
+ *
+ * Props: mode ('signin' | 'register'), onSubmit, redirectPath, showGoogle
+ * @see lib/auth.js — underlying auth functions
+ */
 import { useState } from "react";
 import { AlertCircle, LoaderCircle, Mail, Lock, UserRound, Building2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";

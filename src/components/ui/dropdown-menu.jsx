@@ -1,3 +1,7 @@
+/**
+ * @file dropdown-menu.jsx
+ * @description Radix DropdownMenu primitive — used in Navbar user menu and action menus.
+ */
 import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";

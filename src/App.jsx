@@ -1,3 +1,27 @@
+/**
+ * @file App.jsx
+ * @description Root component and single source of truth for client-side routing.
+ *
+ * Provider tree:
+ *   ErrorBoundary → AuthProvider → AppContent
+ *     AppContent → CurrencyProvider → WishlistProvider → CartProvider → Routes
+ *
+ * Route map:
+ *   /                    HomePage
+ *   /tours               AllToursPage
+ *   /tour/:id            TourDetailPage (id is URL-encoded tour title)
+ *   /wishlist, /cart     Saved items (localStorage via contexts)
+ *   /signin, /register   Consumer auth
+ *   /supplier/*          Supplier auth, payout, and external dashboard redirects
+ *   /booking             Checkout flow (state passed via react-router location)
+ *   /support, /settings  Account & help pages
+ *
+ * Note: `/supplier/dashboard` and `/supplier/earnings` redirect to the external
+ *   supplier portal (https://supplier.travioafrica.com). In-app dashboard pages
+ *   exist but are not wired here — see pages/SupplierDashboardPage.jsx.
+ *
+ * @see hooks/useScrollRestoration.js — scroll behavior on route changes
+ */
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 

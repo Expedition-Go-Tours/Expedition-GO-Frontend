@@ -1,3 +1,8 @@
+/**
+ * @file SupplierSignInPage.jsx
+ * @description Supplier portal sign-in (/supplier/signin). Separate from consumer auth.
+ *   Redirects to external dashboard or payout page on success.
+ */
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";

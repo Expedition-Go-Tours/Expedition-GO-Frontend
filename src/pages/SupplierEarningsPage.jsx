@@ -1,3 +1,10 @@
+/**
+ * @file SupplierEarningsPage.jsx
+ * @description In-app supplier earnings view (NOT currently routed).
+ *
+ * App.jsx redirects /supplier/earnings → https://supplier.travioafrica.com
+ * This page is kept for reference or future in-app earnings integration.
+ */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {

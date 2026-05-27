@@ -1,3 +1,8 @@
+/**
+ * @file SupplierSection.jsx
+ * @description "Become a supplier" CTA block on homepage with 3-step onboarding preview.
+ *   Links to /supplier/register.
+ */
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowRight, UserCheck, Upload, Wallet } from "lucide-react";

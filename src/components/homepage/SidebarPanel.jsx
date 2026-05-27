@@ -1,3 +1,10 @@
+/**
+ * @file SidebarPanel.jsx
+ * @description Desktop homepage sidebar — trust badges, last-minute deals, top-rated tours.
+ *   Uses CompactTourCard and SidebarDealCard for compact layouts.
+ *
+ * @see pages/HomePage.jsx — rendered alongside main content on lg+ breakpoints
+ */
 import { BadgeCheck, CircleDollarSign, Handshake, ShieldCheck, Star, WalletCards } from "lucide-react";
 import { useRef } from "react";
 import { Link } from "react-router-dom";

@@ -61,7 +61,7 @@ export default function AuthCallback() {
         { withCredentials: true } // required: tells browser to accept the __session cookie
       )
       .then((response) => {
-        const { user, token: backendToken } = response.data;
+        const { user, token: backendToken } = response.data?.data || {};
 
         if (!user) {
           throw new Error("Backend did not return user data.");

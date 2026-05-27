@@ -1,3 +1,10 @@
+/**
+ * @file tourFiltersData.js
+ * @description Filter definitions and matching logic for AllToursPage filter panel.
+ *
+ * Exports: SPECIALS_FILTERS, DURATION_FILTERS, PRICE_FILTERS, RATING_FILTERS,
+ *   matchesTourFilters(tour, activeFilters)
+ */
 export const SPECIALS_FILTERS = [
   {
     id: "deals-discounts",

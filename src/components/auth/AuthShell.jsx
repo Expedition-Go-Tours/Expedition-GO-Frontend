@@ -1,3 +1,8 @@
+/**
+ * @file AuthShell.jsx
+ * @description Split-panel layout for auth pages (sign-in, register).
+ *   Left: branding/trust content. Right: form slot (children).
+ */
 import { ShieldCheck, Sparkles, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";

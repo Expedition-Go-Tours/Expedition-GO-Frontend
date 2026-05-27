@@ -1,3 +1,8 @@
+/**
+ * @file SettingsPage.jsx
+ * @description User account settings (/settings). Profile, language, currency, notifications.
+ *   Requires authentication — redirects to /signin if not logged in.
+ */
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useNavigate } from "react-router-dom";

@@ -1,3 +1,8 @@
+/**
+ * @file DestinationCard.jsx
+ * @description Destination tile with image, tour count, and wishlist heart toggle.
+ *   Variants: default (carousel) and modal (grid in DestinationsModal).
+ */
 import { Heart } from "lucide-react";
 
 import { Card } from "@/components/ui/card";

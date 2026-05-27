@@ -1,3 +1,8 @@
+/**
+ * @file dialog.jsx
+ * @description Radix Dialog primitive — modal overlay with header, footer, close button.
+ *   Used on TourDetailPage (gallery, booking) and elsewhere.
+ */
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";

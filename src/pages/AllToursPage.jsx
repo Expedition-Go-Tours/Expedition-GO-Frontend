@@ -1,3 +1,13 @@
+/**
+ * @file AllToursPage.jsx
+ * @description Tour catalog with filters (/tours). Lists all static tours from data.js
+ *   with desktop filter panel and mobile swipe-card UX.
+ *
+ * Features: TourFiltersPanel, destination grid, date picker, wishlist, reviews carousel
+ * Local provider: AuthModalProvider (login prompt for wishlist actions)
+ *
+ * @see components/homepage/tourFiltersData.js — filter matching logic
+ */
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";

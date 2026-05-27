@@ -1,3 +1,7 @@
+/**
+ * @file drawer.jsx
+ * @description Vaul drawer primitive — bottom/side sheet for mobile menus and filters.
+ */
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 

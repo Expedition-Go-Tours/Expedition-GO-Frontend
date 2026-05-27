@@ -1,3 +1,7 @@
+/**
+ * @file NewsletterSection.jsx
+ * @description Email signup CTA on homepage. Pre-fills email when user is logged in.
+ */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";

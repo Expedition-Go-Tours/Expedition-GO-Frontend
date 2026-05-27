@@ -1,3 +1,16 @@
+/**
+ * @file i18n/config.js
+ * @description i18next configuration with inline translation catalogs.
+ *
+ * Languages: en (default), es, fr, de, nl
+ * Detection: browser language via i18next-browser-languagedetector
+ *
+ * Imported as a side effect in main.jsx — must load before any useTranslation() call.
+ * To add a key: add to all language objects in `resources` below.
+ * To add a language: add a new top-level key under resources and extend supportedLngs.
+ *
+ * Note: This file is large (~1900 lines). Consider splitting per-locale in a future refactor.
+ */
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';

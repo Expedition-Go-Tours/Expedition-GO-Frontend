@@ -1,3 +1,8 @@
+/**
+ * @file TourCard.jsx
+ * @description Reusable tour listing card. Used in carousels and AllToursPage grid.
+ *   Links to /tour/:title. Supports wishlist toggle and swipe-to-reveal on mobile.
+ */
 import { Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";

@@ -1,3 +1,16 @@
+/**
+ * @file data.js
+ * @description Static seed data for homepage and tour browsing (MVP / demo content).
+ *
+ * Exports tour arrays (pickupTours, recommendedTours, topRatedTours, leisureTours,
+ * lastMinuteDeals, sidebarTopRated), destinations, navItems, heroStats, trustFeatures,
+ * reviews, and supplier CTA copy.
+ *
+ * Tour lookup uses `title` as the primary key — must stay consistent with
+ * lib/tourData.js and /tour/:id URL encoding.
+ *
+ * TODO: Replace with API-driven data when backend tour endpoints are wired.
+ */
 export const navItems = ["Home", "Tours", "Destinations", "Experiences", "Deals", "About Us", "Contact"];
 
 export const heroStats = [

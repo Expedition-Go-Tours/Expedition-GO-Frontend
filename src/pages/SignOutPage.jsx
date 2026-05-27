@@ -1,3 +1,7 @@
+/**
+ * @file SignOutPage.jsx
+ * @description Sign-out route (/signout). Calls AuthProvider.signOut and redirects home.
+ */
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";

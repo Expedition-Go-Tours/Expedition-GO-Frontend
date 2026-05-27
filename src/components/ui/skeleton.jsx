@@ -1,3 +1,8 @@
+/**
+ * @file skeleton.jsx
+ * @description Shimmer loading placeholder. Supports `delay` prop for staggered skeleton animations.
+ *   Base primitive used by homepage/skeletons/* and inline loading states.
+ */
 import { cn } from "@/lib/utils";
 
 function Skeleton({ className, delay = 0, ...props }) {

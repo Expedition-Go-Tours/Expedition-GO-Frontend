@@ -1,3 +1,11 @@
+/**
+ * @file button.jsx
+ * @description Base Button component (shadcn/Radix pattern). All UI buttons should
+ *   use this or extend buttonVariants — do not create one-off button styles.
+ *
+ * Variants: default, destructive, outline, secondary, ghost, link
+ * Uses cn() from lib/utils.js for Tailwind class merging.
+ */
 import * as React from "react";
 import { cva } from "class-variance-authority";
 

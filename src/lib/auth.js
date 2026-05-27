@@ -1,3 +1,23 @@
+/**
+ * @file lib/auth.js
+ * @description Authentication service — Firebase (production) or mock (local dev).
+ *
+ * Provider selection: VITE_AUTH_PROVIDER = 'firebase' | 'mock' (default: mock)
+ *
+ * Flow (firebase mode):
+ *   1. User signs in via Firebase (email/password or Google popup)
+ *   2. ID token exchanged with backend for httpOnly session cookie
+ *   3. User profile cached in localStorage (AUTH_USER_KEY) for instant UI hydration
+ *
+ * Key exports:
+ *   signInWithEmail, registerWithEmail, signInWithGoogle, signOutUser
+ *   subscribeToAuthState, getStoredAuthUser, getAuthToken, getApiBaseUrl
+ *
+ * Env vars: VITE_FIREBASE_*, VITE_AUTH_API_BASE_URL, VITE_API_URL
+ *
+ * @see components/auth/AuthProvider.jsx — React context wrapper
+ * @see api/client.js — attaches getAuthToken() to API requests
+ */
 // ============================================================================
 // EXPEDITION GO - AUTHENTICATION SERVICE
 // Handles Firebase auth + backend session cookie syncing

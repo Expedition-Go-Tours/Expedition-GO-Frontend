@@ -1,3 +1,7 @@
+/**
+ * Vitest global setup. Runs after each test: cleanup DOM, reset mocks.
+ * Loaded via vitest.config.js setupFiles.
+ */
 import { afterEach, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";

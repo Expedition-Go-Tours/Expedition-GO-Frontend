@@ -1,3 +1,8 @@
+/**
+ * @file DestinationsModal.jsx
+ * @description Full-screen searchable destinations browser opened from DestinationsSection.
+ *   Filters destinations client-side; navigates to /tours on selection.
+ */
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";

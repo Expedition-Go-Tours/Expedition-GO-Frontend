@@ -1,3 +1,13 @@
+/**
+ * @file api/supplier.js
+ * @description Supplier onboarding API. All endpoints require authentication.
+ *
+ * Endpoints:
+ *   POST /suppliers/apply              — submit application
+ *   GET  /suppliers/application/status — poll application status
+ *
+ * @see pages/SupplierRegisterPage.jsx, components/supplier/SupplierApplicationForm.jsx
+ */
 import { apiRequest } from "@/api/client";
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * @file SectionHeading.jsx
+ * @description Reusable section title row with optional subtitle and carousel arrow controls.
+ *   Used by TourCarouselSection and NewExperiencesSection.
+ */
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";

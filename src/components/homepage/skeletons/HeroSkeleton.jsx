@@ -1,3 +1,7 @@
+/**
+ * @file HeroSkeleton.jsx
+ * @description Placeholder skeleton for HeroSection during homepage load.
+ */
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function HeroSkeleton() {

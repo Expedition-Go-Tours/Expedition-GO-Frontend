@@ -1,3 +1,10 @@
+/**
+ * @file SimilarExperiencesCarousel.jsx
+ * @description "Similar experiences" carousel on TourDetailPage.
+ *   Mixes tours from homepage sections via lib/tourData.getMixedHomeSectionToursForSimilar.
+ *
+ * @see lib/tourData.js
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";

@@ -1,3 +1,18 @@
+/**
+ * @file api/client.js
+ * @description HTTP client for all backend requests. Used by React Query hooks and
+ *   domain modules (api/supplier.js, api/payout.js).
+ *
+ * Key exports:
+ *   - apiRequest(path, options) — fetch wrapper with auth headers and JSON parsing
+ *   - ApiError — normalized error shape (status, data, url) for UI handling
+ *
+ * Auth: When `auth: true` (default), attaches Bearer token from lib/auth.js.
+ * Base URL: Resolved via getApiBaseUrl() — see VITE_API_URL / VITE_AUTH_API_BASE_URL.
+ *
+ * @see lib/auth.js for token lifecycle and session cookies
+ * @see api/queryClient.js for retry/cache defaults
+ */
 import { getApiBaseUrl, getAuthToken } from "@/lib/auth";
 
 /**

@@ -1,3 +1,11 @@
+/**
+ * @file SupplierApplicationForm.jsx
+ * @description Multi-step supplier onboarding form (company info, documents, review).
+ *   Submits to api/supplier.js applyAsSupplier endpoint.
+ *
+ * @see api/supplier.js
+ * @see pages/SupplierRegisterPage.jsx
+ */
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";

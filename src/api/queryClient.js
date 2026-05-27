@@ -1,3 +1,11 @@
+/**
+ * @file api/queryClient.js
+ * @description Factory for the shared TanStack QueryClient instance.
+ *   Instantiated once in main.jsx and passed to QueryClientProvider.
+ *
+ * Defaults: 30s stale time, 5min gc, no refetch on focus.
+ * Retries: up to 2 attempts except for 400/401/403/404/422 (fail fast).
+ */
 import { QueryClient } from "@tanstack/react-query";
 
 function getErrorStatus(error) {

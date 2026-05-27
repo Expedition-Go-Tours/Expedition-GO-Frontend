@@ -1,3 +1,14 @@
+/**
+ * @file CartContext.jsx
+ * @description Shopping cart persisted in localStorage with a 25-minute TTL per item.
+ *
+ * Storage key: cart_items_v1
+ * Item identity: title + selectedDate (+ optional selectedDateEnd)
+ *
+ * Used by: TourDetailPage (add to cart), CartPage, Navbar badge
+ *
+ * @see contexts/WishlistContext.jsx — similar persistence pattern for saved tours
+ */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 

@@ -1,3 +1,14 @@
+/**
+ * @file useHomePageData.js
+ * @description HomePage loading orchestration via React Query.
+ *
+ * Controls skeleton visibility timing:
+ *   - Default 250ms delay on first load (unless skipInitialDelay)
+ *   - Post-auth handoff uses 150ms delay after splash screen
+ *   - handoffNonce busts cache after sign-in so skeleton re-runs
+ *
+ * @see pages/HomePage.jsx — primary consumer
+ */
 import { useQuery } from "@tanstack/react-query";
 
 const DEFAULT_INITIAL_DELAY_MS = 250;

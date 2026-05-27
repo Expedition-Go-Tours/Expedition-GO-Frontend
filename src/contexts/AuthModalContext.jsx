@@ -1,3 +1,12 @@
+/**
+ * @file AuthModalContext.jsx
+ * @description Controls the global auth modal (sign-in prompt without leaving page).
+ *
+ * Scoped to HomePage and AllToursPage via AuthModalProvider — not app-wide.
+ * Use openAuthModal() when an action requires login (e.g. wishlist while guest).
+ *
+ * @see components/ui/auth-modal.jsx — modal UI
+ */
 import { createContext, useContext, useState } from "react";
 
 const AuthModalContext = createContext();

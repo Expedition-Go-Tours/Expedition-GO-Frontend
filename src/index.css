@@ -1,3 +1,19 @@
+/**
+ * Global styles for TravioAfrica (Expedition Go homepage).
+ *
+ * Structure:
+ *   1. @font-face — Plus Jakarta Sans (body), GT Eesti Pro Display (hero headings)
+ *   2. @theme — Tailwind v4 font family tokens
+ *   3. :root — brand color palette and layout variables
+ *   4. Base layout — html/body overflow, navbar offset
+ *   5. Component utilities — carousel, skeleton, auth shell, etc.
+ *
+ * Brand tokens (use these instead of hard-coded hex in components):
+ *   --brand-green, --brand-green-2, --brand-green-3 — primary greens
+ *   --brand-mist — white / card backgrounds
+ *   --brand-sand — warm off-white sections
+ *   --navbar-offset — sticky navbar height (responsive)
+ */
 @import "tailwindcss";
 
 @font-face {

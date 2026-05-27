@@ -1,3 +1,12 @@
+/**
+ * @file WishlistContext.jsx
+ * @description Saved tours persisted in localStorage (key: "wishlist").
+ *
+ * Exposes: addToWishlist, removeFromWishlist, toggleWishlist, isInWishlist, wishlist
+ * Items keyed by tour title (must match data.js / tour lookup).
+ *
+ * Used by: TourCard, TourDetailPage, AllToursPage, WishlistPage, Navbar
+ */
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 

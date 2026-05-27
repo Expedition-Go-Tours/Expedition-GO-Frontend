@@ -1,3 +1,7 @@
+/**
+ * @file card.jsx
+ * @description Card container primitives (Card, CardContent). Base layout for tour/destination tiles.
+ */
 import { cn } from "@/lib/utils";
 
 function Card({ className, ...props }) {

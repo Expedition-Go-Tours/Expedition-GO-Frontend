@@ -1,3 +1,8 @@
+/**
+ * @file CardSkeleton.jsx
+ * @description Skeleton placeholders for tour and destination cards.
+ *   Exports CardSkeleton and DestinationCardSkeleton with staggered delay prop.
+ */
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 

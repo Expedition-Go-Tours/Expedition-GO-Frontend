@@ -1,3 +1,13 @@
+/**
+ * @file AuthProvider.jsx
+ * @description React context for authenticated user state. Subscribes to lib/auth.js
+ *   auth-state changes and exposes { user, loading, signOut } via useAuth().
+ *
+ * Mounted in App.jsx above all routes. While loading is true, AppContent shows
+ * BrandLoader full-screen — prevents flash of unauthenticated UI.
+ *
+ * @see lib/auth.js for sign-in/sign-out implementations
+ */
 import { createContext, useContext, useEffect, useState } from "react";
 import { getStoredAuthUser, signOutUser, subscribeToAuthState } from "@/lib/auth";
 

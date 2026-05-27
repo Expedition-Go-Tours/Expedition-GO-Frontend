@@ -1,3 +1,10 @@
+/**
+ * @file useScrollRestoration.js
+ * @description Route-aware scroll behavior. Called once in AppContent.
+ *
+ * Homepage (/): restores scroll position from sessionStorage on return visits.
+ * All other routes: scroll to top on navigation.
+ */
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 

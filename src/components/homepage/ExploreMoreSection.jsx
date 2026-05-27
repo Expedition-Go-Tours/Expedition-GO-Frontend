@@ -1,3 +1,8 @@
+/**
+ * @file ExploreMoreSection.jsx
+ * @description Country-aware "Explore more" attractions accordion on homepage.
+ *   Uses useVisitorCountry + lib/topAttractionsByCountry for localized content.
+ */
 import { useEffect, useId, useMemo, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";

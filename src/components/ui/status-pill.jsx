@@ -1,3 +1,7 @@
+/**
+ * @file status-pill.jsx
+ * @description Colored status badge (success, warning, danger, info) for booking/supplier states.
+ */
 import { cn } from "@/lib/utils";
 
 const TONE_STYLES = {

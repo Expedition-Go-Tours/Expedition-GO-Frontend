@@ -1,3 +1,11 @@
+/**
+ * @file ErrorBoundary.jsx
+ * @description Class-based React error boundary wrapping the entire app in App.jsx.
+ *   Catches render errors and shows a recovery UI (Try again / Go Home).
+ *
+ * Props: goHomeLink, goHomeLabel, goAdminLink (optional), goAdminLabel (optional)
+ * Logs errors via devError (dev-only — see lib/logger.js).
+ */
 import { Component } from "react";
 
 import { Button } from "@/components/ui/button";

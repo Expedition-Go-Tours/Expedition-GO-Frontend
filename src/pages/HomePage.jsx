@@ -1,3 +1,18 @@
+/**
+ * @file HomePage.jsx
+ * @description Main landing route (/). Composes homepage sections and handles
+ *   post-auth splash → skeleton loading handoff.
+ *
+ * Section order: Navbar → Hero → Tour carousels → Destinations → Features →
+ *   Reviews → Supplier CTA → Explore More → Newsletter → Footer
+ * Sidebar: SidebarPanel (deals + top rated) on desktop
+ *
+ * Local providers: AuthModalProvider, RecentlyViewedProvider (page-scoped)
+ * Loading: useHomePageData gate + HomePageSkeleton; post-auth uses BrandLoader splash
+ *
+ * @see hooks/useHomePageData.js — skeleton timing logic
+ * @see App.jsx — route definition
+ */
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";

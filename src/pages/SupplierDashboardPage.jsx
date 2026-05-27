@@ -1,3 +1,10 @@
+/**
+ * @file SupplierDashboardPage.jsx
+ * @description In-app supplier dashboard (NOT currently routed).
+ *
+ * App.jsx redirects /supplier/dashboard → https://supplier.travioafrica.com
+ * This page is kept for reference or future in-app dashboard integration.
+ */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {

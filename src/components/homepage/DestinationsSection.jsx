@@ -1,3 +1,10 @@
+/**
+ * @file DestinationsSection.jsx
+ * @description Homepage destinations carousel with "View all" modal trigger.
+ *   Data from data.js destinations. Uses DestinationCard and DestinationsModal.
+ *
+ * @see components/homepage/DestinationCard.jsx
+ */
 import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";

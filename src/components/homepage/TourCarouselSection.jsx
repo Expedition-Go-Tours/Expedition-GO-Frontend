@@ -1,3 +1,11 @@
+/**
+ * @file TourCarouselSection.jsx
+ * @description Horizontal scroll carousel for tour lists on homepage and AllToursPage.
+ *   Includes arrow navigation with smooth scroll and SectionHeading integration.
+ *
+ * @see components/homepage/TourCard.jsx
+ * @see components/homepage/SectionHeading.jsx
+ */
 import { useRef, useEffect, useLayoutEffect, useCallback } from "react";
 import { TourCard } from "./TourCard";
 import { SectionHeading } from "./SectionHeading";

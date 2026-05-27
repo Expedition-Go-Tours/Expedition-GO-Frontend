@@ -1,3 +1,9 @@
+/**
+ * @file SupportPage.jsx
+ * @description Help & support page (/support). Integrates Tawk.to live chat widget.
+ *
+ * @see lib/tawk.js
+ */
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/homepage/Navbar";

@@ -1,3 +1,11 @@
+/**
+ * @file useDebouncedValue.js
+ * @description Returns a debounced copy of `value` after `delay` ms of stability.
+ *   Generic utility for search inputs and filter panels.
+ *
+ * @param {*} value — value to debounce
+ * @param {number} [delay=300] — debounce interval in milliseconds
+ */
 import { useEffect, useState } from "react";
 
 export function useDebouncedValue(value, delay = 300) {

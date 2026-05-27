@@ -1,3 +1,12 @@
+/**
+ * @file BrandLoader.jsx
+ * @description Branded loading spinner / splash screen.
+ *
+ * Props:
+ *   - fullScreen — fixed overlay (App auth gate, post-sign-in splash)
+ *   - splash — shorter animation for auth handoff (~700ms)
+ *   - label — accessible loading text
+ */
 import { cn } from "@/lib/utils";
 
 /**

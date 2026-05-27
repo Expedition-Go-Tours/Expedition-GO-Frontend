@@ -1,3 +1,10 @@
+/**
+ * @file TourFiltersPanel.jsx
+ * @description Desktop/mobile filter sidebar for AllToursPage.
+ *   Filter definitions from tourFiltersData.js; state managed by parent page.
+ *
+ * @see components/homepage/tourFiltersData.js
+ */
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {

@@ -1,3 +1,12 @@
+/**
+ * @file useVisitorCountry.js
+ * @description Geo-locates visitor country via ipapi.co for personalized content.
+ *
+ * Cache: sessionStorage key expedition-go-visitor-country-v1 (24h TTL)
+ * Fallback: Ghana (GH) when API blocked, offline, or invalid response
+ *
+ * Used by: DestinationsSection, ExploreMoreSection (country-specific attractions)
+ */
 import { useEffect, useState } from "react";
 
 const CACHE_KEY = "expedition-go-visitor-country-v1";

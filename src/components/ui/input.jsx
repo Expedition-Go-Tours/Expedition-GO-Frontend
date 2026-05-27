@@ -1,3 +1,7 @@
+/**
+ * @file input.jsx
+ * @description Styled text input with brand focus ring. Used in forms, search, newsletter.
+ */
 import { cn } from "@/lib/utils";
 
 function Input({ className, ...props }) {

@@ -1,3 +1,10 @@
+/**
+ * @file SupplierPayoutPage.jsx
+ * @description Supplier payout methods management (/supplier/payout).
+ *   CRUD for bank/mobile money payout methods via api/payout.js.
+ *
+ * @see api/payout.js
+ */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {

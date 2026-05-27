@@ -1,11 +1,13 @@
+/**
+ * @file SearchAutocomplete.jsx
+ * @description Navbar search dropdown showing matching tours and destinations.
+ *
+ * @see hooks/useSearchAutocomplete.js — fuzzy matching logic
+ */
 import { MapPin, Clock, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
-/**
- * Search Autocomplete Dropdown
- * Shows matching tours and destinations as user types
- */
 export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery }) {
   const navigate = useNavigate();
   const { convertPrice } = useCurrency();

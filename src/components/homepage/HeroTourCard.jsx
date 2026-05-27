@@ -1,3 +1,8 @@
+/**
+ * @file HeroTourCard.jsx
+ * @description Horizontal tour card for hero "Pickup where you left off" carousel.
+ *   Compact layout inspired by GetYourGuide "Continue planning" style.
+ */
 import { Star, CircleCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -5,10 +10,6 @@ import { useRef } from "react";
 
 import { useCurrency } from "@/contexts/CurrencyContext";
 
-/**
- * Hero Tour Card - Horizontal layout for hero section "Pickup where you left off" carousel
- * Matches GetYourGuide's "Continue planning your trip" card style exactly
- */
 export function HeroTourCard({ title, duration, price, rating, reviews, image, _disableTracking = false }) {
   const { t } = useTranslation();
   const { convertPrice } = useCurrency();

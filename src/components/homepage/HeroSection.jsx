@@ -1,4 +1,8 @@
-
+/**
+ * @file HeroSection.jsx
+ * @description Homepage hero with search bar, destination carousel, and stats.
+ *   Search navigates to /tours with query params. Uses heroStats from data.js.
+ */
 import { MapPin, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";

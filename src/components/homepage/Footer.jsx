@@ -1,3 +1,8 @@
+/**
+ * @file Footer.jsx
+ * @description Site footer with links, newsletter, payment icons, and language/currency.
+ *   Rendered on all main pages below page content.
+ */
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

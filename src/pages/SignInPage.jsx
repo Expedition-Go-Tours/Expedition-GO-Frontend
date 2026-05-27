@@ -1,3 +1,10 @@
+/**
+ * @file SignInPage.jsx
+ * @description Consumer sign-in route (/signin). Wraps AuthForm in AuthShell layout.
+ *   On success, redirects to HomePage with post-auth splash state.
+ *
+ * @see lib/auth.js — signInWithEmail
+ */
 import { useTranslation } from "react-i18next";
 import AuthShell from "@/components/auth/AuthShell";
 import { AuthForm } from "@/components/auth/AuthForm";

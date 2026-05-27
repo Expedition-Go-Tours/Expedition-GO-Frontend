@@ -1,3 +1,7 @@
+/**
+ * @file AutoScrollCarousel.jsx
+ * @description Infinite auto-scrolling tour carousel (framer-motion). Pauses on hover.
+ */
 import { useRef, useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { TourCard } from "./TourCard";

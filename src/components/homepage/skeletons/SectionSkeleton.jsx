@@ -1,3 +1,8 @@
+/**
+ * @file SectionSkeleton.jsx
+ * @description Skeleton blocks for homepage tour carousel and destinations sections.
+ *   Exports TourCarouselSkeleton and DestinationsSkeleton.
+ */
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, DestinationCardSkeleton } from "./CardSkeleton";
 

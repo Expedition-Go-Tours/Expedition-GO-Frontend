@@ -1,3 +1,10 @@
+/**
+ * @file SupplierRegisterPage.jsx
+ * @description Supplier application entry (/supplier/register). Renders SupplierApplicationForm.
+ *
+ * @see components/supplier/SupplierApplicationForm.jsx
+ * @see api/supplier.js
+ */
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { SupplierApplicationForm } from "@/components/supplier/SupplierApplicationForm";

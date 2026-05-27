@@ -1,3 +1,12 @@
+/**
+ * Vite configuration for TravioAfrica homepage.
+ *
+ * - @ alias → ./src (matches jsconfig.json)
+ * - Dev proxy: /api/v1 → VITE_AUTH_PROXY_TARGET (default: Render staging backend)
+ *   Avoids CORS during local development; rewrite prevents /api/v1/api/v1 duplication.
+ *
+ * Env: VITE_AUTH_PROXY_TARGET — full URL including optional path prefix
+ */
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";

@@ -1,3 +1,8 @@
+/**
+ * @file PickupCarousel.jsx
+ * @description Draggable "Pickup where you left off" carousel in HeroSection.
+ *   Uses framer-motion drag with snap-to-card behavior.
+ */
 import { useRef, useState, useEffect } from "react";
 import { motion, useMotionValue, useAnimation } from "framer-motion";
 import { TourCard } from "./TourCard";

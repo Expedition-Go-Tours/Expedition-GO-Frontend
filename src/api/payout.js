@@ -1,3 +1,16 @@
+/**
+ * @file api/payout.js
+ * @description Supplier payout methods and history. All endpoints require authentication.
+ *
+ * Endpoints:
+ *   GET    /payout-methods/me     — list user's payout methods
+ *   POST   /payout-methods        — add method
+ *   PATCH  /payout-methods/:id  — update or set default
+ *   DELETE /payout-methods/:id    — remove method
+ *   GET    /payouts/me            — payout history (supports query params)
+ *
+ * @see pages/SupplierPayoutPage.jsx
+ */
 import { apiRequest } from "@/api/client";
 
 /**

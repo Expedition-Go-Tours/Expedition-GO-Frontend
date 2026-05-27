@@ -1,3 +1,13 @@
+/**
+ * @file Navbar.jsx
+ * @description Global site header. Used on every page except auth shells.
+ *
+ * Features: search autocomplete, language picker (i18n), currency picker,
+ *   wishlist/cart badges, user menu, mobile drawer, supplier link
+ *
+ * @see hooks/useSearchAutocomplete.js
+ * @see contexts/CurrencyContext.jsx, WishlistContext.jsx, CartContext.jsx
+ */
 import { Globe, Heart, Headset, Menu, ShoppingCart, Settings, Store, UserCircle2, X, ChevronDown, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";

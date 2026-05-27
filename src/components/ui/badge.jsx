@@ -1,3 +1,8 @@
+/**
+ * @file badge.jsx
+ * @description Badge/chip component with CVA variants (default, outline, soft).
+ *   Used for tour labels, discounts, and status tags.
+ */
 import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";

@@ -1,3 +1,8 @@
+/**
+ * @file calendar.jsx
+ * @description Custom date picker calendar (single/range modes). Used in AllToursPage
+ *   filters and TourDetailPage date selection. Not a third-party calendar library.
+ */
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./button";

@@ -1,3 +1,8 @@
+/**
+ * @file ReviewsCarousel.jsx
+ * @description Guest reviews carousel on homepage and AllToursPage.
+ *   Review data is static (peopleReviews array) — replace with API when available.
+ */
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";

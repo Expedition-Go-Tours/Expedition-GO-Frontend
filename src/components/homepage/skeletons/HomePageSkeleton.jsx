@@ -1,3 +1,10 @@
+/**
+ * @file HomePageSkeleton.jsx
+ * @description Full-page loading skeleton shown during HomePage initial load.
+ *   Composes HeroSkeleton, SectionSkeleton, and SidebarSkeleton.
+ *
+ * @see hooks/useHomePageData.js — controls when skeleton is shown
+ */
 import { Navbar } from "@/components/homepage/Navbar";
 import { Footer } from "@/components/homepage/Footer";
 import { HeroSkeleton } from "./HeroSkeleton";

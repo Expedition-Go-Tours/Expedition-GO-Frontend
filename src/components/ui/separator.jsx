@@ -1,3 +1,7 @@
+/**
+ * @file separator.jsx
+ * @description Radix Separator — horizontal/vertical divider line.
+ */
 import * as React from "react";
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
 

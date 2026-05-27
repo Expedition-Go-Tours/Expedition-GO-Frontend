@@ -1,3 +1,7 @@
+/**
+ * @file SidebarSkeleton.jsx
+ * @description Skeleton placeholder for homepage SidebarPanel during load.
+ */
 import { Skeleton } from "@/components/ui/skeleton";
 
 function SidebarDealCardSkeleton({ delay = 0 }) {

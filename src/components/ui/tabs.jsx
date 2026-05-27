@@ -1,3 +1,7 @@
+/**
+ * @file tabs.jsx
+ * @description Radix Tabs primitive — tabbed content panels (SettingsPage, supplier forms).
+ */
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 

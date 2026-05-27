@@ -1,3 +1,10 @@
+/**
+ * @file CartPage.jsx
+ * @description Shopping cart page (/cart). Reads items from CartContext (localStorage).
+ *   Items expire after 25 minutes. Links to BookingPage for checkout.
+ *
+ * @see contexts/CartContext.jsx
+ */
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, CalendarDays, Clock3, ShoppingCart, Trash2, ShieldCheck, Users } from "lucide-react";

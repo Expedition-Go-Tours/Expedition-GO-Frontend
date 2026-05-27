@@ -1,3 +1,9 @@
+/**
+ * @file NewExperiencesSection.jsx
+ * @description Animated grid of new tour cards on homepage. Uses framer-motion stagger.
+ *
+ * @see components/homepage/TourCard.jsx
+ */
 import { motion } from "framer-motion";
 import { TourCard } from "./TourCard";
 import { SectionHeading } from "./SectionHeading";

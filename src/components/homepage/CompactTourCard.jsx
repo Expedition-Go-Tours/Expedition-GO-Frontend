@@ -1,3 +1,8 @@
+/**
+ * @file CompactTourCard.jsx
+ * @description Smaller tour card for sidebar and dense layouts. Same data shape as TourCard.
+ *   Links to /tour/:title with wishlist and currency support.
+ */
 import { Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";

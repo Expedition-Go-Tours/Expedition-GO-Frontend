@@ -1,3 +1,19 @@
+/**
+ * @file TourDetailPage.jsx
+ * @description Full tour experience page (/tour/:id). Largest page in the codebase.
+ *
+ * Route param `id` is URL-encoded tour title — resolved via lib/tourData.getTourByTitle.
+ * Much of the detail content is still mock/static; marked with "In production" comments
+ * where API integration is pending.
+ *
+ * Features: image gallery, date/traveler picker, pricing, wishlist/cart, reviews,
+ *   similar experiences carousel, Tawk.to live chat, recently viewed tracking
+ *
+ * Local providers: AuthModalProvider, RecentlyViewedProvider
+ *
+ * @see lib/tourData.js — tour lookup
+ * @see lib/tawk.js — support chat widget
+ */
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";

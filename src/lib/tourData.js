@@ -1,3 +1,14 @@
+/**
+ * @file lib/tourData.js
+ * @description Tour lookup and mixing helpers. Bridges static homepage data with
+ *   tour detail and similar-experiences carousels.
+ *
+ * Data source: components/homepage/data.js (all tour arrays)
+ * Lookup key: tour title (URL-encoded in /tour/:id routes)
+ *
+ * Key exports:
+ *   getAllTours, getTourByTitle, getSimilarTours, mixToursFromSections
+ */
 import {
   pickupTours,
   recommendedTours,

@@ -1,3 +1,7 @@
+/**
+ * @file SidebarDealCard.jsx
+ * @description Deal/discount card for homepage sidebar last-minute offers section.
+ */
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";

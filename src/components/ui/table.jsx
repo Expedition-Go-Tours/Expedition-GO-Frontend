@@ -1,3 +1,8 @@
+/**
+ * @file table.jsx
+ * @description Table layout primitives (Table, TableHeader, TableRow, etc.).
+ *   Used in supplier payout history and admin-style data views.
+ */
 import { cn } from "@/lib/utils";
 
 function Table({ className, ...props }) {

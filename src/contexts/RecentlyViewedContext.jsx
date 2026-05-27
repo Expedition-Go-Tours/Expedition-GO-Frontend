@@ -1,3 +1,12 @@
+/**
+ * @file RecentlyViewedContext.jsx
+ * @description Tracks recently viewed tours per user (or guest session).
+ *
+ * Storage keys: recentlyViewed_{uid} (logged in) | recentlyViewed_guest
+ * Max items: 12 (FIFO). Scoped inside TourDetailPage via RecentlyViewedProvider.
+ *
+ * @see pages/TourDetailPage.jsx — calls addToRecentlyViewed on mount
+ */
 import {
   createContext,
   useCallback,

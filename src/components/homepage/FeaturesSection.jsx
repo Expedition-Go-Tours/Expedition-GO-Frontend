@@ -1,3 +1,8 @@
+/**
+ * @file FeaturesSection.jsx
+ * @description "Why book with us" trust/features grid on the homepage.
+ *   Copy from WHY_BOOK_ITEMS; icons mapped per item. i18n via useTranslation.
+ */
 import { CheckCircle, CreditCard, Star, MessageCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

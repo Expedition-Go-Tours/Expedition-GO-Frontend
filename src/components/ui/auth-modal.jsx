@@ -1,3 +1,11 @@
+/**
+ * @file auth-modal.jsx
+ * @description Inline sign-in/register modal for HomePage and AllToursPage.
+ *   Controlled by AuthModalContext (openAuthModal / closeAuthModal).
+ *   Links to full /signin and /register pages for extended flows.
+ *
+ * @see contexts/AuthModalContext.jsx
+ */
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./button";

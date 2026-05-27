@@ -1,3 +1,7 @@
+/**
+ * @file csv.js
+ * @description CSV generation and browser download for tabular export (e.g. payout history).
+ */
 function escapeCell(value) {
   if (value === null || value === undefined) return "";
   const str = typeof value === "string" ? value : JSON.stringify(value);

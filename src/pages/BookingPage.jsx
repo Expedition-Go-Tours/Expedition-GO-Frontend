@@ -1,3 +1,13 @@
+/**
+ * @file BookingPage.jsx
+ * @description Multi-step checkout flow (/booking). Receives tour + booking details
+ *   via react-router location.state from TourDetailPage or CartPage.
+ *
+ * Steps: traveler details → payment method → review & confirm
+ * Payment methods and country codes are currently static constants in this file.
+ *
+ * @see pages/CartPage.jsx — alternative entry with multiple cart items
+ */
 import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";

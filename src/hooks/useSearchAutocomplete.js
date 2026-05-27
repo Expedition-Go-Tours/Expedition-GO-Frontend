@@ -1,3 +1,12 @@
+/**
+ * @file useSearchAutocomplete.js
+ * @description Fuzzy search over static tour and destination data for Navbar autocomplete.
+ *
+ * Data source: components/homepage/data.js (pickup, recommended, topRated, leisure, destinations)
+ * Minimum query length: 2 characters
+ *
+ * @see components/homepage/SearchAutocomplete.jsx — UI consumer
+ */
 import { useState, useEffect, useMemo } from "react";
 import {
   pickupTours,

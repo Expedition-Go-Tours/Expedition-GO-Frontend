@@ -1,3 +1,13 @@
+/**
+ * @file CurrencyContext.jsx
+ * @description Display currency selection with static exchange rates (relative to USD).
+ *
+ * Storage key: "currency" (localStorage). Default: USD.
+ * Rates are hard-coded — replace with live API when backend supports it.
+ *
+ * Exposes: currency, setCurrency, convertPrice, formatPrice, exchangeRates
+ * Used by: Navbar currency picker, TourCard, TourDetailPage, AllToursPage
+ */
 import { createContext, useContext, useState, useEffect } from "react";
 
 const CurrencyContext = createContext();

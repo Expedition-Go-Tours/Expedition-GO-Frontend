@@ -1,3 +1,7 @@
+/**
+ * @file switch.jsx
+ * @description Radix Switch toggle — boolean settings (notifications, preferences).
+ */
 import * as React from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 

@@ -17,8 +17,8 @@
  *   /support, /settings  Account & help pages
  *
  * Note: `/supplier/dashboard` and `/supplier/earnings` redirect to the external
- *   supplier portal (https://supplier.travioafrica.com). In-app dashboard pages
- *   exist but are not wired here — see pages/SupplierDashboardPage.jsx.
+ *   supplier portal login (https://supplier.travioafrica.com/login). Approved
+ *   suppliers sign in with Google there to create and manage tours.
  *
  * @see hooks/useScrollRestoration.js — scroll behavior on route changes
  */
@@ -43,6 +43,7 @@ import SignInPage from "@/pages/SignInPage";
 import SupplierSignInPage from "@/pages/SupplierSignInPage";
 import SupplierRegisterPage from "@/pages/SupplierRegisterPage";
 import SupplierPayoutPage from "@/pages/SupplierPayoutPage";
+import { SUPPLIER_PORTAL_LOGIN_URL } from "@/lib/supplierPortal";
 
 import SignOutPage from "@/pages/SignOutPage";
 import SupportPage from "@/pages/SupportPage";
@@ -83,8 +84,8 @@ function AppContent() {
             <Route path="/supplier/signin" element={<SupplierSignInPage />} />
             <Route path="/supplier/register" element={<SupplierRegisterPage />} />
             <Route path="/supplier/payout" element={<SupplierPayoutPage />} />
-            <Route path="/supplier/dashboard" element={<Navigate to="https://supplier.travioafrica.com" replace />} />
-            <Route path="/supplier/earnings" element={<Navigate to="https://supplier.travioafrica.com" replace />} />
+            <Route path="/supplier/dashboard" element={<Navigate to={SUPPLIER_PORTAL_LOGIN_URL} replace />} />
+            <Route path="/supplier/earnings" element={<Navigate to={SUPPLIER_PORTAL_LOGIN_URL} replace />} />
             <Route path="/signout" element={<SignOutPage />} />
             <Route path="/support" element={<SupportPage />} />
             <Route path="/settings" element={<SettingsPage />} />

@@ -1,7 +1,7 @@
 /**
  * @file SupplierSignInPage.jsx
  * @description Supplier portal sign-in (/supplier/signin). Separate from consumer auth.
- *   Redirects to external dashboard or payout page on success.
+ *   Approved/active suppliers are redirected to supplier.travioafrica.com/login.
  */
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -12,18 +12,21 @@ import {
   LoaderCircle,
   ArrowRight,
   AlertCircle,
-  CheckCircle2,
   Clock,
   XCircle,
   FileText,
   UserCheck,
-  Wallet,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { signInWithEmail, signInWithGoogle, getAuthToken } from "@/lib/auth";
+import { signInWithEmail, signInWithGoogle } from "@/lib/auth";
 import { getSupplierApplicationStatus } from "@/api/supplier";
+import {
+  getSupplierReviewStatus,
+  isSupplierPortalReady,
+  redirectToSupplierPortalLogin,
+} from "@/lib/supplierPortal";
 import { useAuth } from "@/components/auth/AuthProvider";
 import companyLogo from "@/assets/images/new_logo.png";
 
@@ -39,12 +42,9 @@ function GoogleIcon() {
 }
 
 function SupplierStatusDashboard({ status }) {
-  const navigate = useNavigate();
   const profile = status?.data?.supplierProfile || status?.data || {};
   const reviewStatus = profile.status || "PENDING";
-  const isApproved = reviewStatus === "APPROVED";
   const isRejected = reviewStatus === "REJECTED";
-  const isActive = reviewStatus === "ACTIVE";
   const adminNotes = profile.adminNotes;
   const businessInfo = profile.businessInfo;
   const reviewedAt = profile.reviewedAt;
@@ -55,15 +55,7 @@ function SupplierStatusDashboard({ status }) {
       {/* Status Card */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-4">
-          {isActive ? (
-            <div className="flex size-14 items-center justify-center rounded-full bg-emerald-100">
-              <CheckCircle2 className="size-7 text-emerald-600" />
-            </div>
-          ) : isApproved ? (
-            <div className="flex size-14 items-center justify-center rounded-full bg-emerald-100">
-              <CheckCircle2 className="size-7 text-emerald-600" />
-            </div>
-          ) : isRejected ? (
+          {isRejected ? (
             <div className="flex size-14 items-center justify-center rounded-full bg-rose-100">
               <XCircle className="size-7 text-rose-600" />
             </div>
@@ -76,13 +68,9 @@ function SupplierStatusDashboard({ status }) {
           <div>
             <p className="text-xl font-bold text-slate-900">{reviewStatus}</p>
             <p className="text-sm text-slate-500">
-              {isActive
-                ? "Your supplier account is active. You can start receiving bookings and payouts."
-                : isApproved
-                  ? "Your application has been approved! Set up your payout method to get activated."
-                  : isRejected
-                    ? "Your application was not approved."
-                    : "Your application is under review."}
+              {isRejected
+                ? "Your application was not approved."
+                : "Your application is under review. We'll email you when a decision is made."}
             </p>
           </div>
         </div>
@@ -95,47 +83,14 @@ function SupplierStatusDashboard({ status }) {
         )}
       </div>
 
-      {/* Admin Notes - When APPROVED or ACTIVE */}
-      {(isApproved || isActive) && adminNotes && (
+      {/* Admin Notes - rejected applications with feedback */}
+      {isRejected && adminNotes && (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
           <div className="mb-2 flex items-center gap-2">
             <UserCheck className="size-5 text-emerald-600" />
             <h4 className="text-sm font-bold text-emerald-800">Admin Notes</h4>
           </div>
           <p className="text-sm leading-relaxed text-emerald-700">{adminNotes}</p>
-        </div>
-      )}
-
-      {/* Dashboard CTA - for ACTIVE or APPROVED suppliers */}
-      {(isActive || isApproved) && (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-6 text-center">
-          <div className="mb-3 flex justify-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-emerald-100">
-              <Wallet className="size-6 text-emerald-600" />
-            </div>
-          </div>
-          <h3 className="mb-1 text-base font-bold text-emerald-900">
-            {isActive ? "Your Supplier Dashboard" : "Application Approved"}
-          </h3>
-          <p className="mb-4 text-sm text-emerald-700">
-            {isActive
-              ? "Manage your bookings, earnings, and payouts from your dashboard."
-              : "You\'re approved! Head to your dashboard to set up payouts and start earning."}
-          </p>
-          <Button
-            onClick={async () => {
-              const token = await getAuthToken();
-              if (token) {
-                window.location.href = `https://supplier.travioafrica.com/auth/callback?token=${encodeURIComponent(token)}`;
-              } else {
-                window.location.href = "https://supplier.travioafrica.com";
-              }
-            }}
-            className="h-11 rounded-lg px-6 text-sm font-semibold"
-          >
-            Go to Dashboard
-            <ArrowRight className="ml-2 size-4" />
-          </Button>
         </div>
       )}
 
@@ -194,7 +149,6 @@ function NoApplicationView() {
 
 function SupplierSignInPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState("email"); // "email" | "password"
   const [email, setEmail] = useState("");
@@ -214,6 +168,11 @@ function SupplierSignInPage() {
       setStatusError("");
       getSupplierApplicationStatus()
         .then((data) => {
+          const reviewStatus = getSupplierReviewStatus(data);
+          if (isSupplierPortalReady(reviewStatus)) {
+            redirectToSupplierPortalLogin();
+            return;
+          }
           setSupplierStatus(data);
         })
         .catch((err) => {

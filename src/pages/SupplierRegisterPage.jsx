@@ -1,17 +1,63 @@
 /**
  * @file SupplierRegisterPage.jsx
  * @description Supplier application entry (/supplier/register). Renders SupplierApplicationForm.
+ *   Approved suppliers are redirected to the external supplier portal login.
  *
  * @see components/supplier/SupplierApplicationForm.jsx
  * @see api/supplier.js
  */
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { LoaderCircle } from "lucide-react";
 import { SupplierApplicationForm } from "@/components/supplier/SupplierApplicationForm";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { getSupplierApplicationStatus } from "@/api/supplier";
+import {
+  getSupplierReviewStatus,
+  isSupplierPortalReady,
+  redirectToSupplierPortalLogin,
+} from "@/lib/supplierPortal";
 import companyLogo from "@/assets/images/new_logo.png";
 
 function SupplierRegisterPage() {
   const { t } = useTranslation();
+  const { user, loading: authLoading } = useAuth();
+  const [checkingStatus, setCheckingStatus] = useState(false);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+
+    let cancelled = false;
+    setCheckingStatus(true);
+
+    getSupplierApplicationStatus()
+      .then((data) => {
+        if (cancelled) return;
+        const reviewStatus = getSupplierReviewStatus(data);
+        if (isSupplierPortalReady(reviewStatus)) {
+          redirectToSupplierPortalLogin();
+        }
+      })
+      .catch(() => {
+        // No application yet — show the registration form
+      })
+      .finally(() => {
+        if (!cancelled) setCheckingStatus(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, user?.uid, user?.email]);
+
+  if (authLoading || checkingStatus) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <LoaderCircle className="size-6 animate-spin text-[color:var(--brand-green)]" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white px-4 py-10 sm:py-16">

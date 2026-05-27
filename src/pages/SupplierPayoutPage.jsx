@@ -1,7 +1,7 @@
 /**
  * @file SupplierPayoutPage.jsx
  * @description Supplier payout methods management (/supplier/payout).
- *   CRUD for bank/mobile money payout methods via api/payout.js.
+ *   Approved suppliers are redirected to supplier.travioafrica.com/login instead.
  *
  * @see api/payout.js
  */
@@ -26,7 +26,12 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getAuthToken } from "@/lib/auth";
+import { getSupplierApplicationStatus } from "@/api/supplier";
+import {
+  getSupplierReviewStatus,
+  isSupplierPortalReady,
+  redirectToSupplierPortalLogin,
+} from "@/lib/supplierPortal";
 import {
   getMyPayoutMethods,
   addPayoutMethod,
@@ -423,12 +428,36 @@ export default function SupplierPayoutPage() {
   const [methods, setMethods] = useState([]);
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
+  const [statusChecking, setStatusChecking] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    loadMethods();
+    let cancelled = false;
+
+    getSupplierApplicationStatus()
+      .then((data) => {
+        if (cancelled) return;
+        const reviewStatus = getSupplierReviewStatus(data);
+        if (isSupplierPortalReady(reviewStatus)) {
+          redirectToSupplierPortalLogin();
+          return;
+        }
+        setStatusChecking(false);
+      })
+      .catch(() => {
+        if (!cancelled) setStatusChecking(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  useEffect(() => {
+    if (statusChecking) return;
+    loadMethods();
+  }, [statusChecking]);
 
   async function loadMethods() {
     setListLoading(true);
@@ -448,16 +477,8 @@ export default function SupplierPayoutPage() {
     setSuccess("");
     try {
       await addPayoutMethod(payload);
-      setSuccess("Payout method added successfully. Redirecting to dashboard...");
+      setSuccess("Payout method added successfully.");
       await loadMethods();
-      setTimeout(async () => {
-        const token = await getAuthToken();
-        if (token) {
-          window.location.href = `https://supplier.travioafrica.com/auth/callback?token=${encodeURIComponent(token)}`;
-        } else {
-          window.location.href = "https://supplier.travioafrica.com";
-        }
-      }, 1200);
     } catch (err) {
       setError(err?.message || "Failed to add payout method. Please try again.");
     } finally {
@@ -498,6 +519,14 @@ export default function SupplierPayoutPage() {
         return null;
     }
   };
+
+  if (statusChecking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <LoaderCircle className="size-6 animate-spin text-[color:var(--brand-green)]" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-white">

@@ -23,9 +23,6 @@ function validateSupplierData(data, isPartial = false) {
     if (!data.representativeInfo) {
       errors.push('Representative information is required');
     }
-    if (!data.businessDocuments) {
-      errors.push('Business documents are required');
-    }
   }
 
   // Validate business info
@@ -97,7 +94,7 @@ function validateBusinessInfo(businessInfo) {
   }
 
   // Validate phone number format
-  if (businessInfo.phoneNumber && !/^\+[\d\s\-()]+$/.test(businessInfo.phoneNumber)) {
+  if (businessInfo.phoneNumber && !/^\+?[\d\s\-()]+$/.test(businessInfo.phoneNumber)) {
     errors.push('Invalid phone number format');
   }
 
@@ -178,7 +175,7 @@ function validateRepresentativeInfo(representativeInfo) {
     if (!representativeInfo.address.postalCode) errors.push('Representative postal code is required');
   }
 
-  if (representativeInfo.phoneNumber && !/^\+[\d\s\-()]+$/.test(representativeInfo.phoneNumber)) {
+  if (representativeInfo.phoneNumber && !/^\+?[\d\s\-()]+$/.test(representativeInfo.phoneNumber)) {
     errors.push('Invalid phone number format');
   }
 

@@ -23,25 +23,17 @@ const { notifyAdmin } = require('../utils/adminNotificationService');
 const { logActivity } = require('../utils/auditLogger');
 const { validateSupplierData } = require('../utils/supplierHelpers');
 
-async function uploadBase64ToCloudinary(dataUri, folder = 'supplier-documents') {
-  if (!dataUri || typeof dataUri !== 'string' || !dataUri.startsWith('data:')) return dataUri;
-  try {
-    const result = await cloudinary.uploader.upload(dataUri, { folder, resource_type: 'auto' });
-    return result.secure_url;
-  } catch {
-    return dataUri;
-  }
-}
+const MULTER_FILE_FIELDS = ['registrationDocument', 'taxDocument', 'proofOfAddress', 'idDocument', 'licenses'];
 
-async function uploadBusinessDocs(docs) {
-  if (!docs || typeof docs !== 'object') return docs;
-  const result = { ...docs };
-  const fileFields = ['registrationDocumentUrl', 'taxDocumentUrl', 'proofOfAddressUrl', 'idDocumentUrl'];
-  for (const field of fileFields) {
-    if (result[field]) result[field] = await uploadBase64ToCloudinary(result[field]);
-  }
-  if (Array.isArray(result.licenses)) {
-    result.licenses = await Promise.all(result.licenses.map((l) => uploadBase64ToCloudinary(l)));
+function extractFileUrls(files) {
+  if (!files) return {};
+  const result = {};
+  for (const [field, fileList] of Object.entries(files)) {
+    if (field === 'licenses') {
+      result.licenses = fileList.map((f) => f.path);
+    } else {
+      result[`${field}Url`] = fileList[0]?.path;
+    }
   }
   return result;
 }
@@ -76,32 +68,23 @@ exports.applyToBeSupplier = catchAsync(async (req, res, next) => {
     return next(new AppError('Supplier application already exists', 400));
   }
 
-  // Parse JSON string fields from multipart/form-data
-  parseSupplierFields(req.body);
+  // Parse JSON string fields from multipart form data
+  for (const field of JSON_FIELDS) {
+    if (typeof req.body[field] === 'string') {
+      try { req.body[field] = JSON.parse(req.body[field]); } catch {}
+    }
+  }
 
-  // Map uploaded file URLs (from Cloudinary multer) into the request body for validation
-  if (req.files) {
-    const businessDocuments = req.body.businessDocuments || {};
-    const repInfo = req.body.representativeInfo || {};
-
-    if (req.files.registrationDocument?.[0]) {
-      businessDocuments.registrationDocumentUrl = req.files.registrationDocument[0].path;
-    }
-    if (req.files.taxDocument?.[0]) {
-      businessDocuments.taxDocumentUrl = req.files.taxDocument[0].path;
-    }
-    if (req.files.proofOfAddress?.[0]) {
-      businessDocuments.proofOfAddressUrl = req.files.proofOfAddress[0].path;
-    }
-    if (req.files.idDocument?.[0]) {
-      repInfo.idDocumentUrl = req.files.idDocument[0].path;
-    }
-    if (req.files.licenses?.length) {
-      businessDocuments.licenses = req.files.licenses.map(f => f.path);
-    }
-
-    req.body.businessDocuments = businessDocuments;
-    req.body.representativeInfo = repInfo;
+  // Merge uploaded file URLs from multer into the body before validation
+  const fileUrls = extractFileUrls(req.files);
+  req.body.businessDocuments = {
+    registrationDocumentUrl: fileUrls.registrationDocumentUrl,
+    taxDocumentUrl: fileUrls.taxDocumentUrl,
+    proofOfAddressUrl: fileUrls.proofOfAddressUrl,
+    licenses: fileUrls.licenses || [],
+  };
+  if (req.body.representativeInfo && fileUrls.idDocumentUrl) {
+    req.body.representativeInfo.idDocumentUrl = fileUrls.idDocumentUrl;
   }
 
   // Validate application data
@@ -117,11 +100,6 @@ exports.applyToBeSupplier = catchAsync(async (req, res, next) => {
     businessDocuments,
     payoutInfo
   } = req.body;
-
-  // Upload base64 images to Cloudinary if present (fallback for JSON payloads)
-  if (businessDocuments) {
-    businessDocuments = await uploadBusinessDocs(businessDocuments);
-  }
 
   // Create supplier profile with PENDING status
   const supplierProfile = await prisma.supplierProfile.create({
@@ -154,7 +132,7 @@ exports.applyToBeSupplier = catchAsync(async (req, res, next) => {
   });
 
   // Notify admins
-  notifyAdmin({
+  await notifyAdmin({
     type: 'NEW_SUPPLIER_APPLICATION',
     title: 'New Supplier Application',
     message: `${req.user.name} has applied to become a supplier`,
@@ -200,9 +178,7 @@ exports.getApplicationStatus = catchAsync(async (req, res, next) => {
     select: {
       id: true,
       status: true,
-      businessInfo: true,
       adminNotes: true,
-      reviewedBy: true,
       reviewedAt: true,
       createdAt: true,
       updatedAt: true
@@ -237,46 +213,34 @@ exports.updateApplication = catchAsync(async (req, res, next) => {
     return next(new AppError('Application cannot be modified in current status', 400));
   }
 
-  // Parse JSON string fields from multipart/form-data
-  parseSupplierFields(req.body);
-
-  // Map uploaded file URLs (from Cloudinary multer) into the request body for validation
-  if (req.files) {
-    const businessDocuments = req.body.businessDocuments || {};
-    const repInfo = req.body.representativeInfo || {};
-
-    if (req.files.registrationDocument?.[0]) {
-      businessDocuments.registrationDocumentUrl = req.files.registrationDocument[0].path;
+  // Parse JSON string fields from multipart form data
+  for (const field of JSON_FIELDS) {
+    if (typeof req.body[field] === 'string') {
+      try { req.body[field] = JSON.parse(req.body[field]); } catch {}
     }
-    if (req.files.taxDocument?.[0]) {
-      businessDocuments.taxDocumentUrl = req.files.taxDocument[0].path;
-    }
-    if (req.files.proofOfAddress?.[0]) {
-      businessDocuments.proofOfAddressUrl = req.files.proofOfAddress[0].path;
-    }
-    if (req.files.idDocument?.[0]) {
-      repInfo.idDocumentUrl = req.files.idDocument[0].path;
-    }
-    if (req.files.licenses?.length) {
-      businessDocuments.licenses = req.files.licenses.map(f => f.path);
-    }
-
-    req.body.businessDocuments = businessDocuments;
-    req.body.representativeInfo = repInfo;
   }
 
   // Validate update data
+  // Merge uploaded file URLs from multer into the data
+  const fileUrls = extractFileUrls(req.files);
+  if (fileUrls.registrationDocumentUrl || fileUrls.taxDocumentUrl || fileUrls.proofOfAddressUrl || fileUrls.licenses) {
+    req.body.businessDocuments = {
+      registrationDocumentUrl: fileUrls.registrationDocumentUrl,
+      taxDocumentUrl: fileUrls.taxDocumentUrl,
+      proofOfAddressUrl: fileUrls.proofOfAddressUrl,
+      licenses: fileUrls.licenses || [],
+    };
+  }
+  if (req.body.representativeInfo && fileUrls.idDocumentUrl) {
+    req.body.representativeInfo.idDocumentUrl = fileUrls.idDocumentUrl;
+  }
+
   const validationResult = validateSupplierData(req.body, true); // partial validation
   if (!validationResult.isValid) {
     return next(new AppError(`Validation failed: ${validationResult.errors.join(', ')}`, 400));
   }
 
   const updateData = { ...req.body };
-
-  // Upload base64 images to Cloudinary if present (fallback for JSON payloads)
-  if (updateData.businessDocuments) {
-    updateData.businessDocuments = await uploadBusinessDocs(updateData.businessDocuments);
-  }
 
   // Reset status to PENDING if significant changes made
   if (req.body.businessInfo || req.body.representativeInfo || req.body.businessDocuments) {
@@ -653,7 +617,7 @@ exports.reviewApplication = catchAsync(async (req, res, next) => {
   }).catch(() => {});
 
   // Notify admins of status change
-  notifyAdmin({
+  await notifyAdmin({
     type: 'SUPPLIER_STATUS_CHANGE',
     title: `Supplier ${action === 'approve' ? 'Approved' : action === 'reject' ? 'Rejected' : 'Requested Info'}`,
     message: `${supplierProfile.user?.name || supplierProfile.businessInfo?.legalBusinessName || 'A supplier'}'s application was ${action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'requested additional information'}`,
@@ -727,7 +691,7 @@ exports.activateSupplier = catchAsync(async (req, res, next) => {
     data: { supplierId: id }
   }).catch(() => {});
 
-  notifyAdmin({
+  await notifyAdmin({
     type: 'SUPPLIER_STATUS_CHANGE',
     title: 'Supplier Activated',
     message: `${supplierProfile.user?.name || 'A supplier'}'s account was activated`,
@@ -800,7 +764,7 @@ exports.suspendSupplier = catchAsync(async (req, res, next) => {
     }
   }).catch(() => {});
 
-  notifyAdmin({
+  await notifyAdmin({
     type: 'SUPPLIER_STATUS_CHANGE',
     title: suspend ? 'Supplier Suspended' : 'Supplier Reactivated',
     message: `${supplierProfile.user?.name || 'A supplier'}'s account was ${suspend ? 'suspended' : 'reactivated'}${reason ? ` — ${reason}` : ''}`,

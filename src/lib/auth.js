@@ -6,7 +6,7 @@
  *
  * Flow (firebase mode):
  *   1. User signs in via Firebase (email/password or Google popup)
- *   2. ID token exchanged with backend for httpOnly session cookie
+ *   2. ID token POSTed to /auth/verify-token for httpOnly session cookies
  *   3. User profile cached in localStorage (AUTH_USER_KEY) for instant UI hydration
  *
  * Key exports:
@@ -17,6 +17,7 @@
  *
  * @see components/auth/AuthProvider.jsx — React context wrapper
  * @see api/client.js — attaches getAuthToken() to API requests
+ * @see api/auth.js — verify-token session exchange
  */
 // ============================================================================
 // EXPEDITION GO - AUTHENTICATION SERVICE
@@ -165,6 +166,11 @@ function normalizeFirebaseClientUser(firebaseUser) {
 // BACKEND SYNC
 // ============================================================================
 
+async function callBackendVerifyToken(idToken) {
+  const { verifyToken } = await import('@/api/auth');
+  return verifyToken(idToken);
+}
+
 async function callBackendSignup(idToken, firebaseUser) {
   const endpoint = `${API_BASE}/users/signup`;
 
@@ -198,6 +204,18 @@ async function callBackendSyncMe(idToken, firebaseUser) {
   return payload?.data?.user ?? null;
 }
 
+async function syncUserWithBackend(idToken, firebaseUser) {
+  try {
+    return await callBackendVerifyToken(idToken);
+  } catch {
+    try {
+      return await callBackendSignup(idToken, firebaseUser);
+    } catch {
+      return normalizeFirebaseClientUser(firebaseUser);
+    }
+  }
+}
+
 // ============================================================================
 // AUTH STATE
 // ============================================================================
@@ -225,7 +243,7 @@ export async function subscribeToAuthState(callback) {
 
         let backendUser = null;
         try {
-          backendUser = await callBackendSignup(idToken, firebaseUser);
+          backendUser = await syncUserWithBackend(idToken, firebaseUser);
         } catch {
           backendUser = normalizeFirebaseClientUser(firebaseUser);
         }
@@ -266,7 +284,7 @@ export async function signInWithEmail(email, password) {
 
     let backendUser;
     try {
-      backendUser = await callBackendSignup(idToken, firebaseUser);
+      backendUser = await syncUserWithBackend(idToken, firebaseUser);
     } catch {
       backendUser = normalizeFirebaseClientUser(firebaseUser);
     }
@@ -306,7 +324,7 @@ export async function registerWithEmail(name, email, password) {
 
     let backendUser;
     try {
-      backendUser = await callBackendSignup(idToken, firebaseUser);
+      backendUser = await syncUserWithBackend(idToken, firebaseUser);
     } catch {
       backendUser = normalizeFirebaseClientUser(firebaseUser);
     }
@@ -340,7 +358,7 @@ export async function signInWithGoogle() {
 
     let backendUser;
     try {
-      backendUser = await callBackendSignup(idToken, firebaseUser);
+      backendUser = await syncUserWithBackend(idToken, firebaseUser);
     } catch {
       backendUser = normalizeFirebaseClientUser(firebaseUser);
     }
@@ -371,10 +389,7 @@ export async function signOutUser() {
   const tasks = [];
 
   tasks.push(
-    requestJson(`${API_BASE}/auth/logout`, {
-      method: 'POST',
-      body: JSON.stringify({}),
-    }).catch(() => null)
+    import('@/api/auth').then(({ logoutFromBackend }) => logoutFromBackend()).catch(() => null)
   );
 
   if (AUTH_PROVIDER === 'firebase' && auth) {

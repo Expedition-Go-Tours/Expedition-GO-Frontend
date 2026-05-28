@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   Mail,
   Lock,
@@ -179,7 +180,9 @@ function SupplierSignInPage() {
           if (err?.status === 404) {
             setSupplierStatus(null);
           } else {
-            setStatusError(err?.message || "Failed to load supplier status");
+            const message = err?.message || "Failed to load supplier status";
+            setStatusError(message);
+            toast.error(message, { id: "supplier-status-error" });
           }
         })
         .finally(() => {
@@ -212,9 +215,13 @@ function SupplierSignInPage() {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-      // Successful sign-in triggers the useEffect above to check supplier status
+      toast.success(t("auth.successWelcomeBack", "Welcome back! Signing you in..."), {
+        id: "supplier-signin-success",
+      });
     } catch (err) {
-      setError(err?.message || "We couldn't complete that request.");
+      const message = err?.message || "We couldn't complete that request.";
+      setError(message);
+      toast.error(message, { id: "supplier-signin-error" });
     } finally {
       setLoading(false);
     }
@@ -225,9 +232,13 @@ function SupplierSignInPage() {
     setGoogleLoading(true);
     try {
       await signInWithGoogle();
-      // Successful Google sign-in triggers the useEffect above
+      toast.success(t("auth.successGoogleSignIn", "Welcome! Signing you in with Google..."), {
+        id: "supplier-google-signin-success",
+      });
     } catch (err) {
-      setError(err?.message || "We couldn't complete Google sign-in.");
+      const message = err?.message || "We couldn't complete Google sign-in.";
+      setError(message);
+      toast.error(message, { id: "supplier-google-signin-error" });
     } finally {
       setGoogleLoading(false);
     }

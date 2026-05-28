@@ -62,17 +62,6 @@ function AppContent() {
     <CurrencyProvider>
       <WishlistProvider>
         <CartProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 1400,
-              style: {
-                background: "var(--brand-mist)",
-                color: "var(--brand-green)",
-                border: "1px solid rgba(9, 106, 79, 0.18)",
-              },
-            }}
-          />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/tours" element={<AllToursPage />} />
@@ -101,6 +90,19 @@ function AppContent() {
 function App() {
   return (
     <ErrorBoundary goHomeLink="/" goHomeLabel="Go Home">
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "var(--brand-mist)",
+            color: "var(--brand-green)",
+            border: "1px solid rgba(9, 106, 79, 0.18)",
+          },
+        }}
+      />
       <AuthProvider>
         <AppContent />
       </AuthProvider>

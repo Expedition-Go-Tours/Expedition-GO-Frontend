@@ -154,12 +154,36 @@ function normalizeFirebaseClientUser(firebaseUser) {
 
   return {
     uid: firebaseUser.uid,
+    firebaseUid: firebaseUser.uid,
     email: firebaseUser.email,
     emailVerified: firebaseUser.emailVerified,
     name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
     photoURL: firebaseUser.photoURL || null,
     provider: firebaseUser.providerData?.[0]?.providerId || 'email',
   };
+}
+
+function normalizeBackendUser(user, firebaseUser) {
+  if (!user) return null;
+
+  const firebaseUid = user.firebaseUid ?? user.uid ?? firebaseUser?.uid ?? null;
+
+  return {
+    ...user,
+    firebaseUid,
+    uid: firebaseUid,
+    email: user.email ?? firebaseUser?.email ?? null,
+    name:
+      user.name ??
+      firebaseUser?.displayName ??
+      user.email?.split('@')[0] ??
+      'User',
+    photoURL: user.photoURL ?? firebaseUser?.photoURL ?? null,
+  };
+}
+
+function getStoredFirebaseUid(storedUser) {
+  return storedUser?.firebaseUid ?? storedUser?.uid ?? null;
 }
 
 // ============================================================================
@@ -206,10 +230,12 @@ async function callBackendSyncMe(idToken, firebaseUser) {
 
 async function syncUserWithBackend(idToken, firebaseUser) {
   try {
-    return await callBackendVerifyToken(idToken);
+    const user = await callBackendVerifyToken(idToken);
+    return normalizeBackendUser(user, firebaseUser);
   } catch {
     try {
-      return await callBackendSignup(idToken, firebaseUser);
+      const user = await callBackendSignup(idToken, firebaseUser);
+      return normalizeBackendUser(user, firebaseUser);
     } catch {
       return normalizeFirebaseClientUser(firebaseUser);
     }
@@ -234,7 +260,7 @@ export async function subscribeToAuthState(callback) {
         }
 
         const storedUser = getStoredAuthUser();
-        if (storedUser && storedUser.firebaseUid === firebaseUser.uid) {
+        if (storedUser && getStoredFirebaseUid(storedUser) === firebaseUser.uid) {
           callback(storedUser);
           return;
         }

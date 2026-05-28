@@ -2,8 +2,8 @@
  * Vite configuration for TravioAfrica homepage.
  *
  * - @ alias → ./src (matches jsconfig.json)
- * - Dev proxy: /api/v1 → VITE_AUTH_PROXY_TARGET (default: Render staging backend)
- *   Avoids CORS during local development; rewrite prevents /api/v1/api/v1 duplication.
+ * - Dev proxy: /api → VITE_AUTH_PROXY_TARGET (default: Render staging backend)
+ *   Avoids CORS during local development; rewrite prevents duplicated path prefixes.
  *
  * Env: VITE_AUTH_PROXY_TARGET — full URL including optional path prefix
  */
@@ -30,12 +30,11 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       proxy: {
-        "/api/v1": {
+        "/api": {
           target: authProxyOrigin,
           changeOrigin: true,
           secure: true,
           rewrite: (requestPath) => {
-            // Avoid accidental /api/v1/api/v1 duplication when target includes /api/v1.
             if (!authProxyBasePath || authProxyBasePath === "/") return requestPath;
             if (requestPath.startsWith(`${authProxyBasePath}/`) || requestPath === authProxyBasePath) {
               return requestPath;

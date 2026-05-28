@@ -9,7 +9,16 @@
  * @see lib/auth.js for sign-in/sign-out implementations
  */
 import { createContext, useContext, useEffect, useState } from "react";
-import { getStoredAuthUser, signOutUser, subscribeToAuthState } from "@/lib/auth";
+import { sharedQueryClient } from "@/api/queryClient";
+import { prefetchSupplierAccess } from "@/api/supplierAccessQuery";
+import {
+  getAuthProvider,
+  getStoredAuthUser,
+  signOutUser,
+  subscribeToAuthState,
+  waitForAuthToken,
+} from "@/lib/auth";
+import { clearSupplierNavCache } from "@/lib/supplierPortal";
 
 const AuthContext = createContext({
   loading: true,
@@ -25,13 +34,25 @@ export function AuthProvider({ children }) {
     let mounted = true;
     let cleanup = () => {};
 
-    subscribeToAuthState((nextUser) => {
+    subscribeToAuthState(async (nextUser) => {
       if (!mounted) {
         return;
       }
 
       setUser(nextUser);
-      setLoading(false);
+
+      if (!nextUser) {
+        setLoading(false);
+        return;
+      }
+
+      if (getAuthProvider() === "firebase") {
+        await waitForAuthToken(8000);
+      }
+
+      if (mounted) {
+        setLoading(false);
+      }
     }).then((unsubscribe) => {
       if (!mounted) {
         unsubscribe?.();
@@ -47,7 +68,13 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user || !sharedQueryClient || loading) return;
+    prefetchSupplierAccess(sharedQueryClient, user);
+  }, [user?.uid, user?.id, loading]);
+
   async function handleSignOut() {
+    clearSupplierNavCache(user);
     await signOutUser();
     setUser(null);
   }

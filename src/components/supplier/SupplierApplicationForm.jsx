@@ -7,6 +7,7 @@
  * @see pages/SupplierRegisterPage.jsx
  */
 import { useState, useCallback, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -42,6 +43,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { applyAsSupplier } from "@/api/supplier";
+import { invalidateSupplierAccess } from "@/api/supplierAccessQuery";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const STEPS = [
   { key: "business", label: "Business Info", icon: Building2 },
@@ -307,6 +310,8 @@ function MultiSelect({ label, options, selected, onChange, required }) {
 export function SupplierApplicationForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -533,6 +538,7 @@ export function SupplierApplicationForm() {
         });
 
         await applyAsSupplier(payload);
+        await invalidateSupplierAccess(queryClient, user);
         setSuccess("Your supplier application has been submitted successfully! Our team will review it and get back to you within 3-5 business days.");
       } catch (err) {
         setError(err?.message || "Failed to submit application. Please try again.");

@@ -11,7 +11,14 @@
  *
  * @see pages/SupplierPayoutPage.jsx
  */
-import { apiRequest } from "@/api/client";
+import { apiRequest, unwrap } from "@/api/client";
+
+/** Extract created payout method from POST /payout-methods response. */
+export function parseCreatedPayoutMethod(response) {
+  if (!response) return null;
+  const data = unwrap(response);
+  return data?.method ?? data ?? null;
+}
 
 /**
  * Get current user's payout methods.
@@ -29,11 +36,18 @@ export async function getMyPayoutMethods() {
  * Requires authentication.
  */
 export async function addPayoutMethod(payload) {
-  return apiRequest("/payout-methods", {
+  const response = await apiRequest("/payout-methods", {
     method: "POST",
     body: payload,
     auth: true,
   });
+
+  const method = parseCreatedPayoutMethod(response);
+  if (!method?.id) {
+    throw new Error("Server did not return a saved payout method. Please try again.");
+  }
+
+  return { ...response, data: { ...(response?.data || {}), method } };
 }
 
 /**

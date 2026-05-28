@@ -13,7 +13,7 @@
  * @see lib/auth.js for token lifecycle and session cookies
  * @see api/queryClient.js for retry/cache defaults
  */
-import { getApiBaseUrl, getAuthToken } from "@/lib/auth";
+import { getApiBaseUrl, getStoredAuthUser, waitForAuthToken } from "@/lib/auth";
 
 /**
  * Normalized API error for React Query/UI handling.
@@ -121,11 +121,15 @@ export async function apiRequest(path, options = {}) {
   }
 
   if (auth) {
-    try {
-      const token = await getAuthToken();
-      if (token) finalHeaders.Authorization = `Bearer ${token}`;
-    } catch {
-      // Allow unauthenticated requests to proceed normally.
+    const token = await waitForAuthToken();
+    if (token) {
+      finalHeaders.Authorization = `Bearer ${token}`;
+    } else if (getStoredAuthUser()) {
+      throw new ApiError({
+        message: "You are not logged in! Please log in to get access.",
+        status: 401,
+        url,
+      });
     }
   }
 

@@ -180,6 +180,7 @@ exports.getApplicationStatus = catchAsync(async (req, res, next) => {
       status: true,
       adminNotes: true,
       reviewedAt: true,
+      payoutInfo: true,
       createdAt: true,
       updatedAt: true
     }
@@ -588,6 +589,17 @@ exports.reviewApplication = catchAsync(async (req, res, next) => {
       reviewedAt: new Date()
     }
   });
+
+  if (action === 'approve' && !supplierProfile.user.roles?.includes('supplier')) {
+    await prisma.user.update({
+      where: { id: supplierProfile.userId },
+      data: {
+        roles: {
+          push: 'supplier',
+        },
+      },
+    });
+  }
 
   // Send notification to supplier
   const notificationMessages = {

@@ -19,8 +19,11 @@ function getErrorStatus(error) {
  * - Stops retrying on auth/forbidden/not-found errors.
  * - Uses gentle backoff and reasonable cache windows.
  */
+/** Set in main.jsx — used for auth-time prefetch without prop drilling. */
+export let sharedQueryClient = null;
+
 export function createQueryClient() {
-  return new QueryClient({
+  const client = new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 1000 * 30,
@@ -38,4 +41,7 @@ export function createQueryClient() {
       },
     },
   });
+
+  sharedQueryClient = client;
+  return client;
 }

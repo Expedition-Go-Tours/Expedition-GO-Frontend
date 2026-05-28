@@ -33,6 +33,63 @@ function validatePayoutMethodData(data) {
   return errors;
 }
 
+function buildProfilePayoutInfo(data, existingProfile) {
+  const currency = (data.currency || 'USD').trim().toUpperCase().slice(0, 3);
+
+  if (data.type === 'BANK_TRANSFER') {
+    return {
+      bankAccountName: data.accountName,
+      bankCountry: data.bankCountry,
+      payoutCurrency: currency,
+    };
+  }
+
+  if (data.type === 'PAYPAL') {
+    const businessInfo = existingProfile?.businessInfo || {};
+    return {
+      bankAccountName: data.paypalEmail,
+      bankCountry: businessInfo.country || data.bankCountry || '',
+      payoutCurrency: currency,
+    };
+  }
+
+  return null;
+}
+
+async function ensureSupplierRole(supplierId) {
+  const user = await prisma.user.findUnique({
+    where: { id: supplierId },
+    select: { roles: true },
+  });
+
+  if (!user?.roles?.includes('supplier')) {
+    await prisma.user.update({
+      where: { id: supplierId },
+      data: {
+        roles: {
+          push: 'supplier',
+        },
+      },
+    });
+  }
+}
+
+async function syncSupplierProfilePayoutInfo(supplierId, data) {
+  const profile = await prisma.supplierProfile.findUnique({
+    where: { userId: supplierId },
+  });
+
+  if (!profile) return;
+
+  const payoutInfo = buildProfilePayoutInfo(data, profile);
+  if (!payoutInfo) return;
+
+  await prisma.supplierProfile.update({
+    where: { userId: supplierId },
+    data: { payoutInfo },
+  });
+}
+
 /**
  * Get all payout methods for the authenticated supplier
  */
@@ -92,6 +149,9 @@ exports.addMethod = catchAsync(async (req, res, next) => {
       paypalEmail: data.paypalEmail || null
     }
   });
+
+  await ensureSupplierRole(supplierId);
+  await syncSupplierProfilePayoutInfo(supplierId, data);
 
   await logActivity({
     userId: supplierId,

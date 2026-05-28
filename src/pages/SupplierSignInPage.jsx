@@ -3,7 +3,7 @@
  * @description Supplier portal sign-in (/supplier/signin). Separate from consumer auth.
  *   Approved/active suppliers are redirected to supplier.travioafrica.com/login.
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,22 +15,19 @@ import {
   AlertCircle,
   Clock,
   XCircle,
-  FileText,
   UserCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signInWithEmail, signInWithGoogle } from "@/lib/auth";
-import { getSupplierApplicationStatus } from "@/api/supplier";
 import {
   buildFallbackSupplierStatus,
-  parseSupplierStatusResponse,
+  fetchSupplierAccessSnapshot,
   redirectToSupplierPortalLogin,
-  resolveSupplierRoute,
-  supplierHasPayoutMethod,
+  resolveSupplierSignInToast,
   SUPPLIER_PAYOUT_PATH,
-  userHasSupplierRole,
+  userHasSupplierApplication,
 } from "@/lib/supplierPortal";
 import { useAuth } from "@/components/auth/AuthProvider";
 import companyLogo from "@/assets/images/new_logo.png";
@@ -159,36 +156,6 @@ function SupplierStatusDashboard({ status, payoutComplete = false }) {
   );
 }
 
-function NoApplicationView() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  return (
-    <div className="w-full max-w-[420px]">
-      <div className="mb-6 flex justify-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-slate-100">
-          <FileText className="size-8 text-slate-600" />
-        </div>
-      </div>
-      <h2 className="mb-3 text-center text-xl font-bold text-slate-900">
-        {t("supplierAuth.noApplicationTitle", "Start your supplier application")}
-      </h2>
-      <p className="mb-6 text-center text-sm text-slate-500">
-        {t(
-          "supplierAuth.noApplicationDesc",
-          "You are signed in to TravioAfrica. Complete a short application to list tours and manage bookings as a verified partner."
-        )}
-      </p>
-      <Button
-        onClick={() => navigate("/supplier/register")}
-        className="h-12 w-full rounded-lg text-base font-semibold"
-      >
-        {t("supplierAuth.startApplication", "Start application")}
-        <ArrowRight className="ml-2 size-4" />
-      </Button>
-    </div>
-  );
-}
-
 function SupplierSignInPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -204,58 +171,77 @@ function SupplierSignInPage() {
   const [payoutComplete, setPayoutComplete] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusError, setStatusError] = useState("");
+  const signInToastShownRef = useRef(false);
+
+  function showSupplierSignInSuccessToast(snapshot) {
+    if (signInToastShownRef.current) return;
+
+    const toastContent = resolveSupplierSignInToast(snapshot, user);
+    if (!toastContent) return;
+
+    toast.success(t(toastContent.key, toastContent.defaultMessage), {
+      id: "supplier-signin-success",
+    });
+    signInToastShownRef.current = true;
+  }
 
   // Check supplier status when user is authenticated
   useEffect(() => {
     if (user) {
       setStatusLoading(true);
       setStatusError("");
-      getSupplierApplicationStatus()
-        .then(async (data) => {
-          const parsed = parseSupplierStatusResponse(data);
+      fetchSupplierAccessSnapshot()
+        .then((snapshot) => {
+          showSupplierSignInSuccessToast(snapshot);
 
-          if (!parsed) {
-            if (userHasSupplierRole(user)) {
-              setSupplierStatus(buildFallbackSupplierStatus("PENDING"));
-            } else {
-              setSupplierStatus(null);
-            }
+          if (snapshot.statusError) {
+            const message =
+              snapshot.statusError?.message ||
+              t(
+                "supplierAuth.statusLoadError",
+                "We couldn't load your supplier status. Please try again."
+              );
+            setStatusError(message);
+            toast.error(message, { id: "supplier-status-error" });
             return;
           }
 
-          const reviewStatus = parsed.status;
-          const route = await resolveSupplierRoute(reviewStatus);
+          if (!userHasSupplierApplication(user, snapshot)) {
+            navigate("/supplier/register", { replace: true });
+            return;
+          }
 
-          if (route === "portal") {
+          if (snapshot.route === "portal") {
             redirectToSupplierPortalLogin();
             return;
           }
 
-          if (route === "payout") {
+          if (snapshot.route === "payout") {
             navigate(SUPPLIER_PAYOUT_PATH, { replace: true });
             return;
           }
 
-          setSupplierStatus(data);
-          if (reviewStatus === "APPROVED") {
-            setPayoutComplete(await supplierHasPayoutMethod());
-          } else {
-            setPayoutComplete(false);
-          }
-        })
-        .catch((err) => {
-          if (err?.status === 404) {
-            if (userHasSupplierRole(user)) {
-              setSupplierStatus(buildFallbackSupplierStatus("PENDING"));
-            } else {
-              setSupplierStatus(null);
-            }
+          if (!snapshot.parsed) {
+            const fallbackStatus = snapshot.hasPayout ? "APPROVED" : "PENDING";
+            setSupplierStatus(buildFallbackSupplierStatus(fallbackStatus));
+            setPayoutComplete(
+              fallbackStatus === "APPROVED" && snapshot.hasPayout
+            );
             return;
           }
 
+          setSupplierStatus(snapshot.statusData);
+          setPayoutComplete(
+            snapshot.reviewStatus === "APPROVED" && snapshot.hasPayout
+          );
+        })
+        .catch((err) => {
           const message =
             err?.message ||
-            t("supplierAuth.statusLoadError", "We couldn't load your supplier status. Please try again.");
+            t(
+              "supplierAuth.statusLoadError",
+              "We couldn't load your supplier status. Please try again."
+            );
           setStatusError(message);
           toast.error(message, { id: "supplier-status-error" });
         })
@@ -265,6 +251,7 @@ function SupplierSignInPage() {
     } else {
       setSupplierStatus(null);
       setStatusError("");
+      signInToastShownRef.current = false;
     }
   }, [user?.uid, user?.email, navigate, t]);
 
@@ -289,9 +276,6 @@ function SupplierSignInPage() {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-      toast.success(t("auth.successWelcomeBack", "Welcome back! Signing you in..."), {
-        id: "supplier-signin-success",
-      });
     } catch (err) {
       const message = err?.message || "We couldn't complete that request.";
       setError(message);
@@ -306,9 +290,6 @@ function SupplierSignInPage() {
     setGoogleLoading(true);
     try {
       await signInWithGoogle();
-      toast.success(t("auth.successGoogleSignIn", "Welcome! Signing you in with Google..."), {
-        id: "supplier-google-signin-success",
-      });
     } catch (err) {
       const message = err?.message || "We couldn't complete Google sign-in.";
       setError(message);
@@ -350,7 +331,11 @@ function SupplierSignInPage() {
     }
 
     if (!supplierStatus) {
-      return <NoApplicationView />;
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-white">
+          <LoaderCircle className="size-6 animate-spin text-[color:var(--brand-green)]" />
+        </div>
+      );
     }
 
     return (

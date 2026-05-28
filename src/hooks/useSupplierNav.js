@@ -1,96 +1,91 @@
 /**
  * @file useSupplierNav.js
  * @description Resolves supplier menu label/link for the navbar from application status.
+ *   Uses React Query (shared cache) + sessionStorage so dashboard/pending show immediately.
  */
-import { useEffect, useState } from "react";
-import { getMyPayoutMethods } from "@/api/payout";
-import { getSupplierApplicationStatus } from "@/api/supplier";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+
+import {
+  fetchSupplierAccessForNav,
+  getSupplierAccessInitialData,
+  supplierAccessQueryKey,
+} from "@/api/supplierAccessQuery";
+import { useAuth } from "@/components/auth/AuthProvider";
 import {
   buildFallbackSupplierStatus,
-  extractPayoutMethods,
-  getSupplierNavTarget,
-  isSupplierApproved,
-  isSupplierActive,
-  isSupplierPortalReady,
-  parseSupplierStatusResponse,
-  userHasSupplierRole,
+  getOptimisticSupplierNavState,
+  persistSupplierNavState,
+  resolveSupplierNavState,
 } from "@/lib/supplierPortal";
 
 export function useSupplierNav(user) {
-  const [state, setState] = useState({
-    loading: Boolean(user),
-    hasApplication: userHasSupplierRole(user),
-    portalReady: false,
-    needsPayout: false,
-    reviewStatus: userHasSupplierRole(user) ? "PENDING" : null,
+  const { loading: authLoading } = useAuth();
+  const userId = user?.uid ?? user?.id ?? null;
+
+  const optimistic = useMemo(
+    () => getOptimisticSupplierNavState(user),
+    [user?.uid, user?.id, user?.roles, user?.supplierProfile?.status]
+  );
+
+  const initialSnapshot = useMemo(
+    () => getSupplierAccessInitialData(user),
+    [userId]
+  );
+
+  const { data: snapshot, isPending, isFetching, isError } = useQuery({
+    queryKey: supplierAccessQueryKey(user),
+    queryFn: fetchSupplierAccessForNav,
+    enabled: Boolean(userId) && !authLoading,
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 10,
+    refetchOnMount: "always",
+    retry: (failureCount, error) => {
+      if (error?.code === "AUTH_NOT_READY" && failureCount < 8) return true;
+      return failureCount < 2;
+    },
+    retryDelay: (attempt) => Math.min(250 * (attempt + 1), 2000),
+    placeholderData: (previousData) => previousData ?? initialSnapshot,
+    initialData: initialSnapshot,
   });
 
-  useEffect(() => {
-    if (!user) {
-      setState({
-        loading: false,
-        hasApplication: false,
-        portalReady: false,
-        needsPayout: false,
-        reviewStatus: null,
-      });
-      return;
+  const resolved = useMemo(() => {
+    if (!user) return optimistic;
+
+    const hasFreshSnapshot =
+      snapshot &&
+      (snapshot.route != null || snapshot.statusNotFound || snapshot.statusError);
+
+    if (hasFreshSnapshot) {
+      const next = resolveSupplierNavState(user, snapshot);
+      persistSupplierNavState(user, next);
+      return next;
     }
 
-    let cancelled = false;
-    setState((current) => ({ ...current, loading: true }));
+    if (snapshot?.reviewStatus != null || snapshot?.hasPayout) {
+      return resolveSupplierNavState(user, snapshot);
+    }
 
-    Promise.allSettled([
-      getSupplierApplicationStatus(),
-      getMyPayoutMethods(),
-    ])
-      .then(([statusResult, payoutResult]) => {
-        if (cancelled) return;
+    if (isError) return optimistic;
 
-        const data = statusResult.status === "fulfilled" ? statusResult.value : null;
-        const parsed = parseSupplierStatusResponse(data);
-        const reviewStatus = parsed?.status ?? null;
-        const hasApplication = Boolean(parsed) || userHasSupplierRole(user);
-        const hasPayout =
-          payoutResult.status === "fulfilled" &&
-          extractPayoutMethods(payoutResult.value).length > 0;
-        const needsPayout =
-          (isSupplierApproved(reviewStatus) || isSupplierActive(reviewStatus)) &&
-          !hasPayout;
+    return optimistic;
+  }, [user, snapshot, optimistic, isError]);
 
-        setState({
-          loading: false,
-          hasApplication,
-          portalReady: isSupplierPortalReady(reviewStatus, hasPayout),
-          needsPayout,
-          reviewStatus,
-        });
-      })
-      .catch(() => {
-        if (cancelled) return;
-
-        const hasRole = userHasSupplierRole(user);
-        setState({
-          loading: false,
-          hasApplication: hasRole,
-          portalReady: false,
-          needsPayout: false,
-          reviewStatus: hasRole ? "PENDING" : null,
-        });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.uid, user?.email, user?.roles]);
-
-  const navTarget = getSupplierNavTarget(state);
+  const showPlaceholder =
+    Boolean(userId) &&
+    !authLoading &&
+    isPending &&
+    !snapshot?.reviewStatus &&
+    !snapshot?.hasPayout &&
+    resolved.menuVariant === "become" &&
+    !resolved.hasApplication;
 
   return {
-    ...state,
-    ...navTarget,
-    fallbackStatus: state.hasApplication
-      ? buildFallbackSupplierStatus(state.reviewStatus || "PENDING")
+    ...resolved,
+    loading: showPlaceholder,
+    isRefreshing: isFetching && !isPending,
+    fallbackStatus: resolved.hasApplication
+      ? buildFallbackSupplierStatus(resolved.reviewStatus || "PENDING")
       : null,
   };
 }

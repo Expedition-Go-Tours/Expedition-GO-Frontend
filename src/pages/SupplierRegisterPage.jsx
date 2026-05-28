@@ -14,9 +14,8 @@ import { SupplierApplicationForm } from "@/components/supplier/SupplierApplicati
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getSupplierApplicationStatus } from "@/api/supplier";
 import {
-  getSupplierReviewStatus,
+  fetchSupplierAccessSnapshot,
   redirectToSupplierPortalLogin,
-  resolveSupplierRoute,
   SUPPLIER_PAYOUT_PATH,
 } from "@/lib/supplierPortal";
 import companyLogo from "@/assets/images/new_logo.png";
@@ -33,18 +32,16 @@ function SupplierRegisterPage() {
     let cancelled = false;
     setCheckingStatus(true);
 
-    getSupplierApplicationStatus()
-      .then(async (data) => {
+    fetchSupplierAccessSnapshot()
+      .then((snapshot) => {
         if (cancelled) return;
-        const reviewStatus = getSupplierReviewStatus(data);
-        const route = await resolveSupplierRoute(reviewStatus);
 
-        if (route === "portal") {
+        if (snapshot.route === "portal") {
           redirectToSupplierPortalLogin();
           return;
         }
 
-        if (route === "payout") {
+        if (snapshot.route === "payout") {
           navigate(SUPPLIER_PAYOUT_PATH, { replace: true });
         }
       })

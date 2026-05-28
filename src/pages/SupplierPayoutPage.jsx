@@ -6,6 +6,7 @@
  * @see api/payout.js
  */
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
   Landmark,
@@ -22,19 +23,30 @@ import {
   CreditCard,
   Mail,
   BadgeCheck,
+  Clock,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { getSupplierApplicationStatus } from "@/api/supplier";
 import {
-  getSupplierReviewStatus,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { invalidateSupplierAccess } from "@/api/supplierAccessQuery";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { refreshStoredUserFromBackend } from "@/lib/auth";
+import {
+  fetchSupplierAccessSnapshot,
   isSupplierActive,
   isSupplierApproved,
+  persistSupplierNavState,
   redirectToSupplierPortalLogin,
   requiresPayoutSetup,
-  resolveSupplierRoute,
-  supplierHasPayoutMethod,
+  resolveSupplierNavState,
   SUPPLIER_SIGNIN_PATH,
 } from "@/lib/supplierPortal";
 import {
@@ -42,6 +54,7 @@ import {
   addPayoutMethod,
   deletePayoutMethod,
   setDefaultPayoutMethod,
+  parseCreatedPayoutMethod,
 } from "@/api/payout";
 import companyLogo from "@/assets/images/new_logo.png";
 
@@ -50,13 +63,7 @@ const PAYOUT_TYPES = [
     key: "BANK_TRANSFER",
     label: "Bank Transfer",
     icon: Landmark,
-    description: "Receive payouts directly to your bank account via wire or ACH.",
-  },
-  {
-    key: "MOBILE_MONEY",
-    label: "Mobile Money",
-    icon: Smartphone,
-    description: "Receive payouts to your mobile money wallet (MTN, Orange, Airtel, etc.).",
+    description: "Receive payouts directly to your bank account via wire transfer.",
   },
   {
     key: "PAYPAL",
@@ -66,15 +73,71 @@ const PAYOUT_TYPES = [
   },
 ];
 
-const MOBILE_PROVIDERS = [
-  "MTN",
-  "Orange",
-  "Airtel",
-  "Vodafone",
-  "Safaricom",
-  "Tigo",
-  "Other",
-];
+/** Shape payload to match Expedition-Go-Backend-v2 payoutMethodController validation. */
+function buildPayoutPayload(data) {
+  const currency = (data.currency || "USD").trim().toUpperCase();
+
+  if (data.type === "BANK_TRANSFER") {
+    const payload = {
+      type: "BANK_TRANSFER",
+      currency,
+      accountName: data.accountName?.trim(),
+      bankName: data.bankName?.trim(),
+      bankCountry: data.bankCountry?.trim().toUpperCase(),
+    };
+
+    const accountNumber = data.accountNumber?.trim();
+    const iban = data.iban?.trim();
+    if (accountNumber) payload.accountNumber = accountNumber;
+    if (iban) payload.iban = iban;
+
+    const optionalFields = [
+      "bankAddress",
+      "routingNumber",
+      "swiftCode",
+      "sortCode",
+      "branchCode",
+    ];
+    for (const field of optionalFields) {
+      const value = data[field]?.trim();
+      if (value) payload[field] = value;
+    }
+
+    return payload;
+  }
+
+  if (data.type === "PAYPAL") {
+    return {
+      type: "PAYPAL",
+      currency,
+      paypalEmail: data.paypalEmail?.trim().toLowerCase(),
+    };
+  }
+
+  return { type: data.type, currency };
+}
+
+function validateBankTransferForm(form) {
+  if (!form.accountName?.trim()) return "Account holder name is required.";
+  if (!form.accountNumber?.trim() && !form.iban?.trim()) {
+    return "Account number or IBAN is required.";
+  }
+  if (!form.bankName?.trim()) return "Bank name is required.";
+  if (!form.bankCountry?.trim()) return "Bank country code is required (e.g. GH, US).";
+  if (form.bankCountry.trim().length !== 2) {
+    return "Bank country must be a 2-letter ISO code (e.g. GH, NG, US).";
+  }
+  return null;
+}
+
+function validatePayPalForm(form) {
+  const email = form.paypalEmail?.trim();
+  if (!email) return "PayPal email is required.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Enter a valid PayPal email address.";
+  }
+  return null;
+}
 
 function FieldLabel({ children, required }) {
   return (
@@ -97,7 +160,7 @@ function StyledInput({ icon: Icon, ...props }) {
   );
 }
 
-function BankTransferForm({ onSubmit, loading }) {
+function BankTransferForm({ onSubmit, onValidationError, loading }) {
   const [form, setForm] = useState({
     accountName: "",
     accountNumber: "",
@@ -116,11 +179,12 @@ function BankTransferForm({ onSubmit, loading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.accountName.trim()) return alert("Account name is required");
-    if (!form.accountNumber.trim() && !form.iban.trim()) return alert("Account number or IBAN is required");
-    if (!form.bankName.trim()) return alert("Bank name is required");
-    if (!form.bankCountry.trim()) return alert("Bank country is required");
-    onSubmit({ type: "BANK_TRANSFER", ...form });
+    const validationError = validateBankTransferForm(form);
+    if (validationError) {
+      onValidationError?.(validationError);
+      return;
+    }
+    onSubmit(buildPayoutPayload({ type: "BANK_TRANSFER", ...form }));
   };
 
   return (
@@ -237,74 +301,7 @@ function BankTransferForm({ onSubmit, loading }) {
   );
 }
 
-function MobileMoneyForm({ onSubmit, loading }) {
-  const [form, setForm] = useState({
-    mobileProvider: "",
-    mobileNumber: "",
-    currency: "USD",
-  });
-
-  const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.mobileProvider) return alert("Mobile provider is required");
-    if (!form.mobileNumber.trim()) return alert("Mobile number is required");
-    onSubmit({ type: "MOBILE_MONEY", ...form });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="grid gap-5 sm:grid-cols-2">
-      <div className="sm:col-span-2">
-        <FieldLabel required>Mobile Provider</FieldLabel>
-        <select
-          className="h-11 w-full rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 text-sm shadow-sm focus:border-primary/40 focus:outline-none focus:ring-4 focus:ring-primary/10"
-          value={form.mobileProvider}
-          onChange={(e) => update("mobileProvider", e.target.value)}
-        >
-          <option value="">Select provider</option>
-          {MOBILE_PROVIDERS.map((p) => (
-            <option key={p} value={p}>
-              {p}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="sm:col-span-2">
-        <FieldLabel required>Mobile Number</FieldLabel>
-        <StyledInput
-          icon={Smartphone}
-          placeholder="e.g. +233 20 123 4567"
-          value={form.mobileNumber}
-          onChange={(e) => update("mobileNumber", e.target.value)}
-        />
-      </div>
-      <div className="sm:col-span-2">
-        <FieldLabel>Currency</FieldLabel>
-        <StyledInput
-          placeholder="e.g. USD, GHS"
-          value={form.currency}
-          onChange={(e) => update("currency", e.target.value.toUpperCase())}
-        />
-      </div>
-      <div className="sm:col-span-2">
-        <Button
-          type="submit"
-          disabled={loading}
-          className="h-12 w-full rounded-lg text-base font-semibold"
-        >
-          {loading ? (
-            <LoaderCircle className="mr-2 size-4 animate-spin" />
-          ) : (
-            "Save Mobile Money Method"
-          )}
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-function PayPalForm({ onSubmit, loading }) {
+function PayPalForm({ onSubmit, onValidationError, loading }) {
   const [form, setForm] = useState({
     paypalEmail: "",
     currency: "USD",
@@ -314,8 +311,12 @@ function PayPalForm({ onSubmit, loading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.paypalEmail.trim()) return alert("PayPal email is required");
-    onSubmit({ type: "PAYPAL", ...form });
+    const validationError = validatePayPalForm(form);
+    if (validationError) {
+      onValidationError?.(validationError);
+      return;
+    }
+    onSubmit(buildPayoutPayload({ type: "PAYPAL", ...form }));
   };
 
   return (
@@ -355,7 +356,21 @@ function PayPalForm({ onSubmit, loading }) {
   );
 }
 
-function ExistingMethodCard({ method, onDelete, onSetDefault }) {
+function getPayoutMethodLabel(method) {
+  if (!method) return "this payout method";
+  if (method.type === "BANK_TRANSFER") {
+    return method.bankName || "Bank transfer";
+  }
+  if (method.type === "PAYPAL") {
+    return method.paypalEmail || "PayPal";
+  }
+  if (method.type === "MOBILE_MONEY") {
+    return method.mobileProvider || "Mobile money";
+  }
+  return "this payout method";
+}
+
+function ExistingMethodCard({ method, onDeleteRequest, onSetDefault }) {
   const iconMap = {
     BANK_TRANSFER: Landmark,
     MOBILE_MONEY: Smartphone,
@@ -416,7 +431,8 @@ function ExistingMethodCard({ method, onDelete, onSetDefault }) {
           </button>
         )}
         <button
-          onClick={() => onDelete(method.id)}
+          type="button"
+          onClick={() => onDeleteRequest(method)}
           className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
           title="Remove"
         >
@@ -429,37 +445,61 @@ function ExistingMethodCard({ method, onDelete, onSetDefault }) {
 
 export default function SupplierPayoutPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("BANK_TRANSFER");
   const [methods, setMethods] = useState([]);
+  const [reviewStatus, setReviewStatus] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [statusChecking, setStatusChecking] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const hasSavedMethod = methods.length > 0;
+  const payoutComplete = hasSavedMethod && isSupplierApproved(reviewStatus);
+
+  async function syncSupplierNav(snapshot) {
+    if (user && snapshot) {
+      persistSupplierNavState(user, resolveSupplierNavState(user, snapshot));
+    }
+    await invalidateSupplierAccess(queryClient, user);
+  }
 
   useEffect(() => {
     let cancelled = false;
 
-    getSupplierApplicationStatus()
-      .then(async (data) => {
+    fetchSupplierAccessSnapshot()
+      .then((snapshot) => {
         if (cancelled) return;
-        const reviewStatus = getSupplierReviewStatus(data);
 
-        if (!requiresPayoutSetup(reviewStatus)) {
+        if (
+          snapshot.reviewStatus &&
+          !requiresPayoutSetup(snapshot.reviewStatus)
+        ) {
           navigate(SUPPLIER_SIGNIN_PATH, { replace: true });
           return;
         }
 
-        const route = await resolveSupplierRoute(reviewStatus);
-        if (route === "portal") {
+        if (snapshot.route === "portal") {
           redirectToSupplierPortalLogin();
           return;
         }
 
+        setReviewStatus(snapshot.reviewStatus);
+        setMethods(snapshot.methods);
+        setShowAddForm(snapshot.methods.length === 0);
+        setListLoading(false);
         setStatusChecking(false);
       })
       .catch(() => {
-        if (!cancelled) setStatusChecking(false);
+        if (!cancelled) {
+          setListLoading(false);
+          setStatusChecking(false);
+        }
       });
 
     return () => {
@@ -467,16 +507,15 @@ export default function SupplierPayoutPage() {
     };
   }, [navigate]);
 
-  useEffect(() => {
-    if (statusChecking) return;
-    loadMethods();
-  }, [statusChecking]);
-
-  async function loadMethods() {
+  async function refreshMethods() {
     setListLoading(true);
     try {
-      const res = await getMyPayoutMethods();
-      setMethods(res.data?.methods || []);
+      const snapshot = await fetchSupplierAccessSnapshot();
+      setMethods(snapshot.methods);
+      setReviewStatus(snapshot.reviewStatus);
+      if (snapshot.methods.length > 0) {
+        setShowAddForm(false);
+      }
     } catch {
       setMethods([]);
     } finally {
@@ -489,21 +528,40 @@ export default function SupplierPayoutPage() {
     setError("");
     setSuccess("");
     try {
-      await addPayoutMethod(payload);
-      setSuccess("Payout method added successfully.");
-      await loadMethods();
+      const res = await addPayoutMethod(payload);
+      const created = parseCreatedPayoutMethod(res);
 
-      const statusRes = await getSupplierApplicationStatus().catch(() => null);
-      const reviewStatus = getSupplierReviewStatus(statusRes);
-      if (isSupplierActive(reviewStatus) && (await supplierHasPayoutMethod())) {
+      const snapshot = await fetchSupplierAccessSnapshot();
+      if (!snapshot.hasPayout) {
+        throw new Error(
+          "Payout details were not saved. Check your connection and try again, or contact support."
+        );
+      }
+
+      setMethods(snapshot.methods);
+      setReviewStatus(snapshot.reviewStatus);
+      setShowAddForm(false);
+      await refreshStoredUserFromBackend();
+      await syncSupplierNav(snapshot);
+
+      if (created?.id && !snapshot.methods.some((m) => m.id === created.id)) {
+        setMethods((prev) => [...prev, created]);
+      }
+
+      if (isSupplierActive(snapshot.reviewStatus)) {
+        setSuccess("Payout method saved. Opening your supplier dashboard...");
         redirectToSupplierPortalLogin();
         return;
       }
-      if (isSupplierApproved(reviewStatus)) {
+
+      if (isSupplierApproved(snapshot.reviewStatus)) {
         setSuccess(
-          "Payout method saved. Your supplier dashboard will be available after account activation."
+          "Payout method saved to your supplier profile. Your account is pending admin activation."
         );
+        return;
       }
+
+      setSuccess("Payout method saved successfully.");
     } catch (err) {
       setError(err?.message || "Failed to add payout method. Please try again.");
     } finally {
@@ -511,14 +569,26 @@ export default function SupplierPayoutPage() {
     }
   }
 
-  async function handleDelete(id) {
-    if (!confirm("Are you sure you want to remove this payout method?")) return;
+  async function confirmDeletePayout() {
+    if (!deleteTarget) return;
+
+    setDeleteLoading(true);
+    setError("");
     try {
-      await deletePayoutMethod(id);
-      setMethods((prev) => prev.filter((m) => m.id !== id));
+      await deletePayoutMethod(deleteTarget.id);
+      setMethods((prev) => {
+        const next = prev.filter((m) => m.id !== deleteTarget.id);
+        if (next.length === 0) setShowAddForm(true);
+        return next;
+      });
       setSuccess("Payout method removed.");
+      setDeleteTarget(null);
+      const snapshot = await fetchSupplierAccessSnapshot();
+      await syncSupplierNav(snapshot);
     } catch (err) {
       setError(err?.message || "Failed to remove payout method.");
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
@@ -526,20 +596,36 @@ export default function SupplierPayoutPage() {
     try {
       await setDefaultPayoutMethod(id);
       setSuccess("Default payout method updated.");
-      await loadMethods();
+      await refreshMethods();
+      await invalidateSupplierAccess(queryClient, user);
     } catch (err) {
       setError(err?.message || "Failed to update default method.");
     }
   }
 
+  const reportValidationError = (message) => {
+    setSuccess("");
+    setError(message);
+  };
+
   const renderForm = () => {
     switch (activeTab) {
       case "BANK_TRANSFER":
-        return <BankTransferForm onSubmit={handleAdd} loading={loading} />;
-      case "MOBILE_MONEY":
-        return <MobileMoneyForm onSubmit={handleAdd} loading={loading} />;
+        return (
+          <BankTransferForm
+            onSubmit={handleAdd}
+            onValidationError={reportValidationError}
+            loading={loading}
+          />
+        );
       case "PAYPAL":
-        return <PayPalForm onSubmit={handleAdd} loading={loading} />;
+        return (
+          <PayPalForm
+            onSubmit={handleAdd}
+            onValidationError={reportValidationError}
+            loading={loading}
+          />
+        );
       default:
         return null;
     }
@@ -555,11 +641,56 @@ export default function SupplierPayoutPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <Dialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => {
+          if (!open && !deleteLoading) setDeleteTarget(null);
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete payout method?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to remove{" "}
+              <span className="font-semibold text-slate-800">
+                {getPayoutMethodLabel(deleteTarget)}
+              </span>
+              ? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={deleteLoading}
+              onClick={() => setDeleteTarget(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={deleteLoading}
+              className="bg-rose-600 text-white hover:bg-rose-700"
+              onClick={confirmDeletePayout}
+            >
+              {deleteLoading ? (
+                <>
+                  <LoaderCircle className="mr-2 size-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete payout method"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <div className="border-b border-slate-100 bg-white px-4 py-4">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
           <button
-            onClick={() => navigate("/supplier/signin")}
+            onClick={() => navigate("/")}
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
           >
             <ArrowLeft className="size-4" />
@@ -585,7 +716,9 @@ export default function SupplierPayoutPage() {
             Payout Setup
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Your application has been approved! Add at least one payout method to start receiving payments.
+            {payoutComplete
+              ? "Your payout method is on file. Finance will verify it before your dashboard is activated."
+              : "Your application has been approved! Add at least one payout method (Bank Transfer or PayPal) to continue."}
           </p>
         </div>
 
@@ -618,7 +751,7 @@ export default function SupplierPayoutPage() {
               <ExistingMethodCard
                 key={m.id}
                 method={m}
-                onDelete={handleDelete}
+                onDeleteRequest={setDeleteTarget}
                 onSetDefault={handleSetDefault}
               />
             ))}
@@ -631,8 +764,50 @@ export default function SupplierPayoutPage() {
           </div>
         )}
 
+        {payoutComplete && (
+          <div className="mb-8 space-y-4 rounded-2xl border border-amber-200 bg-amber-50/80 p-5">
+            <p className="text-sm text-amber-900">
+              <strong>Payout setup complete.</strong> Your bank details are saved in our system.
+              You do not need to submit the form again. An admin will verify your method and
+              activate your supplier dashboard.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="border-amber-300 bg-white text-amber-900 hover:bg-amber-100"
+                onClick={() => navigate(SUPPLIER_SIGNIN_PATH)}
+              >
+                View application status
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-slate-300 bg-white"
+                onClick={() => navigate("/")}
+              >
+                Back to homepage
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {hasSavedMethod && !showAddForm ? (
+          <div className="mb-6">
+            <button
+              type="button"
+              onClick={() => setShowAddForm(true)}
+              className="text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
+            >
+              Add another payout method
+            </button>
+          </div>
+        ) : null}
+
+        {showAddForm && (
+          <>
         {/* Tabs */}
-        <div className="mb-6 grid grid-cols-3 gap-2">
+        <div className="mb-6 grid grid-cols-2 gap-2">
           {PAYOUT_TYPES.map((t) => {
             const Icon = t.icon;
             const isActive = activeTab === t.key;
@@ -673,6 +848,8 @@ export default function SupplierPayoutPage() {
           </p>
           {renderForm()}
         </div>
+          </>
+        )}
       </div>
     </div>
   );

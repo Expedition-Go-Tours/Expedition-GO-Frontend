@@ -31,7 +31,12 @@ const resources = {
         settings: "Settings",
         support: "Support",
         updates: "Updates",
-        becomeSupplier: "Become a supplier"
+        becomeSupplier: "Become a supplier",
+        supplierStatusPending: "Supplier status pending",
+        supplierPendingWarning: "Action required",
+        supplierPendingPayoutHint: "Add your payout method to continue. Dashboard access unlocks after admin activation.",
+        supplierPendingActivationHint: "Your payout method is saved. Your supplier dashboard will unlock once an admin activates your account.",
+        supplierPendingReviewHint: "Your supplier application is being reviewed. Complete any outstanding steps from the supplier portal."
       },
       hero: {
         badge: "Curated African escapes",
@@ -194,7 +199,16 @@ const resources = {
         statusPendingDesc: "Your application is under review. We'll email you when a decision is made.",
         statusApprovedDesc: "Your application is approved. Add a payout method before you can access your supplier dashboard.",
         statusApprovedAwaitingActivation: "Your payout method is saved. We will activate your supplier dashboard after review.",
-        setupPayout: "Set up payout method"
+        setupPayout: "Set up payout method",
+        successSignedIn: "Signed in successfully.",
+        successApplyRequired:
+          "Signed in successfully. Apply to become a supplier to access the dashboard.",
+        successSetupPayout:
+          "Signed in successfully. Set up your payout method to access the dashboard.",
+        successAwaitingActivation:
+          "Signed in successfully. Your payout is saved — your dashboard unlocks after admin activation.",
+        successPortalReady:
+          "Signed in successfully. Opening your supplier dashboard..."
       },
       footer: {
         waysYouCanPay: "Ways You Can Pay",
@@ -413,7 +427,12 @@ const resources = {
         settings: "Configuración",
         support: "Soporte",
         updates: "Actualizaciones",
-        becomeSupplier: "Conviértete en proveedor"
+        becomeSupplier: "Conviértete en proveedor",
+        supplierStatusPending: "Estado de proveedor pendiente",
+        supplierPendingWarning: "Acción requerida",
+        supplierPendingPayoutHint: "Añade tu método de pago para continuar. El panel se desbloqueará tras la activación por un administrador.",
+        supplierPendingActivationHint: "Tu método de pago está guardado. El panel de proveedor se desbloqueará cuando un administrador active tu cuenta.",
+        supplierPendingReviewHint: "Tu solicitud de proveedor está en revisión. Completa los pasos pendientes desde el portal de proveedores."
       },
       hero: {
         badge: "Escapadas africanas seleccionadas",
@@ -790,7 +809,12 @@ const resources = {
         settings: "Paramètres",
         support: "Assistance",
         updates: "Mises à jour",
-        becomeSupplier: "Devenir fournisseur"
+        becomeSupplier: "Devenir fournisseur",
+        supplierStatusPending: "Statut fournisseur en attente",
+        supplierPendingWarning: "Action requise",
+        supplierPendingPayoutHint: "Ajoutez votre mode de paiement pour continuer. Le tableau de bord sera débloqué après activation par un administrateur.",
+        supplierPendingActivationHint: "Votre mode de paiement est enregistré. Le tableau de bord fournisseur sera débloqué une fois votre compte activé par un administrateur.",
+        supplierPendingReviewHint: "Votre candidature fournisseur est en cours d'examen. Complétez les étapes restantes depuis le portail fournisseur."
       },
       hero: {
         badge: "Escapades africaines sélectionnées",
@@ -1167,7 +1191,12 @@ const resources = {
         settings: "Einstellungen",
         support: "Unterstützung",
         updates: "Aktualisierungen",
-        becomeSupplier: "Lieferant werden"
+        becomeSupplier: "Lieferant werden",
+        supplierStatusPending: "Lieferantenstatus ausstehend",
+        supplierPendingWarning: "Aktion erforderlich",
+        supplierPendingPayoutHint: "Fügen Sie Ihre Auszahlungsmethode hinzu. Der Dashboard-Zugang wird nach der Aktivierung durch einen Administrator freigeschaltet.",
+        supplierPendingActivationHint: "Ihre Auszahlungsmethode ist gespeichert. Das Lieferanten-Dashboard wird freigeschaltet, sobald ein Administrator Ihr Konto aktiviert.",
+        supplierPendingReviewHint: "Ihre Lieferantenbewerbung wird geprüft. Schließen Sie ausstehende Schritte im Lieferantenportal ab."
       },
       hero: {
         badge: "Kuratierte afrikanische Ausflüge",
@@ -1544,7 +1573,12 @@ const resources = {
         settings: "Instellingen",
         support: "Ondersteuning",
         updates: "Updates",
-        becomeSupplier: "Word leverancier"
+        becomeSupplier: "Word leverancier",
+        supplierStatusPending: "Leveranciersstatus in behandeling",
+        supplierPendingWarning: "Actie vereist",
+        supplierPendingPayoutHint: "Voeg je uitbetalingsmethode toe om door te gaan. Dashboardtoegang wordt vrijgegeven na activatie door een beheerder.",
+        supplierPendingActivationHint: "Je uitbetalingsmethode is opgeslagen. Het leveranciersdashboard wordt vrijgegeven zodra een beheerder je account activeert.",
+        supplierPendingReviewHint: "Je leveranciersaanvraag wordt beoordeeld. Rond openstaande stappen af via het leveranciersportaal."
       },
       hero: {
         badge: "Geselecteerde Afrikaanse ontsnappingen",

@@ -261,6 +261,11 @@ export async function subscribeToAuthState(callback) {
 
         const storedUser = getStoredAuthUser();
         if (storedUser && getStoredFirebaseUid(storedUser) === firebaseUser.uid) {
+          try {
+            await firebaseUser.getIdToken(false);
+          } catch {
+            // Token refresh failed; fall through to full sync.
+          }
           callback(storedUser);
           return;
         }
@@ -433,12 +438,19 @@ export async function signOutUser() {
 // ============================================================================
 
 export async function getCurrentUserToken() {
-  if (AUTH_PROVIDER === 'firebase' && auth && auth.currentUser) {
+  if (AUTH_PROVIDER === 'firebase' && auth) {
+    const firebaseUser = auth.currentUser;
+    if (!firebaseUser) return null;
+
     try {
-      return await auth.currentUser.getIdToken();
+      return await firebaseUser.getIdToken();
     } catch {
       return null;
     }
+  }
+
+  if (AUTH_PROVIDER === 'mock' && getStoredAuthUser()) {
+    return import.meta.env.DEV ? 'test-token' : null;
   }
 
   return null;
@@ -450,6 +462,45 @@ export function getApiBaseUrl() {
 
 export async function getAuthToken() {
   return await getCurrentUserToken();
+}
+
+/** Wait for Firebase to restore the session after a full page reload. */
+export async function waitForAuthToken(maxMs = 5000) {
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline) {
+    const token = await getCurrentUserToken();
+    if (token) return token;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  return null;
+}
+
+/** Refresh cached user from GET /users/me (roles, profile fields). */
+export async function refreshStoredUserFromBackend() {
+  try {
+    const token = await waitForAuthToken();
+    if (!token) return null;
+
+    const payload = await requestJson(`${API_BASE}/users/me`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const user = payload?.data?.user ?? payload?.data ?? null;
+    if (user) {
+      const normalized = {
+        ...user,
+        firebaseUid: user.firebaseUid ?? user.uid,
+        uid: user.firebaseUid ?? user.uid,
+      };
+      storeAuthUser(normalized);
+      notifyAuthStateChange(normalized);
+      return normalized;
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 export async function updateUserProfile(updates) {

@@ -7,6 +7,10 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowRight, UserCheck, Upload, Wallet } from "lucide-react";
 
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useSupplierNav } from "@/hooks/useSupplierNav";
+import { getSupplierEntryHref } from "@/lib/supplierPortal";
+
 const STEPS = [
   {
     Icon: UserCheck,
@@ -27,6 +31,9 @@ const STEPS = [
 
 export function SupplierSection() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const { href } = useSupplierNav(user);
+  const ctaHref = getSupplierEntryHref({ user, href });
 
   return (
     <section className="bg-white py-12 sm:py-16 lg:py-20">
@@ -61,7 +68,7 @@ export function SupplierSection() {
 
               <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                 <Link
-                  to="/supplier/signin"
+                  to={ctaHref}
                   className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-5 py-3 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-amber-300 hover:shadow-xl active:scale-[0.98]"
                 >
                   {t("supplier.ctaPrimary", "Become a supplier")}

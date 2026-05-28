@@ -8,7 +8,7 @@
  * @see hooks/useSearchAutocomplete.js
  * @see contexts/CurrencyContext.jsx, WishlistContext.jsx, CartContext.jsx
  */
-import { Globe, Heart, Headset, Menu, ShoppingCart, Settings, Store, UserCircle2, X, ChevronDown, Search } from "lucide-react";
+import { Globe, Heart, Headset, Menu, ShoppingCart, Settings, UserCircle2, X, ChevronDown, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -20,6 +20,7 @@ import { getAuthToken } from "@/lib/auth";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useSearchAutocomplete } from "@/hooks/useSearchAutocomplete";
 import { SearchAutocomplete } from "./SearchAutocomplete";
+import { SupplierNavMenuItem } from "./SupplierNavMenuItem";
 
 export function Navbar({
   sharedDateRange,
@@ -419,14 +420,9 @@ export function Navbar({
                         <p className="text-xs text-slate-500">{user.email}</p>
                       </div>
                       <div className="py-2">
-                        <Link
-                          to="/supplier/signin"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
-                        >
-                          <Store className="size-4" />
-                          <span>Become a supplier</span>
-                        </Link>
+                        <SupplierNavMenuItem
+                          onNavigate={() => setIsUserMenuOpen(false)}
+                        />
                         <Link
                           to="/support"
                           onClick={() => setIsUserMenuOpen(false)}
@@ -667,14 +663,10 @@ export function Navbar({
               </Link>
               {!loading && user && (
                 <>
-                  <Link
-                    to="/supplier/signin"
-                    onClick={closeMobileMenu}
+                  <SupplierNavMenuItem
+                    onNavigate={closeMobileMenu}
                     className="inline-flex w-full items-center gap-2 py-2 text-sm text-slate-700 transition hover:text-slate-950"
-                  >
-                    <Store className="size-4" />
-                    <span>Become a supplier</span>
-                  </Link>
+                  />
                   <Link to="/settings" onClick={closeMobileMenu} className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
                     <Settings className="size-4" />
                     <span className="text-sm">{t('nav.settings')}</span>

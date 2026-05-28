@@ -24,9 +24,13 @@ import { Input } from "@/components/ui/input";
 import { signInWithEmail, signInWithGoogle } from "@/lib/auth";
 import { getSupplierApplicationStatus } from "@/api/supplier";
 import {
-  getSupplierReviewStatus,
-  isSupplierPortalReady,
+  buildFallbackSupplierStatus,
+  parseSupplierStatusResponse,
   redirectToSupplierPortalLogin,
+  resolveSupplierRoute,
+  supplierHasPayoutMethod,
+  SUPPLIER_PAYOUT_PATH,
+  userHasSupplierRole,
 } from "@/lib/supplierPortal";
 import { useAuth } from "@/components/auth/AuthProvider";
 import companyLogo from "@/assets/images/new_logo.png";
@@ -42,10 +46,14 @@ function GoogleIcon() {
   );
 }
 
-function SupplierStatusDashboard({ status }) {
+function SupplierStatusDashboard({ status, payoutComplete = false }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const profile = status?.data?.supplierProfile || status?.data || {};
   const reviewStatus = profile.status || "PENDING";
   const isRejected = reviewStatus === "REJECTED";
+  const isApproved = reviewStatus === "APPROVED";
+  const approvedAwaitingActivation = isApproved && payoutComplete;
   const adminNotes = profile.adminNotes;
   const businessInfo = profile.businessInfo;
   const reviewedAt = profile.reviewedAt;
@@ -60,6 +68,10 @@ function SupplierStatusDashboard({ status }) {
             <div className="flex size-14 items-center justify-center rounded-full bg-rose-100">
               <XCircle className="size-7 text-rose-600" />
             </div>
+          ) : approvedAwaitingActivation ? (
+            <div className="flex size-14 items-center justify-center rounded-full bg-emerald-100">
+              <UserCheck className="size-7 text-emerald-600" />
+            </div>
           ) : (
             <div className="flex size-14 items-center justify-center rounded-full bg-amber-100">
               <Clock className="size-7 text-amber-600" />
@@ -70,11 +82,37 @@ function SupplierStatusDashboard({ status }) {
             <p className="text-xl font-bold text-slate-900">{reviewStatus}</p>
             <p className="text-sm text-slate-500">
               {isRejected
-                ? "Your application was not approved."
-                : "Your application is under review. We'll email you when a decision is made."}
+                ? t(
+                    "supplierAuth.statusRejectedDesc",
+                    "Your application was not approved."
+                  )
+                : approvedAwaitingActivation
+                  ? t(
+                      "supplierAuth.statusApprovedAwaitingActivation",
+                      "Your payout method is saved. We will activate your supplier dashboard after review."
+                    )
+                  : isApproved
+                    ? t(
+                        "supplierAuth.statusApprovedDesc",
+                        "Your application is approved. Add a payout method before you can access your supplier dashboard."
+                      )
+                    : t(
+                      "supplierAuth.statusPendingDesc",
+                      "Your application is under review. We'll email you when a decision is made."
+                    )}
             </p>
           </div>
         </div>
+
+        {isApproved && !payoutComplete && (
+          <Button
+            onClick={() => navigate(SUPPLIER_PAYOUT_PATH)}
+            className="h-11 w-full rounded-lg text-sm font-semibold"
+          >
+            {t("supplierAuth.setupPayout", "Set up payout method")}
+            <ArrowRight className="ml-2 size-4" />
+          </Button>
+        )}
 
         {reviewedAt && (
           <p className="mt-4 text-xs text-slate-400">
@@ -122,26 +160,29 @@ function SupplierStatusDashboard({ status }) {
 }
 
 function NoApplicationView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <div className="w-full max-w-[420px]">
       <div className="mb-6 flex justify-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-amber-100">
-          <FileText className="size-8 text-amber-600" />
+        <div className="flex size-16 items-center justify-center rounded-full bg-slate-100">
+          <FileText className="size-8 text-slate-600" />
         </div>
       </div>
       <h2 className="mb-3 text-center text-xl font-bold text-slate-900">
-        No Supplier Application Found
+        {t("supplierAuth.noApplicationTitle", "Start your supplier application")}
       </h2>
       <p className="mb-6 text-center text-sm text-slate-500">
-        You&apos;re signed in, but you haven&apos;t submitted a supplier application yet.
-        Start your application to become a verified partner.
+        {t(
+          "supplierAuth.noApplicationDesc",
+          "You are signed in to TravioAfrica. Complete a short application to list tours and manage bookings as a verified partner."
+        )}
       </p>
       <Button
         onClick={() => navigate("/supplier/register")}
         className="h-12 w-full rounded-lg text-base font-semibold"
       >
-        Start Application
+        {t("supplierAuth.startApplication", "Start application")}
         <ArrowRight className="ml-2 size-4" />
       </Button>
     </div>
@@ -150,6 +191,7 @@ function NoApplicationView() {
 
 function SupplierSignInPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState("email"); // "email" | "password"
   const [email, setEmail] = useState("");
@@ -159,6 +201,7 @@ function SupplierSignInPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const [supplierStatus, setSupplierStatus] = useState(null);
+  const [payoutComplete, setPayoutComplete] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusError, setStatusError] = useState("");
 
@@ -168,22 +211,53 @@ function SupplierSignInPage() {
       setStatusLoading(true);
       setStatusError("");
       getSupplierApplicationStatus()
-        .then((data) => {
-          const reviewStatus = getSupplierReviewStatus(data);
-          if (isSupplierPortalReady(reviewStatus)) {
+        .then(async (data) => {
+          const parsed = parseSupplierStatusResponse(data);
+
+          if (!parsed) {
+            if (userHasSupplierRole(user)) {
+              setSupplierStatus(buildFallbackSupplierStatus("PENDING"));
+            } else {
+              setSupplierStatus(null);
+            }
+            return;
+          }
+
+          const reviewStatus = parsed.status;
+          const route = await resolveSupplierRoute(reviewStatus);
+
+          if (route === "portal") {
             redirectToSupplierPortalLogin();
             return;
           }
+
+          if (route === "payout") {
+            navigate(SUPPLIER_PAYOUT_PATH, { replace: true });
+            return;
+          }
+
           setSupplierStatus(data);
+          if (reviewStatus === "APPROVED") {
+            setPayoutComplete(await supplierHasPayoutMethod());
+          } else {
+            setPayoutComplete(false);
+          }
         })
         .catch((err) => {
           if (err?.status === 404) {
-            setSupplierStatus(null);
-          } else {
-            const message = err?.message || "Failed to load supplier status";
-            setStatusError(message);
-            toast.error(message, { id: "supplier-status-error" });
+            if (userHasSupplierRole(user)) {
+              setSupplierStatus(buildFallbackSupplierStatus("PENDING"));
+            } else {
+              setSupplierStatus(null);
+            }
+            return;
           }
+
+          const message =
+            err?.message ||
+            t("supplierAuth.statusLoadError", "We couldn't load your supplier status. Please try again.");
+          setStatusError(message);
+          toast.error(message, { id: "supplier-status-error" });
         })
         .finally(() => {
           setStatusLoading(false);
@@ -192,7 +266,7 @@ function SupplierSignInPage() {
       setSupplierStatus(null);
       setStatusError("");
     }
-  }, [user?.uid, user?.email]);
+  }, [user?.uid, user?.email, navigate, t]);
 
   function handleEmailNext(e) {
     e.preventDefault();
@@ -286,7 +360,7 @@ function SupplierSignInPage() {
             <img src={companyLogo} alt="TravioAfrica" className="h-auto w-[220px] object-contain" />
           </Link>
         </div>
-        <SupplierStatusDashboard status={supplierStatus} />
+        <SupplierStatusDashboard status={supplierStatus} payoutComplete={payoutComplete} />
       </div>
     );
   }

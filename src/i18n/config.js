@@ -30,7 +30,8 @@ const resources = {
         signOut: "Sign Out",
         settings: "Settings",
         support: "Support",
-        updates: "Updates"
+        updates: "Updates",
+        becomeSupplier: "Become a supplier"
       },
       hero: {
         badge: "Curated African escapes",
@@ -184,7 +185,16 @@ const resources = {
         welcomeBackPartner: "Welcome back, partner",
         signedInDesc: "You're signed in as a supplier. View your application status and manage your account.",
         wantToApply: "Want to apply as a supplier?",
-        applyHere: "Apply here"
+        applyHere: "Apply here",
+        noApplicationTitle: "Start your supplier application",
+        noApplicationDesc: "You are signed in to TravioAfrica. Complete a short application to list tours and manage bookings as a verified partner.",
+        startApplication: "Start application",
+        statusLoadError: "We couldn't load your supplier status. Please try again.",
+        statusRejectedDesc: "Your application was not approved.",
+        statusPendingDesc: "Your application is under review. We'll email you when a decision is made.",
+        statusApprovedDesc: "Your application is approved. Add a payout method before you can access your supplier dashboard.",
+        statusApprovedAwaitingActivation: "Your payout method is saved. We will activate your supplier dashboard after review.",
+        setupPayout: "Set up payout method"
       },
       footer: {
         waysYouCanPay: "Ways You Can Pay",
@@ -402,7 +412,8 @@ const resources = {
         signOut: "Cerrar sesión",
         settings: "Configuración",
         support: "Soporte",
-        updates: "Actualizaciones"
+        updates: "Actualizaciones",
+        becomeSupplier: "Conviértete en proveedor"
       },
       hero: {
         badge: "Escapadas africanas seleccionadas",
@@ -556,7 +567,11 @@ const resources = {
         welcomeBackPartner: "Bienvenido de nuevo, socio",
         signedInDesc: "Has iniciado sesión como proveedor. Ver el estado de tu solicitud y gestionar tu cuenta.",
         wantToApply: "¿Quieres solicitar ser proveedor?",
-        applyHere: "Solicitar aquí"
+        applyHere: "Solicitar aquí",
+        noApplicationTitle: "Inicia tu solicitud de proveedor",
+        noApplicationDesc: "Has iniciado sesión en TravioAfrica. Completa una solicitud breve para publicar tours y gestionar reservas como socio verificado.",
+        startApplication: "Iniciar solicitud",
+        statusLoadError: "No pudimos cargar el estado de tu proveedor. Inténtalo de nuevo."
       },
       footer: {
         waysYouCanPay: "Formas de pago",
@@ -774,7 +789,8 @@ const resources = {
         signOut: "Se déconnecter",
         settings: "Paramètres",
         support: "Assistance",
-        updates: "Mises à jour"
+        updates: "Mises à jour",
+        becomeSupplier: "Devenir fournisseur"
       },
       hero: {
         badge: "Escapades africaines sélectionnées",
@@ -928,7 +944,11 @@ const resources = {
         welcomeBackPartner: "Bon retour, partenaire",
         signedInDesc: "Vous êtes connecté en tant que fournisseur. Consultez le statut de votre candidature et gérez votre compte.",
         wantToApply: "Vous voulez postuler comme fournisseur?",
-        applyHere: "Postulez ici"
+        applyHere: "Postulez ici",
+        noApplicationTitle: "Commencez votre candidature fournisseur",
+        noApplicationDesc: "Vous êtes connecté à TravioAfrica. Complétez une courte candidature pour publier des circuits et gérer les réservations en tant que partenaire vérifié.",
+        startApplication: "Commencer la candidature",
+        statusLoadError: "Impossible de charger le statut fournisseur. Veuillez réessayer."
       },
       footer: {
         waysYouCanPay: "Moyens de paiement",
@@ -1146,7 +1166,8 @@ const resources = {
         signOut: "Abmelden",
         settings: "Einstellungen",
         support: "Unterstützung",
-        updates: "Aktualisierungen"
+        updates: "Aktualisierungen",
+        becomeSupplier: "Lieferant werden"
       },
       hero: {
         badge: "Kuratierte afrikanische Ausflüge",
@@ -1300,7 +1321,11 @@ const resources = {
         welcomeBackPartner: "Willkommen zurück, Partner",
         signedInDesc: "Sie sind als Lieferant angemeldet. Sehen Sie sich den Status Ihrer Bewerbung an und verwalten Sie Ihr Konto.",
         wantToApply: "Möchten Sie sich als Lieferant bewerben?",
-        applyHere: "Hier bewerben"
+        applyHere: "Hier bewerben",
+        noApplicationTitle: "Starten Sie Ihre Lieferantenbewerbung",
+        noApplicationDesc: "Sie sind bei TravioAfrica angemeldet. Füllen Sie eine kurze Bewerbung aus, um Touren zu listen und Buchungen als verifizierter Partner zu verwalten.",
+        startApplication: "Bewerbung starten",
+        statusLoadError: "Wir konnten Ihren Lieferantenstatus nicht laden. Bitte versuchen Sie es erneut."
       },
       footer: {
         waysYouCanPay: "Zahlungsmöglichkeiten",
@@ -1518,7 +1543,8 @@ const resources = {
         signOut: "Uitloggen",
         settings: "Instellingen",
         support: "Ondersteuning",
-        updates: "Updates"
+        updates: "Updates",
+        becomeSupplier: "Word leverancier"
       },
       hero: {
         badge: "Geselecteerde Afrikaanse ontsnappingen",
@@ -1671,7 +1697,11 @@ const resources = {
         welcomeBackPartner: "Welkom terug, partner",
         signedInDesc: "Je bent ingelogd als leverancier. Bekijk de status van je aanvraag en beheer je account.",
         wantToApply: "Wil je je aanmelden als leverancier?",
-        applyHere: "Hier aanmelden"
+        applyHere: "Hier aanmelden",
+        noApplicationTitle: "Start je leveranciersaanvraag",
+        noApplicationDesc: "Je bent ingelogd bij TravioAfrica. Vul een korte aanvraag in om tours te plaatsen en boekingen te beheren als geverifieerde partner.",
+        startApplication: "Aanvraag starten",
+        statusLoadError: "We konden je leveranciersstatus niet laden. Probeer het opnieuw."
       },
       footer: {
         waysYouCanPay: "Betaalmethoden",

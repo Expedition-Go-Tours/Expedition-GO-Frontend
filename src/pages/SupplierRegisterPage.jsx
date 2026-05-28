@@ -1,27 +1,29 @@
 /**
  * @file SupplierRegisterPage.jsx
  * @description Supplier application entry (/supplier/register). Renders SupplierApplicationForm.
- *   Approved suppliers are redirected to the external supplier portal login.
+ *   Approved suppliers are sent to payout setup before dashboard access.
  *
  * @see components/supplier/SupplierApplicationForm.jsx
  * @see api/supplier.js
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { SupplierApplicationForm } from "@/components/supplier/SupplierApplicationForm";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getSupplierApplicationStatus } from "@/api/supplier";
 import {
   getSupplierReviewStatus,
-  isSupplierPortalReady,
   redirectToSupplierPortalLogin,
+  resolveSupplierRoute,
+  SUPPLIER_PAYOUT_PATH,
 } from "@/lib/supplierPortal";
 import companyLogo from "@/assets/images/new_logo.png";
 
 function SupplierRegisterPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [checkingStatus, setCheckingStatus] = useState(false);
 
@@ -32,11 +34,18 @@ function SupplierRegisterPage() {
     setCheckingStatus(true);
 
     getSupplierApplicationStatus()
-      .then((data) => {
+      .then(async (data) => {
         if (cancelled) return;
         const reviewStatus = getSupplierReviewStatus(data);
-        if (isSupplierPortalReady(reviewStatus)) {
+        const route = await resolveSupplierRoute(reviewStatus);
+
+        if (route === "portal") {
           redirectToSupplierPortalLogin();
+          return;
+        }
+
+        if (route === "payout") {
+          navigate(SUPPLIER_PAYOUT_PATH, { replace: true });
         }
       })
       .catch(() => {

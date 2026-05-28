@@ -29,8 +29,13 @@ import { Input } from "@/components/ui/input";
 import { getSupplierApplicationStatus } from "@/api/supplier";
 import {
   getSupplierReviewStatus,
-  isSupplierPortalReady,
+  isSupplierActive,
+  isSupplierApproved,
   redirectToSupplierPortalLogin,
+  requiresPayoutSetup,
+  resolveSupplierRoute,
+  supplierHasPayoutMethod,
+  SUPPLIER_SIGNIN_PATH,
 } from "@/lib/supplierPortal";
 import {
   getMyPayoutMethods,
@@ -436,13 +441,21 @@ export default function SupplierPayoutPage() {
     let cancelled = false;
 
     getSupplierApplicationStatus()
-      .then((data) => {
+      .then(async (data) => {
         if (cancelled) return;
         const reviewStatus = getSupplierReviewStatus(data);
-        if (isSupplierPortalReady(reviewStatus)) {
+
+        if (!requiresPayoutSetup(reviewStatus)) {
+          navigate(SUPPLIER_SIGNIN_PATH, { replace: true });
+          return;
+        }
+
+        const route = await resolveSupplierRoute(reviewStatus);
+        if (route === "portal") {
           redirectToSupplierPortalLogin();
           return;
         }
+
         setStatusChecking(false);
       })
       .catch(() => {
@@ -452,7 +465,7 @@ export default function SupplierPayoutPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (statusChecking) return;
@@ -479,6 +492,18 @@ export default function SupplierPayoutPage() {
       await addPayoutMethod(payload);
       setSuccess("Payout method added successfully.");
       await loadMethods();
+
+      const statusRes = await getSupplierApplicationStatus().catch(() => null);
+      const reviewStatus = getSupplierReviewStatus(statusRes);
+      if (isSupplierActive(reviewStatus) && (await supplierHasPayoutMethod())) {
+        redirectToSupplierPortalLogin();
+        return;
+      }
+      if (isSupplierApproved(reviewStatus)) {
+        setSuccess(
+          "Payout method saved. Your supplier dashboard will be available after account activation."
+        );
+      }
     } catch (err) {
       setError(err?.message || "Failed to add payout method. Please try again.");
     } finally {

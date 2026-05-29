@@ -6,7 +6,7 @@
  * @see api/supplier.js
  * @see pages/SupplierRegisterPage.jsx
  */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -128,18 +128,75 @@ const LANGUAGE_OPTIONS = [
   "Amharic",
 ];
 
-function StepIndicator({ steps, currentStep }) {
+function getStepValidationError(stepKey, form) {
+  if (stepKey === "business") {
+    const b = form.businessInfo;
+    if (!b.legalBusinessName.trim()) return "Legal business name is required";
+    if (!b.displayName.trim()) return "Display name is required";
+    if (!b.businessType) return "Business type is required";
+    if (!b.country) return "Country is required";
+    if (!b.address.line1.trim()) return "Address line 1 is required";
+    if (!b.address.city.trim()) return "City is required";
+    if (!b.address.state.trim()) return "State / Province is required";
+    if (!b.address.postalCode.trim()) return "Postal code is required";
+    if (!b.phoneNumber.trim()) return "Phone number is required";
+  }
+
+  if (stepKey === "operating") {
+    const o = form.operatingInfo;
+    if (o.tourCategories.length === 0) return "Select at least one tour category";
+    if (o.destinations.length === 0) return "Add at least one destination";
+    if (o.languages.length === 0) return "Select at least one language";
+    if (!o.yearsInBusiness || parseInt(o.yearsInBusiness, 10) < 0) return "Years in business is required";
+    if (!o.cancellationPolicy.trim()) return "Cancellation policy is required";
+    if (!o.meetingStyle) return "Meeting style is required";
+  }
+
+  if (stepKey === "representative") {
+    const r = form.representativeInfo;
+    if (!r.fullName.trim()) return "Representative full name is required";
+    if (!r.email.trim()) return "Representative email is required";
+    if (!r.dateOfBirth) return "Date of birth is required";
+    if (!r.address.line1.trim()) return "Representative address line 1 is required";
+    if (!r.address.city.trim()) return "Representative city is required";
+    if (!r.address.state.trim()) return "Representative state / province is required";
+    if (!r.address.postalCode.trim()) return "Representative postal code is required";
+    if (!r.idType) return "ID type is required";
+    if (!r.idDocument) return "ID document image is required";
+  }
+
+  if (stepKey === "documents") {
+    const d = form.businessDocuments;
+    if (!d.registrationDocument) return "Business registration document is required";
+    if (!d.taxDocument) return "Tax document is required";
+    if (!d.proofOfAddress) return "Proof of address document is required";
+  }
+
+  if (stepKey === "compliance") {
+    if (!form.compliance.acceptedTerms) return "You must accept the terms and conditions";
+  }
+
+  return null;
+}
+
+function StepIndicator({ steps, currentStep, onStepClick, stepCompleted = [] }) {
   return (
     <div className="mb-8 overflow-x-auto px-4">
       <div className="flex min-w-[280px] items-center justify-center sm:min-w-0 sm:justify-between">
         {steps.map((step, idx) => {
           const isActive = idx === currentStep;
-          const isCompleted = idx < currentStep;
+          const isCompleted = Boolean(stepCompleted[idx]);
           const isLast = idx === steps.length - 1;
 
           return (
             <div key={step.key} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center gap-2">
+              <button
+                type="button"
+                onClick={() => onStepClick?.(idx)}
+                aria-current={isActive ? "step" : undefined}
+                aria-label={`${step.label}${isCompleted ? ", completed" : ""}`}
+                className="flex flex-col items-center gap-2 rounded-lg transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-green)] focus-visible:ring-offset-2"
+              >
                 <div
                   className={`flex size-8 items-center justify-center rounded-full border-2 transition-all duration-300 sm:size-10 ${
                     isActive
@@ -149,7 +206,7 @@ function StepIndicator({ steps, currentStep }) {
                         : "border-slate-200 bg-white text-slate-400"
                   }`}
                 >
-                  {isCompleted ? (
+                  {isCompleted && !isActive ? (
                     <CheckCircle2 className="size-4 sm:size-5" />
                   ) : (
                     <step.icon className="size-3.5 sm:size-4" />
@@ -162,7 +219,7 @@ function StepIndicator({ steps, currentStep }) {
                 >
                   {step.label}
                 </span>
-              </div>
+              </button>
               {!isLast && (
                 <div
                   className={`mx-1.5 h-px flex-1 transition-all duration-300 sm:mx-4 ${
@@ -392,68 +449,53 @@ export function SupplierApplicationForm() {
     });
   }, []);
 
+  const stepCompleted = useMemo(
+    () =>
+      STEPS.map((s) => getStepValidationError(s.key, form) === null),
+    [form]
+  );
+
+  const isFormComplete = useMemo(
+    () => stepCompleted.every(Boolean),
+    [stepCompleted]
+  );
+
   const validateStep = useCallback(() => {
+    const err = getStepValidationError(STEPS[step].key, form);
+    if (err) {
+      setError(err);
+      return false;
+    }
     setError("");
-    const s = STEPS[step].key;
-
-    if (s === "business") {
-      const b = form.businessInfo;
-      if (!b.legalBusinessName.trim()) return setError("Legal business name is required");
-      if (!b.displayName.trim()) return setError("Display name is required");
-      if (!b.businessType) return setError("Business type is required");
-      if (!b.country) return setError("Country is required");
-      if (!b.address.line1.trim()) return setError("Address line 1 is required");
-      if (!b.address.city.trim()) return setError("City is required");
-      if (!b.address.state.trim()) return setError("State / Province is required");
-      if (!b.address.postalCode.trim()) return setError("Postal code is required");
-      if (!b.phoneNumber.trim()) return setError("Phone number is required");
-    }
-
-    if (s === "operating") {
-      const o = form.operatingInfo;
-      if (o.tourCategories.length === 0) return setError("Select at least one tour category");
-      if (o.destinations.length === 0) return setError("Add at least one destination");
-      if (o.languages.length === 0) return setError("Select at least one language");
-      if (!o.yearsInBusiness || parseInt(o.yearsInBusiness, 10) < 0) return setError("Years in business is required");
-      if (!o.cancellationPolicy.trim()) return setError("Cancellation policy is required");
-      if (!o.meetingStyle) return setError("Meeting style is required");
-    }
-
-    if (s === "representative") {
-      const r = form.representativeInfo;
-      if (!r.fullName.trim()) return setError("Representative full name is required");
-      if (!r.email.trim()) return setError("Representative email is required");
-      if (!r.dateOfBirth) return setError("Date of birth is required");
-      if (!r.address.line1.trim()) return setError("Representative address line 1 is required");
-      if (!r.address.city.trim()) return setError("Representative city is required");
-      if (!r.address.state.trim()) return setError("Representative state / province is required");
-      if (!r.address.postalCode.trim()) return setError("Representative postal code is required");
-      if (!r.idType) return setError("ID type is required");
-      if (!r.idDocument) return setError("ID document image is required");
-    }
-
-    if (s === "documents") {
-      const d = form.businessDocuments;
-      if (!d.registrationDocument) return setError("Business registration document is required");
-      if (!d.taxDocument) return setError("Tax document is required");
-      if (!d.proofOfAddress) return setError("Proof of address document is required");
-    }
-
-    if (s === "compliance") {
-      if (!form.compliance.acceptedTerms) return setError("You must accept the terms and conditions");
-    }
-
     return true;
   }, [step, form]);
 
+  const validateAllSteps = useCallback(() => {
+    for (let i = 0; i < STEPS.length; i++) {
+      const err = getStepValidationError(STEPS[i].key, form);
+      if (err) {
+        setStep(i);
+        setError(err);
+        return false;
+      }
+    }
+    setError("");
+    return true;
+  }, [form]);
+
   const handleNext = useCallback(() => {
-    if (validateStep() !== true) return;
+    if (!validateStep()) return;
     setStep((prev) => Math.min(prev + 1, STEPS.length - 1));
   }, [validateStep]);
 
   const handleBack = useCallback(() => {
     setError("");
     setStep((prev) => Math.max(prev - 1, 0));
+  }, []);
+
+  const handleStepClick = useCallback((idx) => {
+    setError("");
+    setStep(idx);
   }, []);
 
   const normalizeWebsite = (url) => {
@@ -467,7 +509,7 @@ export function SupplierApplicationForm() {
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
-      if (validateStep() !== true) return;
+      if (!validateAllSteps()) return;
 
       setLoading(true);
       setError("");
@@ -546,7 +588,7 @@ export function SupplierApplicationForm() {
         setLoading(false);
       }
     },
-    [form, validateStep]
+    [form, validateAllSteps, queryClient, user]
   );
 
   const renderBusinessInfo = () => (
@@ -1134,7 +1176,12 @@ export function SupplierApplicationForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <StepIndicator steps={STEPS} currentStep={step} />
+      <StepIndicator
+        steps={STEPS}
+        currentStep={step}
+        onStepClick={handleStepClick}
+        stepCompleted={stepCompleted}
+      />
 
       <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_12px_40px_rgba(15,23,42,0.06)] sm:p-8">
         {renderStepContent()}
@@ -1165,10 +1212,32 @@ export function SupplierApplicationForm() {
             <ChevronRight className="size-4" />
           </Button>
         ) : (
-          <Button type="submit" disabled={loading || !!success} className="h-12 px-8">
-            {loading ? <LoaderCircle className="mr-2 size-4 animate-spin" /> : null}
-            Submit Application
-          </Button>
+          <div className="flex flex-col items-end gap-1">
+            <Button
+              type="submit"
+              disabled={loading || !!success || !isFormComplete}
+              className="h-12 px-8"
+              title={
+                !isFormComplete
+                  ? t(
+                      "supplierRegister.completeAllSteps",
+                      "Complete all steps and required fields before submitting"
+                    )
+                  : undefined
+              }
+            >
+              {loading ? <LoaderCircle className="mr-2 size-4 animate-spin" /> : null}
+              {t("supplierRegister.submitApplication", "Submit Application")}
+            </Button>
+            {!isFormComplete && !success && (
+              <p className="text-xs text-slate-500">
+                {t(
+                  "supplierRegister.completeAllStepsHint",
+                  "Fill in every step to enable submission"
+                )}
+              </p>
+            )}
+          </div>
         )}
       </div>
     </form>

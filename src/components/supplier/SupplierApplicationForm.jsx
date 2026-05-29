@@ -293,6 +293,123 @@ function FormSection({ title, description, children }) {
   );
 }
 
+function filePreviewKey(file) {
+  return `${file.name}-${file.size}-${file.lastModified}`;
+}
+
+function ImageUploadField({ label, file, onChange, required }) {
+  const [preview, setPreview] = useState(null);
+
+  useEffect(() => {
+    if (!file) {
+      setPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  const handleFileChange = (e) => {
+    const selected = e.target.files?.[0];
+    if (selected) onChange(selected);
+  };
+
+  return (
+    <div>
+      <FieldLabel required={required}>{label}</FieldLabel>
+      {preview ? (
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <img src={preview} alt={label} className="h-48 w-full object-contain" />
+          <button
+            type="button"
+            onClick={() => onChange(null)}
+            className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-md transition hover:bg-white hover:text-rose-600"
+          >
+            <X className="size-4" />
+          </button>
+          <p className="truncate px-4 pb-3 text-center text-xs text-slate-500">{file.name}</p>
+        </div>
+      ) : (
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 transition hover:border-[color:var(--brand-green)]/50 hover:bg-[color:var(--brand-mist)]/30">
+          <Upload className="mb-2 size-8 text-slate-400" />
+          <span className="text-sm font-semibold text-slate-700">Click to upload an image</span>
+          <span className="mt-1 text-xs text-slate-400">PNG, JPG, JPEG up to 5MB</span>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/jpg"
+            className="sr-only"
+            onChange={handleFileChange}
+          />
+        </label>
+      )}
+    </div>
+  );
+}
+
+function MultiImageUploadField({ label, files, onChange, required }) {
+  const [previews, setPreviews] = useState([]);
+
+  useEffect(() => {
+    const next = files.map((file) => ({
+      key: filePreviewKey(file),
+      url: URL.createObjectURL(file),
+      name: file.name,
+    }));
+    setPreviews(next);
+    return () => next.forEach((item) => URL.revokeObjectURL(item.url));
+  }, [files]);
+
+  const handleFileChange = (e) => {
+    const selected = Array.from(e.target.files || []);
+    if (selected.length) onChange([...files, ...selected]);
+  };
+
+  const removeFile = (index) => {
+    onChange(files.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div>
+      <FieldLabel required={required}>{label}</FieldLabel>
+      <div className="space-y-3">
+        {previews.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {previews.map((item, index) => (
+              <div
+                key={item.key}
+                className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+              >
+                <img src={item.url} alt={item.name} className="h-32 w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeFile(index)}
+                  className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-md transition hover:bg-white hover:text-rose-600"
+                >
+                  <X className="size-3.5" />
+                </button>
+                <p className="truncate px-3 pb-2 text-center text-[10px] text-slate-500">{item.name}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-8 transition hover:border-[color:var(--brand-green)]/50 hover:bg-[color:var(--brand-mist)]/30">
+          <Upload className="mb-2 size-7 text-slate-400" />
+          <span className="text-sm font-semibold text-slate-700">Click to upload license images</span>
+          <span className="mt-1 text-xs text-slate-400">PNG, JPG, JPEG up to 5MB each</span>
+          <input
+            type="file"
+            multiple
+            accept="image/png,image/jpeg,image/jpg"
+            className="sr-only"
+            onChange={handleFileChange}
+          />
+        </label>
+      </div>
+    </div>
+  );
+}
+
 function MultiSelect({ label, options, selected, onChange, required }) {
   const toggleOption = useCallback(
     (option) => {
@@ -952,116 +1069,6 @@ export function SupplierApplicationForm() {
       </div>
     </FormSection>
   );
-
-  function ImageUploadField({ label, file, onChange, required }) {
-    const [preview, setPreview] = useState(null);
-
-    useEffect(() => {
-      if (!file) {
-        setPreview(null);
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-      return () => URL.revokeObjectURL(url);
-    }, [file]);
-
-    const handleFileChange = (e) => {
-      const selected = e.target.files?.[0];
-      if (selected) onChange(selected);
-    };
-
-    return (
-      <div>
-        <FieldLabel required={required}>{label}</FieldLabel>
-        {preview ? (
-          <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <img
-              src={preview}
-              alt={label}
-              className="h-48 w-full object-contain"
-            />
-            <button
-              type="button"
-              onClick={() => onChange(null)}
-              className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-md transition hover:bg-white hover:text-rose-600"
-            >
-              <X className="size-4" />
-            </button>
-            <p className="truncate px-4 pb-3 text-center text-xs text-slate-500">{file.name}</p>
-          </div>
-        ) : (
-          <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 transition hover:border-[color:var(--brand-green)]/50 hover:bg-[color:var(--brand-mist)]/30">
-            <Upload className="mb-2 size-8 text-slate-400" />
-            <span className="text-sm font-semibold text-slate-700">Click to upload an image</span>
-            <span className="mt-1 text-xs text-slate-400">PNG, JPG, JPEG up to 5MB</span>
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/jpg"
-              className="sr-only"
-              onChange={handleFileChange}
-            />
-          </label>
-        )}
-      </div>
-    );
-  }
-
-  function MultiImageUploadField({ label, files, onChange, required }) {
-    const handleFileChange = (e) => {
-      const selected = Array.from(e.target.files || []);
-      if (selected.length) onChange([...files, ...selected]);
-    };
-
-    const removeFile = (index) => {
-      onChange(files.filter((_, i) => i !== index));
-    };
-
-    return (
-      <div>
-        <FieldLabel required={required}>{label}</FieldLabel>
-        <div className="space-y-3">
-          {files.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {files.map((file, index) => {
-                const preview = URL.createObjectURL(file);
-                return (
-                  <div key={index} className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <img
-                      src={preview}
-                      alt={file.name}
-                      className="h-32 w-full object-cover"
-                      onLoad={() => URL.revokeObjectURL(preview)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeFile(index)}
-                      className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-md transition hover:bg-white hover:text-rose-600"
-                    >
-                      <X className="size-3.5" />
-                    </button>
-                    <p className="truncate px-3 pb-2 text-center text-[10px] text-slate-500">{file.name}</p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-8 transition hover:border-[color:var(--brand-green)]/50 hover:bg-[color:var(--brand-mist)]/30">
-            <Upload className="mb-2 size-7 text-slate-400" />
-            <span className="text-sm font-semibold text-slate-700">Click to upload license images</span>
-            <span className="mt-1 text-xs text-slate-400">PNG, JPG, JPEG up to 5MB each</span>
-            <input
-              type="file"
-              multiple
-              accept="image/png,image/jpeg,image/jpg"
-              className="sr-only"
-              onChange={handleFileChange}
-            />
-          </label>
-        </div>
-      </div>
-    );
-  }
 
   const renderDocuments = () => (
     <FormSection title="Documents" description="Upload images of your business verification documents. You will be able to add your payout method after your application is approved.">

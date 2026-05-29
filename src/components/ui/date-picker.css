@@ -1,5 +1,5 @@
 /* Brand styling for react-day-picker (DatePicker) */
-/* body uses color: #fff globally — day buttons must set text color explicitly */
+/* body uses color: #fff globally — day buttons must set text color on buttons explicitly */
 .brand-day-picker {
   color: #0f172a;
 }
@@ -12,8 +12,9 @@
   --rdp-day_button-border-radius: 0.65rem;
   --rdp-selected-border: none;
   --rdp-today-color: var(--brand-green, #01311a);
-  --rdp-disabled-opacity: 0.4;
-  --rdp-outside-opacity: 0.55;
+  /* Prevent library from grey-washing disabled cells; we style per modifier */
+  --rdp-disabled-opacity: 1;
+  --rdp-outside-opacity: 1;
   padding: 0.75rem;
 }
 
@@ -37,7 +38,6 @@
   color: #0f172a;
 }
 
-/* Hide legacy native select overlay when custom Dropdown is used */
 .brand-day-picker .rdp-dropdown {
   display: none;
 }
@@ -46,54 +46,59 @@
   display: none;
 }
 
-/* Default selectable day in month */
-.brand-day-picker .rdp-day:not(.rdp-disabled):not(.rdp-outside) .rdp-day_button {
-  color: #0f172a;
+/* Day buttons inherit from cell — set color on the cell + button for reliability */
+.brand-day-picker .rdp-day .rdp-day_button {
+  color: inherit;
 }
 
-/* Days that have already passed — greyed out */
-.brand-day-picker .rdp-passed:not(.rdp-outside) .rdp-day_button {
-  color: #94a3b8;
-  opacity: 0.9;
+/* Past days (before today) — greyed out, still selectable */
+.brand-day-picker .rdp-day.rdp-passed .rdp-day_button {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
 }
 
-/* Days yet to come — black (disabled for date of birth) */
-.brand-day-picker .rdp-upcoming:not(.rdp-outside) .rdp-day_button {
-  color: #0f172a;
-  opacity: 0.4;
+.brand-day-picker .rdp-day.rdp-passed.rdp-outside .rdp-day_button {
+  color: #cbd5e1 !important;
+  opacity: 0.7 !important;
 }
 
-.brand-day-picker .rdp-outside .rdp-day_button {
-  color: #cbd5e1;
-  opacity: 0.55;
+/* Future days (after today) — black, not selectable */
+.brand-day-picker .rdp-day.rdp-upcoming,
+.brand-day-picker .rdp-day.rdp-disabled.rdp-upcoming {
+  opacity: 1 !important;
 }
 
-/* Today — accent when still selectable */
-.brand-day-picker .rdp-today:not(.rdp-outside):not(.rdp-upcoming) .rdp-day_button {
-  color: var(--brand-green, #01311a);
+.brand-day-picker .rdp-day.rdp-upcoming .rdp-day_button,
+.brand-day-picker .rdp-day.rdp-disabled.rdp-upcoming .rdp-day_button {
+  color: #0f172a !important;
+  opacity: 0.38 !important;
+  cursor: not-allowed;
+}
+
+/* Today */
+.brand-day-picker .rdp-day.rdp-today:not(.rdp-upcoming) .rdp-day_button {
+  color: var(--brand-green, #01311a) !important;
   font-weight: 700;
-  opacity: 1;
+  opacity: 1 !important;
 }
 
-.brand-day-picker .rdp-day_button:hover:not(:disabled) {
+.brand-day-picker .rdp-day.rdp-passed:not(.rdp-disabled) .rdp-day_button:hover:not(:disabled) {
   background: color-mix(in srgb, var(--brand-green, #01311a) 10%, white);
+  color: #64748b !important;
 }
 
-.brand-day-picker .rdp-passed:not(.rdp-disabled) .rdp-day_button:hover:not(:disabled) {
-  color: #64748b;
-}
-
-.brand-day-picker .rdp-selected .rdp-day_button {
-  background: var(--brand-green, #01311a);
+.brand-day-picker .rdp-day.rdp-selected .rdp-day_button {
+  background: var(--brand-green, #01311a) !important;
   color: #ffffff !important;
   font-weight: 600;
   opacity: 1 !important;
 }
 
-/* Too old / out of range */
-.brand-day-picker .rdp-disabled:not(.rdp-upcoming) .rdp-day_button {
-  color: #cbd5e1;
-  opacity: 0.35;
+/* Too old to select (before min year), not future */
+.brand-day-picker .rdp-day.rdp-disabled:not(.rdp-upcoming) .rdp-day_button {
+  color: #cbd5e1 !important;
+  opacity: 0.35 !important;
+  cursor: not-allowed;
 }
 
 .brand-day-picker .rdp-weekday {

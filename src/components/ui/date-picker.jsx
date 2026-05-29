@@ -3,7 +3,7 @@
  * @description Polished single-date picker (react-day-picker) with dd-MM-yyyy display.
  */
 import { useMemo, useState } from "react";
-import { format, isAfter, isBefore, isValid, parse, startOfDay } from "date-fns";
+import { endOfDay, format, isAfter, isBefore, isValid, parse, startOfDay } from "date-fns";
 import { CalendarDays, ChevronDown } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
@@ -155,11 +155,15 @@ export function DatePicker({
               onChange(formatDateForStorage(date));
               if (date) setOpen(false);
             }}
-            disabled={{ after: maxDate, before: minDate }}
+            disabled={{ after: endOfDay(maxDate), before: startOfDay(minDate) }}
             modifiers={dayModifiers}
             modifiersClassNames={{
               passed: "rdp-passed",
               upcoming: "rdp-upcoming",
+            }}
+            modifiersStyles={{
+              passed: { color: "#94a3b8" },
+              upcoming: { color: "#0f172a", opacity: 1 },
             }}
             captionLayout="dropdown"
             fromYear={fromYear}

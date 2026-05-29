@@ -249,7 +249,7 @@ function StepIndicator({ steps, currentStep, onStepClick, stepCompleted = [] }) 
                 className="flex flex-col items-center gap-2 rounded-lg transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-green)] focus-visible:ring-offset-2"
               >
                 <div
-                  className={`flex size-8 items-center justify-center rounded-full border-2 transition-all duration-300 sm:size-10 ${
+                  className={`flex size-8 items-center justify-center rounded-full border-2 sm:size-10 ${
                     isActive
                       ? "border-[color:var(--brand-green)] bg-[color:var(--brand-green)] text-white shadow-lg"
                       : isCompleted
@@ -273,7 +273,7 @@ function StepIndicator({ steps, currentStep, onStepClick, stepCompleted = [] }) 
               </button>
               {!isLast && (
                 <div
-                  className={`mx-1.5 h-px flex-1 transition-all duration-300 sm:mx-4 ${
+                  className={`mx-1.5 h-px flex-1 sm:mx-4 ${
                     isCompleted ? "bg-[color:var(--brand-green)]" : "bg-slate-200"
                   }`}
                 />
@@ -775,6 +775,7 @@ export function SupplierApplicationForm() {
       <div>
         <FieldLabel required>Cancellation Policy</FieldLabel>
         <Select
+          modal={false}
           value={form.operatingInfo.cancellationPolicy || undefined}
           onValueChange={(value) => updateForm("operatingInfo", "cancellationPolicy", value)}
         >
@@ -789,11 +790,20 @@ export function SupplierApplicationForm() {
             ))}
           </SelectContent>
         </Select>
-        {form.operatingInfo.cancellationPolicy ? (
-          <div className="mt-3 rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600 whitespace-pre-line">
-            {getCancellationPolicyText(form.operatingInfo.cancellationPolicy)}
-          </div>
-        ) : null}
+        <div
+          className="mt-3 min-h-[17rem] rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600"
+          aria-live="polite"
+        >
+          {form.operatingInfo.cancellationPolicy ? (
+            <p className="whitespace-pre-line">
+              {getCancellationPolicyText(form.operatingInfo.cancellationPolicy)}
+            </p>
+          ) : (
+            <p className="text-slate-400">
+              Select a policy above to preview the full terms.
+            </p>
+          )}
+        </div>
       </div>
     </FormSection>
   );

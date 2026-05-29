@@ -30,7 +30,6 @@ import {
   BadgeCheck,
   Upload,
   X,
-  Plus,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -45,6 +44,7 @@ import {
 import { applyAsSupplier } from "@/api/supplier";
 import { invalidateSupplierAccess } from "@/api/supplierAccessQuery";
 import { useAuth } from "@/components/auth/AuthProvider";
+import GhanaDestinationSelect from "@/components/supplier/GhanaDestinationSelect";
 
 const STEPS = [
   { key: "business", label: "Business Info", icon: Building2 },
@@ -252,75 +252,6 @@ function FormSection({ title, description, children }) {
         {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
       </div>
       <div className="space-y-5">{children}</div>
-    </div>
-  );
-}
-
-function TagInput({ label, placeholder, tags, onChange, required }) {
-  const [input, setInput] = useState("");
-
-  const addTag = useCallback(() => {
-    const trimmed = input.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      onChange([...tags, trimmed]);
-      setInput("");
-    }
-  }, [input, tags, onChange]);
-
-  const removeTag = useCallback(
-    (tag) => {
-      onChange(tags.filter((t) => t !== tag));
-    },
-    [tags, onChange]
-  );
-
-  return (
-    <div>
-      <FieldLabel required={required}>{label}</FieldLabel>
-      <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm">
-        <div className="flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center gap-1 rounded-full bg-[color:var(--brand-mist)] px-3 py-1 text-xs font-semibold text-[color:var(--brand-green)]"
-            >
-              {tag}
-              <button
-                type="button"
-                onClick={() => removeTag(tag)}
-                className="ml-1 rounded-full hover:bg-[color:var(--brand-green)]/10"
-              >
-                <X className="size-3" />
-              </button>
-            </span>
-          ))}
-          <div className="flex flex-1 items-center gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addTag();
-                }
-                if (e.key === "Backspace" && !input && tags.length > 0) {
-                  removeTag(tags[tags.length - 1]);
-                }
-              }}
-              placeholder={tags.length === 0 ? placeholder : ""}
-              className="min-w-[120px] flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
-            />
-            <button
-              type="button"
-              onClick={addTag}
-              className="rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-600"
-            >
-              <Plus className="size-4" />
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -757,10 +688,8 @@ export function SupplierApplicationForm() {
         required
       />
 
-      <TagInput
-        label="Destinations You Operate In"
-        placeholder="Type a destination and press Enter"
-        tags={form.operatingInfo.destinations}
+      <GhanaDestinationSelect
+        selected={form.operatingInfo.destinations}
         onChange={(value) => updateForm("operatingInfo", "destinations", value)}
         required
       />

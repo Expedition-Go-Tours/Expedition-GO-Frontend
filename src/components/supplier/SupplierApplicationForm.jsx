@@ -95,6 +95,47 @@ const MEETING_STYLES = [
   { value: "flexible", label: "Flexible / Both options" },
 ];
 
+const CANCELLATION_POLICY_OPTIONS = [
+  {
+    value: "individual",
+    label: "Individual Tour Bookings",
+    text: `Individual Tour Bookings
+
+More than 30 days before departure:
+You will receive a full refund, minus a 10% administrative fee.
+
+15-30 days before departure:
+You will receive a 50% refund, minus any non-refundable costs we've incurred (e.g., accommodation deposits, permits, etc.).
+
+Less than 1 day before departure:
+No refund will be provided. However, we may offer you the option to reschedule your tour to another date, subject to availability.`,
+  },
+  {
+    value: "group",
+    label: "Group Bookings (10 or more participants)",
+    text: `Group Bookings (10 or more participants)
+
+More than 60 days before departure:
+Full refund, minus a 10% group booking fee.
+
+30-60 days before departure:
+75% of your total booking cost will be refunded.
+
+Less than 30 days before departure:
+Unfortunately, we cannot offer a refund, but we will try to accommodate rescheduling if possible.`,
+  },
+];
+
+function getCancellationPolicyText(policyKey) {
+  const option = CANCELLATION_POLICY_OPTIONS.find((p) => p.value === policyKey);
+  return option?.text || "";
+}
+
+function getCancellationPolicyLabel(policyKey) {
+  const option = CANCELLATION_POLICY_OPTIONS.find((p) => p.value === policyKey);
+  return option?.label || "";
+}
+
 const TOUR_CATEGORIES_OPTIONS = [
   "Adventure",
   "Cultural",
@@ -148,7 +189,7 @@ function getStepValidationError(stepKey, form) {
     if (o.destinations.length === 0) return "Add at least one destination";
     if (o.languages.length === 0) return "Select at least one language";
     if (!o.yearsInBusiness || parseInt(o.yearsInBusiness, 10) < 0) return "Years in business is required";
-    if (!o.cancellationPolicy.trim()) return "Cancellation policy is required";
+    if (!getCancellationPolicyText(o.cancellationPolicy)) return "Cancellation policy is required";
     if (!o.meetingStyle) return "Meeting style is required";
   }
 
@@ -467,6 +508,7 @@ export function SupplierApplicationForm() {
           JSON.stringify({
             ...form.operatingInfo,
             yearsInBusiness: parseInt(form.operatingInfo.yearsInBusiness, 10) || 0,
+            cancellationPolicy: getCancellationPolicyText(form.operatingInfo.cancellationPolicy),
           })
         );
 
@@ -735,14 +777,27 @@ export function SupplierApplicationForm() {
       </div>
 
       <div>
-        <FieldLabel>Cancellation Policy</FieldLabel>
-        <textarea
-          rows={3}
-          placeholder="Describe your cancellation policy..."
-          className="w-full rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[color:var(--brand-green)]/35 focus:ring-4 focus:ring-[color:var(--brand-green)]/10"
-          value={form.operatingInfo.cancellationPolicy}
-          onChange={(e) => updateForm("operatingInfo", "cancellationPolicy", e.target.value)}
-        />
+        <FieldLabel required>Cancellation Policy</FieldLabel>
+        <Select
+          value={form.operatingInfo.cancellationPolicy || undefined}
+          onValueChange={(value) => updateForm("operatingInfo", "cancellationPolicy", value)}
+        >
+          <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
+            <SelectValue placeholder="Select a cancellation policy" />
+          </SelectTrigger>
+          <SelectContent side="bottom" sideOffset={4} className="max-w-[min(100vw-2rem,32rem)]">
+            {CANCELLATION_POLICY_OPTIONS.map((policy) => (
+              <SelectItem key={policy.value} value={policy.value}>
+                {policy.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {form.operatingInfo.cancellationPolicy ? (
+          <div className="mt-3 rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600 whitespace-pre-line">
+            {getCancellationPolicyText(form.operatingInfo.cancellationPolicy)}
+          </div>
+        ) : null}
       </div>
     </FormSection>
   );
@@ -1039,6 +1094,12 @@ export function SupplierApplicationForm() {
           <div className="flex justify-between">
             <span>Categories:</span>
             <span className="font-semibold text-slate-900">{form.operatingInfo.tourCategories.join(", ") || "—"}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="shrink-0">Cancellation policy:</span>
+            <span className="text-right font-semibold text-slate-900">
+              {getCancellationPolicyLabel(form.operatingInfo.cancellationPolicy) || "—"}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Representative:</span>

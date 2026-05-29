@@ -73,7 +73,7 @@ export default function GhanaDestinationSelect({ selected = [], onChange, requir
         </div>
       )}
 
-      <Select key={selectKey} onValueChange={addSite}>
+      <Select key={selectKey} modal={false} onValueChange={addSite}>
         <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
           <div className="flex items-center gap-2 text-left">
             <MapPin className="size-4 shrink-0 text-slate-400" />

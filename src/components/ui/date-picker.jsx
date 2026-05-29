@@ -11,6 +11,55 @@ import "./date-picker.css";
 
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+/** Radix select replacement for react-day-picker native year/month dropdowns. */
+function CalendarDropdown({ options = [], value, onChange, disabled, className }) {
+  const stringValue = value !== undefined && value !== null ? String(value) : undefined;
+
+  return (
+    <Select
+      modal={false}
+      value={stringValue}
+      onValueChange={(newValue) => {
+        onChange?.({ target: { value: newValue } });
+      }}
+      disabled={disabled}
+    >
+      <SelectTrigger
+        className={cn(
+          "h-9 min-w-[5.5rem] rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 shadow-sm",
+          className
+        )}
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent
+        side="bottom"
+        position="popper"
+        sideOffset={4}
+        align="start"
+        className="z-[200] max-h-[min(16rem,50vh)]"
+      >
+        {options.map((option) => (
+          <SelectItem
+            key={String(option.value)}
+            value={String(option.value)}
+            disabled={option.disabled}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
 export const DISPLAY_DATE_FORMAT = "dd-MM-yyyy";
 export const STORAGE_DATE_FORMAT = "yyyy-MM-dd";
@@ -82,8 +131,14 @@ export function DatePicker({
           <ChevronDown className="size-4 shrink-0 text-slate-400" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto border-0 p-0 shadow-none" align="start">
-        <div className="brand-day-picker rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.14)]">
+      <PopoverContent
+        className="z-50 w-auto overflow-visible border-0 p-0 shadow-none"
+        align="start"
+        side="top"
+        sideOffset={8}
+        collisionPadding={16}
+      >
+        <div className="brand-day-picker overflow-visible rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.14)]">
           <DayPicker
             mode="single"
             selected={selected}
@@ -98,6 +153,7 @@ export function DatePicker({
             defaultMonth={selected || maxDate}
             showOutsideDays
             fixedWeeks
+            components={{ Dropdown: CalendarDropdown }}
           />
         </div>
       </PopoverContent>

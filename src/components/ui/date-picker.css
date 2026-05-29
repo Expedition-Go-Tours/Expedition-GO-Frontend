@@ -20,11 +20,28 @@
   color: #0f172a;
 }
 
+.brand-day-picker .rdp-dropdowns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: visible;
+}
+
 .brand-day-picker .rdp-dropdown_root {
-  border-radius: 0.65rem;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  overflow: visible;
+  border: none;
+  background: transparent;
   color: #0f172a;
+}
+
+/* Hide legacy native select overlay when custom Dropdown is used */
+.brand-day-picker .rdp-dropdown {
+  display: none;
+}
+
+.brand-day-picker .rdp-dropdown_root > .rdp-caption_label {
+  display: none;
 }
 
 .brand-day-picker .rdp-day_button {

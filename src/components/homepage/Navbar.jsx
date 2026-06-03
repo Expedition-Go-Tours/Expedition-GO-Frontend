@@ -71,7 +71,7 @@ export function Navbar({
 
   const handleBrandClick = (e) => {
     e.preventDefault();
-    navigate('/');
+    navigate('/', { state: { postAuthSplash: true } });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

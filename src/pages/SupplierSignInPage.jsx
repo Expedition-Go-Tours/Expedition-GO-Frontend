@@ -325,7 +325,7 @@ function SupplierSignInPage() {
     if (statusError) {
       return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4 py-12">
-          <Link to="/" className="mb-8 inline-block">
+          <Link to="/" state={{ postAuthSplash: true }} className="mb-8 inline-block">
             <img src={companyLogo} alt="TravioAfrica" className="h-auto w-[220px] object-contain" />
           </Link>
           <div className="flex items-start gap-2 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -347,7 +347,7 @@ function SupplierSignInPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4 py-12">
         <div className="mb-8 flex justify-center">
-          <Link to="/" className="inline-block">
+          <Link to="/" state={{ postAuthSplash: true }} className="inline-block">
             <img src={companyLogo} alt="TravioAfrica" className="h-auto w-[220px] object-contain" />
           </Link>
         </div>
@@ -362,7 +362,7 @@ function SupplierSignInPage() {
       <div className="w-full max-w-[420px]">
         {/* Logo */}
         <div className="mb-8 flex justify-center">
-          <Link to="/" className="inline-block">
+          <Link to="/" state={{ postAuthSplash: true }} className="inline-block">
             <img
               src={companyLogo}
               alt="TravioAfrica"

@@ -44,6 +44,7 @@ import SupplierSignInPage from "@/pages/SupplierSignInPage";
 import SupplierRegisterPage from "@/pages/SupplierRegisterPage";
 import SupplierPayoutPage from "@/pages/SupplierPayoutPage";
 import SupplierPortalRedirectPage from "@/pages/SupplierPortalRedirectPage";
+import SupplierPage from "@/pages/SupplierPage";
 import { SUPPLIER_PORTAL_LOGIN_URL } from "@/lib/supplierPortal";
 
 import SignOutPage from "@/pages/SignOutPage";
@@ -81,6 +82,7 @@ function AppContent() {
             <Route path="/support" element={<SupportPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/booking" element={<BookingPage />} />
+            <Route path="/supplier/profile/:tourTitle" element={<SupplierPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </CartProvider>

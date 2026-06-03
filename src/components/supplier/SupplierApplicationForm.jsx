@@ -1172,7 +1172,7 @@ export function SupplierApplicationForm() {
               <p className="mt-1">{success}</p>
               <button
                 type="button"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/", { state: { postAuthSplash: true } })}
                 className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
               >
                 Return to Homepage

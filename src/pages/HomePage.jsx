@@ -3,9 +3,9 @@
  * @description Main landing route (/). Composes homepage sections and handles
  *   post-auth splash → skeleton loading handoff.
  *
- * Section order: Navbar → Hero → Tour carousels → Destinations → Features →
- *   Reviews → Supplier CTA → Explore More → Newsletter → Footer
- * Sidebar: SidebarPanel (deals + top rated) on desktop
+ * Section order: Navbar → Hero → New Experiences → Destinations → Recommended →
+ *   Top Rated → Featured → Likely to Sellout → Last Minute Deals → Newsletter →
+ *   Features → Reviews → Supplier CTA → Explore More → Footer
  *
  * Local providers: AuthModalProvider, RecentlyViewedProvider (page-scoped)
  * Loading: useHomePageData gate + HomePageSkeleton; post-auth uses BrandLoader splash
@@ -13,16 +13,15 @@
  * @see hooks/useHomePageData.js — skeleton timing logic
  * @see App.jsx — route definition
  */
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { DestinationsSection } from "@/components/homepage/DestinationsSection";
 import { Footer } from "@/components/homepage/Footer";
 import { HeroSection } from "@/components/homepage/HeroSection";
 import { Navbar } from "@/components/homepage/Navbar";
-import { SidebarPanel } from "@/components/homepage/SidebarPanel";
 import { TourCarouselSection } from "@/components/homepage/TourCarouselSection";
 import { NewsletterSection } from "@/components/homepage/NewsletterSection";
 import { FeaturesSection } from "@/components/homepage/FeaturesSection";
@@ -31,12 +30,16 @@ import { SupplierSection } from "@/components/homepage/SupplierSection";
 import { ExploreMoreSection } from "@/components/homepage/ExploreMoreSection";
 import { HomePageSkeleton } from "@/components/homepage/skeletons/HomePageSkeleton";
 import BrandLoader from "@/components/ui/BrandLoader";
-import { pickupTours, recommendedTours, topRatedTours, leisureTours } from "@/components/homepage/data";
+import { SectionHeading } from "@/components/homepage/SectionHeading";
+import { CompactTourCard } from "@/components/homepage/CompactTourCard";
+import { SidebarDealCard } from "@/components/homepage/SidebarDealCard";
+import { pickupTours, recommendedTours, topRatedTours, leisureTours, lastMinuteDeals, sidebarTopRated } from "@/components/homepage/data";
 import { AuthModalProvider } from "@/contexts/AuthModalContext";
 import { RecentlyViewedProvider } from "@/contexts/RecentlyViewedContext";
 import { AuthModal } from "@/components/ui/auth-modal";
 import { useAuthModal } from "@/contexts/AuthModalContext";
 import { useHomePageData } from "@/hooks/useHomePageData";
+import { useAllTours } from "@/hooks/useAllTours";
 
 /** Post–sign-in/register handoff: show brand splash, stay under ~1200ms. */
 const POST_AUTH_SPLASH_MS = 700;
@@ -68,23 +71,43 @@ function HomePageContent() {
   /** Use fetchStatus + fresh handoff nonce so skeleton does not disappear when TanStack skips isLoading during cache quirks. */
   const categories = homeLoad.data?.categories || {};
   const apiDestinations = homeLoad.data?.destinations || [];
-  const categoryKeys = Object.keys(categories);
-  const carouselSlots = [
-    ...(categoryKeys.length > 0 ? [
-      { id: categoryKeys[0], title: t('sections.featuredTitle'), items: categories[categoryKeys[0]] },
-      ...(categoryKeys[1] ? [{ id: categoryKeys[1], title: t('sections.recommendedTitle'), items: categories[categoryKeys[1]] }] : []),
-      ...(categoryKeys[2] ? [{ id: categoryKeys[2], title: t('sections.topRatedTitle'), items: categories[categoryKeys[2]] }] : []),
-      ...(categoryKeys[3] ? [{ id: categoryKeys[3], title: t('sections.likelyToSellOut'), items: categories[categoryKeys[3]] }] : []),
-      ...(categoryKeys.length < 4 && leisureTours.length > 0
-        ? [{ id: "leisure", title: t('sections.likelyToSellOut'), items: leisureTours }]
-        : []),
-    ] : [
-      { id: "tours", title: t('sections.featuredTitle'), items: pickupTours },
-      { id: "recommended", title: t('sections.recommendedTitle'), items: recommendedTours },
-      { id: "deals", title: t('sections.topRatedTitle'), items: topRatedTours },
-      { id: "leisure", title: t('sections.likelyToSellOut'), items: leisureTours },
-    ]),
-  ].filter(slot => slot.items && slot.items.length > 0);
+  const categoryKeys = Object.keys(categories).filter(
+    (key) => key.toLowerCase() !== "cultural" && key.toLowerCase() !== "wildlife"
+  );
+  const MIN_SLOT_ITEMS = 8;
+  const MIN_SLOT_IDS = [categoryKeys[0], categoryKeys[1], categoryKeys[2], categoryKeys[3]];
+  const FALLBACK_SLOTS = [pickupTours, recommendedTours, topRatedTours, leisureTours];
+  const FALLBACK_KEYS = ["tours", "recommended", "deals", "leisure"];
+  function padItems(items, fallback) {
+    if (items.length >= MIN_SLOT_ITEMS) return items;
+    const needed = MIN_SLOT_ITEMS - items.length;
+    return [...items, ...fallback.slice(0, needed)];
+  }
+  const carouselSlots = (() => {
+    if (categoryKeys.length > 0) {
+      const slots = [];
+      const addSlot = (keyIndex, title, items) => {
+        if (!items?.length) return;
+        const id = MIN_SLOT_IDS[keyIndex] ?? `slot-${keyIndex}`;
+        const fallback = FALLBACK_SLOTS[keyIndex];
+        slots.push({ id, title, fallbackKey: FALLBACK_KEYS[keyIndex], items: padItems([...items], fallback) });
+      };
+      addSlot(0, t('sections.featuredTitle'), categories[categoryKeys[0]]);
+      if (categoryKeys[1]) addSlot(1, t('sections.recommendedTitle'), categories[categoryKeys[1]]);
+      if (categoryKeys[2]) addSlot(2, t('sections.topRatedTitle'), categories[categoryKeys[2]]);
+      if (categoryKeys[3]) addSlot(3, t('sections.likelyToSellOut'), categories[categoryKeys[3]]);
+      if (categoryKeys.length < 4 && leisureTours.length > 0) {
+        slots.push({ id: "leisure", title: t('sections.likelyToSellOut'), fallbackKey: "leisure", items: padItems([...leisureTours], topRatedTours) });
+      }
+      return slots;
+    }
+    return [
+      ...(pickupTours.length > 0 ? [{ id: "tours", title: t('sections.featuredTitle'), fallbackKey: "tours", items: padItems([...pickupTours], recommendedTours) }] : []),
+      ...(recommendedTours.length > 0 ? [{ id: "recommended", title: t('sections.recommendedTitle'), fallbackKey: "recommended", items: padItems([...recommendedTours], topRatedTours) }] : []),
+      ...(topRatedTours.length > 0 ? [{ id: "deals", title: t('sections.topRatedTitle'), fallbackKey: "deals", items: padItems([...topRatedTours], leisureTours) }] : []),
+      ...(leisureTours.length > 0 ? [{ id: "leisure", title: t('sections.likelyToSellOut'), fallbackKey: "leisure", items: padItems([...leisureTours], pickupTours) }] : []),
+    ];
+  })();
 
   const extraSlots = categoryKeys.slice(4).map((key) => ({
     id: key,
@@ -93,17 +116,70 @@ function HomePageContent() {
   })).filter(slot => slot.items.length > 0);
   const allCarouselSlots = [...carouselSlots, ...extraSlots];
 
-  const sidebarTours = Object.values(categories).flat().slice(0, 6);
-
   const homeReady =
     homeDataEnabled &&
     Boolean(homeLoad.data?.loaded) &&
     homeLoad.fetchStatus !== "fetching";
   const showLogoutToast = Boolean(location.state?.showLogoutToast);
+  const { data: newToursData } = useAllTours({
+    sortBy: "createdAt",
+    sortOrder: "desc",
+    limit: 12,
+    enabled: true,
+  });
+  const rawNewTours = newToursData?.tours?.length > 0 ? newToursData.tours : [...sidebarTopRated, ...sidebarTopRated];
+  const newTours = rawNewTours.length < MIN_SLOT_ITEMS ? [...rawNewTours, ...sidebarTopRated.slice(0, MIN_SLOT_ITEMS - rawNewTours.length)] : rawNewTours;
   const [sharedHeroDateRange, setSharedHeroDateRange] = useState({ from: null, to: null });
   const [sharedSearchQuery, setSharedSearchQuery] = useState("");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showCompactSearch, setShowCompactSearch] = useState(false);
+
+  const CAROUSEL_SCROLL_MS = 260;
+  const scrollRafRef = useRef({});
+  function smoothScrollTo(element, target) {
+    if (scrollRafRef.current[element] != null) {
+      cancelAnimationFrame(scrollRafRef.current[element]);
+    }
+    const originalSnap = element.style.scrollSnapType;
+    if (originalSnap) element.style.scrollSnapType = "none";
+    const start = element.scrollLeft;
+    const distance = target - start;
+    if (Math.abs(distance) < 1) {
+      if (originalSnap) element.style.scrollSnapType = originalSnap;
+      return;
+    }
+    let startTime = null;
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / CAROUSEL_SCROLL_MS, 1);
+      element.scrollLeft = start + distance * easeOutCubic(progress);
+      if (progress < 1) {
+        scrollRafRef.current[element] = requestAnimationFrame(step);
+      } else {
+        scrollRafRef.current[element] = null;
+        if (originalSnap) element.style.scrollSnapType = originalSnap;
+      }
+    };
+    scrollRafRef.current[element] = requestAnimationFrame(step);
+  }
+  const dealsScrollRef = useRef(null);
+  const experiencesScrollRef = useRef(null);
+  const scrollDeals = useCallback((direction) => {
+    const container = dealsScrollRef.current;
+    if (!container) return;
+    const amount = 280 + 12;
+    const target = container.scrollLeft + (direction === "left" ? -amount : amount);
+    smoothScrollTo(container, target);
+  }, []);
+  const scrollExperiences = useCallback((direction) => {
+    const container = experiencesScrollRef.current;
+    if (!container) return;
+    const amount = 280 + 12;
+    const target = container.scrollLeft + (direction === "left" ? -amount : amount);
+    smoothScrollTo(container, target);
+  }, []);
 
   useEffect(() => {
     if (!showPostAuthSplash) {
@@ -216,18 +292,128 @@ function HomePageContent() {
         />
 
         <main className="mx-auto max-w-[1520px] overflow-x-hidden px-4 pb-14 sm:px-6">
-          <div className="grid gap-5 md:gap-8 xl:gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
-            <div className="space-y-6 pt-6 min-w-0 md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
-              {allCarouselSlots.map((slot) => (
-                <TourCarouselSection key={slot.id} id={slot.id} title={slot.title} items={slot.items} />
-              ))}
-            </div>
-            <div className="pt-5 min-w-0 md:pt-6 xl:pt-4">
-              <SidebarPanel topRatedTours={sidebarTours} allTours={Object.values(categories).flat()} />
-            </div>
-          </div>
-          <div className="mt-6 md:mt-8 xl:mt-7">
+          <div className="space-y-6 pt-6 min-w-0 md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
+            {/* 1. Recommended For You */}
+            {carouselSlots[1] && <TourCarouselSection key={carouselSlots[1].id} {...carouselSlots[1]} />}
+
+            {/* 2. Popular Destinations */}
             <DestinationsSection apiDestinations={apiDestinations} />
+
+            {/* 3. Top Rated By Travellers */}
+            {carouselSlots[2] && <TourCarouselSection key={carouselSlots[2].id} {...carouselSlots[2]} />}
+
+            {/* 4. Likely to Sellout */}
+            {carouselSlots[3] && <TourCarouselSection key={carouselSlots[3].id} {...carouselSlots[3]} />}
+
+            {/* 5. Featured Experiences */}
+            {carouselSlots[0] && <TourCarouselSection key={carouselSlots[0].id} {...carouselSlots[0]} />}
+
+            {/* Extra carousel slots */}
+            {extraSlots.map((slot) => (
+              <TourCarouselSection key={slot.id} id={slot.id} title={slot.title} items={slot.items} />
+            ))}
+
+            {/* 6. Last Minute Deals */}
+            <section className="py-4 md:py-4 xl:py-5">
+              <div className="relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+                <div className="min-w-0 flex-1">
+                  <h2
+                    className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
+                    style={{ fontSize: 'clamp(1.2rem, 1.2vw + 0.5rem, 1.375rem)' }}
+                    title={t('sections.lastMinuteDeals')}
+                  >
+                    {t('sections.lastMinuteDeals')}
+                  </h2>
+                </div>
+                <div className="relative z-[1] flex shrink-0 items-center gap-3">
+                  <Link
+                    to={`/tours?category=last-minute-deals&title=${encodeURIComponent(t('sections.lastMinuteDeals'))}`}
+                    onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
+                    className="group relative inline-flex min-h-[44px] min-w-[44px] shrink-0 touch-manipulation items-center justify-center gap-1 whitespace-nowrap rounded-md py-2 pl-2 pr-2 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100/90 hover:text-slate-950 sm:text-[13px] xl:text-[14px]"
+                  >
+                    <span className="relative">
+                      {t('sections.viewAll')}
+                      <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
+                    </span>
+                    <ChevronRight className="size-4 text-slate-500 transition group-hover:text-[color:var(--brand-green)]" />
+                  </Link>
+                  <div className="hidden items-center gap-2 xl:flex">
+                    <button
+                      onClick={() => scrollDeals("left")}
+                      className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                      aria-label="Scroll left"
+                    >
+                      <ChevronLeft className="size-4" />
+                    </button>
+                    <button
+                      onClick={() => scrollDeals("right")}
+                      className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                      aria-label="Scroll right"
+                    >
+                      <ChevronRight className="size-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div ref={dealsScrollRef} className="flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-1 scrollbar-hide">
+                {lastMinuteDeals.map((deal, index) => (
+                  <div key={`${deal.title}-${index}`} className="w-[280px] shrink-0 h-full" style={{ scrollSnapAlign: "start" }}>
+                    <SidebarDealCard {...deal} />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* 7. New Experiences */}
+            <section className="py-4 md:py-4 xl:py-5">
+              <div className="relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+                <div className="min-w-0 flex-1">
+                  <h2
+                    className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
+                    style={{ fontSize: 'clamp(1.2rem, 1.2vw + 0.5rem, 1.375rem)' }}
+                    title={t('sections.newExperiences')}
+                  >
+                    {t('sections.newExperiences')}
+                  </h2>
+                </div>
+                <div className="relative z-[1] flex shrink-0 items-center gap-3">
+                  <Link
+                    to={`/tours?category=new-experiences&title=${encodeURIComponent(t('sections.newExperiences'))}`}
+                    onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
+                    className="group relative inline-flex min-h-[44px] min-w-[44px] shrink-0 touch-manipulation items-center justify-center gap-1 whitespace-nowrap rounded-md py-2 pl-2 pr-2 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100/90 hover:text-slate-950 sm:text-[13px] xl:text-[14px]"
+                  >
+                    <span className="relative">
+                      {t('sections.viewAll')}
+                      <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
+                    </span>
+                    <ChevronRight className="size-4 text-slate-500 transition group-hover:text-[color:var(--brand-green)]" />
+                  </Link>
+                  <div className="hidden items-center gap-2 xl:flex">
+                    <button
+                      onClick={() => scrollExperiences("left")}
+                      className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                      aria-label="Scroll left"
+                    >
+                      <ChevronLeft className="size-4" />
+                    </button>
+                    <button
+                      onClick={() => scrollExperiences("right")}
+                      className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                      aria-label="Scroll right"
+                    >
+                      <ChevronRight className="size-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div ref={experiencesScrollRef} className="flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-1 scrollbar-hide">
+                {newTours.map((tour, index) => (
+                  <div key={`${tour.title}-${index}`} className="w-[280px] shrink-0 h-full" style={{ scrollSnapAlign: "start" }}>
+                    <CompactTourCard {...tour} badge="new" />
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         </main>
 

@@ -464,6 +464,21 @@ export const lastMinuteDeals = [
     image:
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
   },
+  ...Array.from({ length: 8 }, (_, index) => {
+    const discounts = ["-15%", "-20%", "-25%", "-30%", "-10%", "-40%", "-35%", "-50%"];
+    const hours = [3, 4, 5, 6, 7, 8, 9, 10][index];
+    const minutes = [15, 20, 30, 45, 10, 25, 35, 50][index];
+    const seconds = [30, 45, 15, 20, 50, 35, 25, 10][index];
+    const basePrice = [60, 80, 120, 90, 55, 110, 95, 70][index];
+    return {
+      title: `Last Minute Deal ${index + 1}`,
+      oldPrice: `$${Math.round(basePrice * 1.3)}`,
+      price: `$${basePrice}`,
+      discount: discounts[index],
+      countdown: `Ends in ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+      image: `https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80&sig=deal${index + 1}`,
+    };
+  }),
 ];
 
 export const sidebarTopRated = [

@@ -7,6 +7,7 @@
  * @see components/homepage/SectionHeading.jsx
  */
 import { useRef, useEffect, useLayoutEffect, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TourCard } from "./TourCard";
 import { SectionHeading } from "./SectionHeading";
 
@@ -65,7 +66,7 @@ function smoothScrollTo(element, target, duration, generationRef, generation, on
   requestAnimationFrame(step);
 }
 
-export function TourCarouselSection({ id, title, subtitle, items }) {
+export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, hideViewAll, hideTitle, sideArrows, badge }) {
   const scrollContainerRef = useRef(null);
   const mobileScrollRef = useRef(null);
   const isScrollingRef = useRef(false);
@@ -195,29 +196,56 @@ export function TourCarouselSection({ id, title, subtitle, items }) {
         title={title}
         subtitle={subtitle}
         categoryId={id}
-        onScrollLeft={() => scroll("left")}
-        onScrollRight={() => scroll("right")}
+        fallbackKey={fallbackKey}
+        hideViewAll={hideViewAll}
+        hideTitle={hideTitle}
+        onScrollLeft={!sideArrows ? () => scroll("left") : undefined}
+        onScrollRight={!sideArrows ? () => scroll("right") : undefined}
       />
 
-      <div
-        ref={scrollContainerRef}
-        className="hidden gap-3 overflow-x-auto overscroll-x-contain scrollbar-hide xl:flex"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
-        {infiniteItems.map((item, index) => (
-          <div
-            key={`${item.title}-${index}`}
-            className="min-w-[280px] shrink-0"
-            style={{ scrollSnapAlign: "start" }}
+      <div className={`flex items-center gap-0 ${sideArrows ? "xl:gap-1" : ""}`}>
+        {sideArrows && (
+          <button
+            type="button"
+            onClick={() => scroll("left")}
+            className="z-10 hidden shrink-0 rounded-full border border-slate-200 bg-white/90 p-2.5 text-slate-700 shadow-lg backdrop-blur transition hover:bg-white hover:text-slate-900 xl:grid place-items-center"
+            aria-label="Scroll left"
           >
-            <TourCard {...item} />
-          </div>
-        ))}
+            <ChevronLeft className="size-5" />
+          </button>
+        )}
+
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-x-auto pb-1 overscroll-x-contain scrollbar-hide hidden xl:flex gap-3"
+          style={{ scrollSnapType: "x mandatory" }}
+        >
+          {infiniteItems.map((item, index) => (
+            <div
+              key={`${item.title}-${index}`}
+              className="w-[280px] shrink-0 h-full"
+              style={{ scrollSnapAlign: "start" }}
+            >
+              <TourCard {...item} badge={badge} />
+            </div>
+          ))}
+        </div>
+
+        {sideArrows && (
+          <button
+            type="button"
+            onClick={() => scroll("right")}
+            className="z-10 hidden shrink-0 rounded-full border border-slate-200 bg-white/90 p-2.5 text-slate-700 shadow-lg backdrop-blur transition hover:bg-white hover:text-slate-900 xl:grid place-items-center"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="size-5" />
+          </button>
+        )}
       </div>
 
       <div
         ref={mobileScrollRef}
-        className="-mx-1 flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 scrollbar-hide xl:hidden"
+        className="-mx-1 flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-1 scrollbar-hide xl:hidden"
         style={{
           WebkitOverflowScrolling: "touch",
           scrollSnapType: "x mandatory",
@@ -226,7 +254,7 @@ export function TourCarouselSection({ id, title, subtitle, items }) {
         {infiniteItems.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
-            className="w-[280px] min-w-[280px] shrink-0"
+            className="w-[280px] shrink-0 h-full"
             style={{ scrollSnapAlign: "start" }}
           >
             <TourCard {...item} />

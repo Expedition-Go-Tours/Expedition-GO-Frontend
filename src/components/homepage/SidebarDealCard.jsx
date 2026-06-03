@@ -98,7 +98,7 @@ export function SidebarDealCard({ title, slug, oldPrice, price, discount, countd
       onPointerMove={handlePointerMove}
       onPointerUp={endPointerGesture}
       onPointerCancel={endPointerGesture}
-      className="relative contain-none touch-manipulation overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)]"
+      className="relative h-full contain-none touch-manipulation overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-1 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)]"
     >
       <div className="relative z-0 h-36 overflow-hidden">
         <img src={image} alt="" aria-hidden={true} className="h-full w-full object-cover transition duration-500 xl:hover:scale-105" />

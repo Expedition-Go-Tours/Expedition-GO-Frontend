@@ -155,7 +155,7 @@ export default function SupplierDashboardPage() {
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/", { state: { postAuthSplash: true } })}
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
             >
               <LayoutDashboard className="size-4" />

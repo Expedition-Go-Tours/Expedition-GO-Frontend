@@ -109,7 +109,7 @@ export function TourCard({
       onPointerMove={handlePointerMove}
       onPointerUp={endPointerGesture}
       onPointerCancel={endPointerGesture}
-      className="group relative contain-none touch-manipulation overflow-hidden rounded-b-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-0.5 xl:hover:shadow-none xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)]"
+      className="group relative h-full contain-none touch-manipulation rounded-b-[12px] border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition duration-300 xl:hover:-translate-y-0.5 xl:hover:shadow-md xl:active:scale-95 xl:active:shadow-[0_1px_2px_rgba(15,23,42,0.06)]"
     >
       <div className={`relative z-0 ${imageHeightClass} overflow-hidden bg-slate-100`}>
         <img 
@@ -145,8 +145,8 @@ export function TourCard({
         <p
           className={
             variant === "allTours"
-              ? "line-clamp-2 font-bold leading-tight tracking-tight text-slate-900"
-              : "line-clamp-2 font-bold leading-tight tracking-tight text-slate-900"
+              ? "line-clamp-2 min-h-[2.4em] font-bold leading-tight tracking-tight text-slate-900"
+              : "line-clamp-2 min-h-[2.4em] font-bold leading-tight tracking-tight text-slate-900"
           }
           style={{ fontSize: variant === "allTours" ? 'clamp(0.9375rem, 0.8vw + 0.5rem, 1rem)' : 'clamp(0.875rem, 0.7vw + 0.5rem, 0.9375rem)' }}
         >

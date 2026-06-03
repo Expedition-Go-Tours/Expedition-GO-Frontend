@@ -61,6 +61,7 @@ function WishlistPageContent() {
             </p>
             <Link
               to="/"
+              state={{ postAuthSplash: true }}
               className="inline-flex items-center gap-2 rounded-lg bg-[color:var(--brand-green)] px-5 py-2.5 text-sm font-semibold !text-white transition hover:bg-[color:var(--brand-green)]/90 sm:px-6 sm:py-3 sm:text-base"
             >
               {t('wishlist.exploreTours')}

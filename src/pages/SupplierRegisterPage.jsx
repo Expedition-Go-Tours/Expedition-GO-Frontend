@@ -70,7 +70,7 @@ function SupplierRegisterPage() {
       <div className="mx-auto w-full max-w-[720px]">
         {/* Logo */}
         <div className="mb-8 flex justify-center">
-          <Link to="/" className="inline-block">
+          <Link to="/" state={{ postAuthSplash: true }} className="inline-block">
             <img
               src={companyLogo}
               alt="TravioAfrica"

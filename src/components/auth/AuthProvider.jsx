@@ -33,6 +33,18 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let mounted = true;
     let cleanup = () => {};
+    const MIN_SPLASH_MS = 2800;
+    const splashStart = Date.now();
+
+    const done = () => {
+      const elapsed = Date.now() - splashStart;
+      const remaining = Math.max(0, MIN_SPLASH_MS - elapsed);
+      if (remaining > 0) {
+        setTimeout(() => { if (mounted) setLoading(false); }, remaining);
+      } else {
+        if (mounted) setLoading(false);
+      }
+    };
 
     subscribeToAuthState(async (nextUser) => {
       if (!mounted) {
@@ -42,7 +54,7 @@ export function AuthProvider({ children }) {
       setUser(nextUser);
 
       if (!nextUser) {
-        setLoading(false);
+        done();
         return;
       }
 
@@ -51,7 +63,7 @@ export function AuthProvider({ children }) {
       }
 
       if (mounted) {
-        setLoading(false);
+        done();
       }
     }).then((unsubscribe) => {
       if (!mounted) {

@@ -15,7 +15,7 @@
  * @see lib/tawk.js — support chat widget
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { 
   ArrowLeft, 
@@ -39,6 +39,10 @@ import {
   Share2,
   Grid3X3,
   MessageSquare,
+  Phone,
+  Mail,
+  Building2,
+  Globe,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Navbar } from "@/components/homepage/Navbar";
@@ -53,6 +57,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useCart } from "@/contexts/CartContext";
 import { useTourById } from "@/hooks/useTourById";
 import { adaptTourDetail, buildOverviewHighlights, buildDescriptionSteps, extractAgePrices, parseItineraryStops } from "@/lib/tourDetailAdapter";
+import { getTourByTitle, getAllTours } from "@/lib/tourData";
 import { openTawkChat } from "@/lib/tawk";
 import fallbackTourImage from "@/assets/images/hero_pic.jpg";
 
@@ -112,6 +117,7 @@ const TOUR_DETAIL_TABS = [
   { key: "details", label: "Details" },
   { key: "itinerary", label: "Itinerary" },
   { key: "reviews", label: "Reviews" },
+  { key: "supplier", label: "Supplier" },
 ];
 
 const getDateKey = (date) => {
@@ -396,11 +402,11 @@ function BookingCalendarPopover({
               </button>
             );
           })}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 
 
@@ -436,7 +442,40 @@ function TourDetailContent() {
   const { addToCart } = useCart();
   const { addToRecentlyViewed } = useRecentlyViewed();
   const { data: rawTour, isLoading, error } = useTourById(id);
-  const tourData = useMemo(() => adaptTourDetail(rawTour), [rawTour]);
+  const fallbackTour = useMemo(() => {
+    if (!error || rawTour) return null;
+    const decoded = safeDecodeRouteParam(id);
+    const staticTour = getTourByTitle(decoded);
+    if (!staticTour) return null;
+    const durationMinutes = (() => {
+      if (!staticTour.duration) return undefined;
+      const match = staticTour.duration.match(/(\d+\.?\d*)/);
+      if (!match) return undefined;
+      const num = parseFloat(match[1]);
+      if (/h/i.test(staticTour.duration)) return Math.round(num * 60);
+      if (/d/i.test(staticTour.duration)) return Math.round(num * 1440);
+      return Math.round(num);
+    })();
+    return {
+      title: staticTour.title,
+      durationMinutes,
+      groupType: "Private tour",
+      city: "Accra",
+      language: "English",
+      photos: staticTour.image ? [staticTour.image] : [],
+      coverPhoto: staticTour.image || "",
+      averageRating: parseFloat(String(staticTour.rating ?? "4.8")),
+      reviewCount: parseInt(String(staticTour.reviews ?? "0"), 10),
+      slug: encodeURIComponent(staticTour.title),
+      metaTitle: staticTour.title,
+      summary: staticTour.title,
+      tags: ["Departure guaranteed"],
+      transferInfo: "Airport/station pick-up and drop-off included",
+      productContent: { highlights: [], included: [], excluded: [], location: { city: "Accra" }, description: { overview: "" }, itinerary: "" },
+    };
+  }, [rawTour, error, id]);
+  const effectiveRawTour = rawTour || fallbackTour;
+  const tourData = useMemo(() => adaptTourDetail(effectiveRawTour), [effectiveRawTour]);
   const OVERVIEW_HIGHLIGHTS_DEFAULT = useMemo(() => buildOverviewHighlights(rawTour), [rawTour]);
   const OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT = useMemo(() => buildDescriptionSteps(rawTour), [rawTour]);
   const mergedImages = useMemo(() => {
@@ -454,7 +493,7 @@ function TourDetailContent() {
   const selectedTourDuration = tourData?.duration || "Flexible";
   const selectedTourPriceNumber = tourData?.price || 0;
   const selectedTourTitle = useMemo(() => rawTour?.metaTitle || safeDecodeRouteParam(id) || tourData?.name || id, [id, rawTour, tourData]);
-  const selectedTourRatingNumber = tourData?.ratingsAverage ?? 4.8;
+  const selectedTourRatingNumber = Number(tourData?.ratingsAverage) || 4.8;
   const selectedTourReviewsNumber = tourData?.ratingsQuantity ?? 0;
 
   const agePrices = useMemo(() => extractAgePrices(rawTour), [rawTour]);
@@ -488,7 +527,8 @@ function TourDetailContent() {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [_expandedDay, _setExpandedDay] = useState(0);
-  const [expandedInfoSection, setExpandedInfoSection] = useState("included");
+  const [expandedInfoSection, setExpandedInfoSection] = useState({ included: true });
+  const [supplierInfoOpen, setSupplierInfoOpen] = useState(false);
   const [_travelerType, _setTravelerType] = useState("adults");
   const [overviewAccordionOpen, setOverviewAccordionOpen] = useState({
     highlights: true,
@@ -903,6 +943,26 @@ function TourDetailContent() {
   const restrictionsText = rawTour?.productContent?.restrictions || "";
   const travelerReqsText = rawTour?.productContent?.travelerRequirements || "";
 
+  const supplierData = useMemo(() => {
+    const src = effectiveRawTour;
+    return {
+      name: src?.supplier?.companyName || src?.operator?.companyName || "Expedition-Go Tours Ltd",
+      logo: src?.supplier?.logo || "",
+      email: src?.supplier?.email || src?.operator?.email || "contact@expeditiongo.com",
+      phone: src?.supplier?.phone || src?.operator?.phone || "+233 123 456 789",
+      website: src?.supplier?.website || src?.operator?.website || "https://expeditiongo.com",
+      address: src?.supplier?.address || src?.operator?.address || src?.city || "Accra, Ghana",
+      description: src?.supplier?.description || src?.operator?.description || "Expedition-Go Tours is a trusted tour operator based in Accra, Ghana, offering curated cultural, wildlife, and adventure experiences across West Africa.",
+      toursCount: src?.supplier?.toursCount || 24,
+      rating: src?.supplier?.rating || src?.averageRating || 4.9,
+    };
+  }, [effectiveRawTour]);
+
+  const supplierTours = useMemo(() => {
+    const all = getAllTours();
+    return all.filter((t) => t.title !== selectedTourTitle).slice(0, 8);
+  }, [selectedTourTitle]);
+
   const infoSections = [
     {
       key: "included",
@@ -987,7 +1047,7 @@ function TourDetailContent() {
     },
   ];
 
-  const itineraryStops = useMemo(() => parseItineraryStops(rawTour), [rawTour]);
+  const itineraryStops = useMemo(() => parseItineraryStops(effectiveRawTour), [effectiveRawTour]);
 
   const apiReviewCards = useMemo(() => {
     if (!rawTour?.reviews?.length) return [];
@@ -1091,7 +1151,7 @@ function TourDetailContent() {
     );
   }
 
-  if (error || !tourData) {
+  if ((error && !fallbackTour) || !tourData) {
     return (
       <div className="min-h-screen bg-[color:var(--page-bg)]">
         <Navbar />
@@ -1438,8 +1498,8 @@ function TourDetailContent() {
           </aside>
         </div>
 
-        <nav className="sticky top-[58px] z-30 -mx-4 mt-5 overflow-x-auto bg-white px-4 sm:-mx-6 sm:px-6 lg:top-[104px] lg:-mx-8 lg:px-8">
-          <div className="flex min-w-max gap-7 text-sm font-bold text-[color:var(--brand-green)]">
+        <nav className="sticky top-[58px] z-30 -mx-4 mt-5 overflow-x-auto bg-white px-4 sm:-mx-6 sm:px-6 lg:top-[104px] lg:-mx-8 lg:px-8 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex gap-4 text-xs font-bold text-[color:var(--brand-green)] sm:gap-7 sm:text-sm">
             {TOUR_DETAIL_TABS.map((tab) => (
               <button
                 key={tab.key}
@@ -1513,7 +1573,7 @@ function TourDetailContent() {
                     className="flex w-full items-center justify-between gap-4 py-4 text-left"
                     aria-expanded={overviewAccordionOpen.highlights}
                   >
-                    <span className="text-sm font-bold text-slate-900">{t("tourDetail.highlights")}</span>
+                    <span className="text-sm font-black text-slate-900">{t("tourDetail.highlights")}</span>
                     <span className="flex shrink-0 justify-end">
                       {overviewAccordionOpen.highlights ? (
                         <ChevronUp className="size-4 text-[color:var(--brand-green)]" aria-hidden />
@@ -1541,13 +1601,13 @@ function TourDetailContent() {
               <h2 className="text-lg font-black text-[color:var(--brand-green)]">Details</h2>
               <div className="mt-4 space-y-3">
                 {infoSections.map((section) => {
-                  const isOpen = expandedInfoSection === section.key;
+                  const isOpen = !!expandedInfoSection[section.key];
                   return (
                     <div key={section.key}>
                       <button
                         type="button"
-                        onClick={() => setExpandedInfoSection(isOpen ? "" : section.key)}
-                        className="flex w-full items-center justify-between py-4 text-left text-sm font-black text-[color:var(--brand-green)]"
+                        onClick={() => setExpandedInfoSection(p => ({ ...p, [section.key]: !p[section.key] }))}
+                        className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold text-[color:var(--brand-green)]"
                       >
                         {section.title}
                         {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
@@ -1624,7 +1684,6 @@ function TourDetailContent() {
                     </div>
 
                     <div>
-                      <p className="mb-5 text-sm font-semibold text-slate-950">Total reviews and rating from Viator & Tripadvisor</p>
                       <div className="space-y-3">
                         {reviewBreakdown.map((item) => {
                           const isActive = reviewStarFilter === item.stars;
@@ -1765,26 +1824,22 @@ function TourDetailContent() {
               </div>
             </section>
 
-            <section id="operator" className="pb-8">
-              <h2 className="text-lg font-black text-[color:var(--brand-green)]">About the operator</h2>
-              <p className="mt-2 text-sm text-[color:var(--brand-green)]/75">Don't take it from us - here's what people have to say about this operator.</p>
-              <div className="mt-4 flex gap-4 overflow-x-auto pb-2">
-                <div className="min-w-[190px] rounded-lg border border-slate-200 p-4 text-center">
-                  <div className="mx-auto grid size-16 place-items-center rounded-full border border-slate-200 text-xs font-black">EXP</div>
-                  <p className="mt-3 text-sm font-black">Expedition-Go Tours Ltd</p>
-                  <p className="mt-2 text-xs">4.9 • Accra, Ghana</p>
-                </div>
-                {allReviewCards.map((review) => (
-                  <article key={`operator-${review.name}`} className="min-w-[210px] rounded-lg border border-slate-200 p-4">
-                    <p className="text-sm font-black">{review.name}</p>
-                    <div className="mt-2 flex gap-1 text-emerald-600">{ratingDots.map((_, i) => <Star key={i} className="size-2.5 fill-current" />)}</div>
-                    <p className="mt-2 line-clamp-4 text-xs leading-5">{review.text}</p>
-                  </article>
-                ))}
-              </div>
-              <button type="button" className="mt-2 text-xs font-bold underline">See all 853 reviews</button>
-            </section>
             </>
+            )}
+
+            {activeDetailTab === "supplier" && (
+            <SupplierTabContent
+              supplierData={supplierData}
+              supplierTours={supplierTours}
+              supplierInfoOpen={supplierInfoOpen}
+              setSupplierInfoOpen={setSupplierInfoOpen}
+              handleImageError={handleImageError}
+              convertPrice={convertPrice}
+              toggleWishlist={toggleWishlist}
+              isInWishlist={isInWishlist}
+              t={t}
+              tourTitle={selectedTourTitle}
+            />
             )}
           </div>
         </div>
@@ -2201,6 +2256,247 @@ function TourDetailContent() {
 
       <Footer />
     </div>
+  );
+}
+
+const CARD_GAP = 16;
+const CARD_W_SM = 260;
+const CARD_W_MD = 280;
+
+function SupplierTabContent({ supplierData, supplierTours, supplierInfoOpen, setSupplierInfoOpen, handleImageError, convertPrice, toggleWishlist, isInWishlist, t, tourTitle }) {
+  const scrollRef = useRef(null);
+  const scrollBtnLeftRef = useRef(null);
+  const scrollBtnRightRef = useRef(null);
+
+  const updateScrollEdges = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const max = scrollWidth - clientWidth;
+    const eps = 6;
+    const left = scrollLeft > eps;
+    const right = max > eps && scrollLeft < max - eps;
+    if (scrollBtnLeftRef.current) {
+      scrollBtnLeftRef.current.style.opacity = left ? "1" : "0";
+      scrollBtnLeftRef.current.style.pointerEvents = left ? "auto" : "none";
+    }
+    if (scrollBtnRightRef.current) {
+      scrollBtnRightRef.current.style.opacity = right ? "1" : "0";
+      scrollBtnRightRef.current.style.pointerEvents = right ? "auto" : "none";
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    requestAnimationFrame(updateScrollEdges);
+    el.addEventListener("scroll", updateScrollEdges, { passive: true });
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(updateScrollEdges) : null;
+    ro?.observe(el);
+    window.addEventListener("resize", updateScrollEdges);
+    return () => {
+      el.removeEventListener("scroll", updateScrollEdges);
+      ro?.disconnect();
+      window.removeEventListener("resize", updateScrollEdges);
+    };
+  }, [supplierTours.length, updateScrollEdges]);
+
+  const scrollByDirection = useCallback((dir) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const card = window.innerWidth >= 640 ? CARD_W_MD : CARD_W_SM;
+    const step = card + CARD_GAP;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step * 1.35));
+    el.scrollTo({ left: target, behavior: "smooth" });
+  }, []);
+
+  return (
+    <section id="supplier" className="pb-8">
+      <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-4">
+            <div className="grid size-16 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs font-black text-[color:var(--brand-green)]">
+              {supplierData.logo ? (
+                <img src={supplierData.logo} alt="" className="size-full rounded-full object-cover" />
+              ) : (
+                supplierData.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
+              )}
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-slate-900">{supplierData.name}</h2>
+              <div className="mt-1 flex items-center gap-2 text-sm text-slate-500">
+                <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                <span className="font-semibold text-slate-900">{supplierData.rating}</span>
+                <span>•</span>
+                <span>{supplierData.toursCount} tours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 border-b border-slate-200">
+        <div className="flex items-center justify-between py-4">
+          <button
+            type="button"
+            onClick={() => setSupplierInfoOpen(o => !o)}
+            className="flex items-center gap-2 text-left text-sm font-semibold text-[color:var(--brand-green)]"
+          >
+            About this supplier
+            {supplierInfoOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+          </button>
+          <Link
+            to={`/supplier/profile/${encodeURIComponent(tourTitle)}`}
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
+          >
+            View More
+            <ChevronRight className="size-4" strokeWidth={2} />
+          </Link>
+        </div>
+        {supplierInfoOpen && (
+          <div className="pb-5">
+            <p className="text-sm leading-7 text-slate-600">{supplierData.description}</p>
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <Phone className="size-4 text-[color:var(--brand-green)]" />
+                <span className="text-slate-700">{supplierData.phone}</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <Mail className="size-4 text-[color:var(--brand-green)]" />
+                <a href={`mailto:${supplierData.email}`} className="text-[color:var(--brand-green)] underline-offset-2 hover:underline">{supplierData.email}</a>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <Globe className="size-4 text-[color:var(--brand-green)]" />
+                <a href={supplierData.website} target="_blank" rel="noopener noreferrer" className="text-[color:var(--brand-green)] underline-offset-2 hover:underline">{supplierData.website}</a>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <MapPin className="size-4 text-[color:var(--brand-green)]" />
+                <span className="text-slate-700">{supplierData.address}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-6">
+        <h3 className="text-base font-black text-slate-900">Tours by this supplier</h3>
+        <div className="mt-4 flex items-center gap-2 sm:gap-3">
+          <button
+            ref={scrollBtnLeftRef}
+            type="button"
+            className="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md transition-opacity duration-200 sm:grid sm:size-10"
+            style={{ opacity: 0, pointerEvents: "none" }}
+            aria-label={t("tourDetail.similarScrollPrev")}
+            onClick={() => scrollByDirection(-1)}
+          >
+            <ChevronLeft className="size-5" strokeWidth={2} aria-hidden />
+          </button>
+
+          <div
+            ref={scrollRef}
+            className="min-w-0 flex-1 -mx-1 flex gap-4 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-5 md:gap-5 [&::-webkit-scrollbar]:hidden"
+            style={{ WebkitOverflowScrolling: "touch", overflowY: "unset" }}
+          >
+            {supplierTours.map((tour) => {
+              const detailTo = `/tour/${encodeURIComponent(tour.title)}`;
+              const converted = convertPrice(tour.price);
+              const reviewsDisplay = tour.reviews ? (typeof tour.reviews === "number" ? String(tour.reviews) : String(tour.reviews).replace(/,/g, "")) : "0";
+              const isFav = isInWishlist(tour.title);
+              return (
+                <article
+                  key={tour.title}
+                  className="w-[260px] shrink-0 sm:w-[280px]"
+                >
+                  <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.08)] transition hover:shadow-md">
+                    <div className="relative">
+                      <a
+                        href={detailTo}
+                        className="block overflow-hidden rounded-t-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
+                      >
+                        <div className="relative aspect-[4/3] bg-slate-100">
+                          <img
+                            src={tour.image}
+                            alt=""
+                            className="h-full w-full object-cover pointer-events-none"
+                            onError={handleImageError}
+                          />
+                          <span className="pointer-events-none absolute left-2 top-2 rounded-md bg-slate-700/95 px-2 py-1 text-[11px] font-bold text-white shadow-sm sm:text-[10px]">
+                            {tour.duration}
+                          </span>
+                        </div>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          toggleWishlist({
+                            title: tour.title,
+                            slug: tour.slug,
+                            duration: tour.duration,
+                            price: tour.price,
+                            rating: tour.rating,
+                            reviews: tour.reviews,
+                            image: tour.image,
+                          })
+                        }
+                        className="absolute right-2 top-2 z-10 grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-slate-700 shadow-sm transition hover:scale-105"
+                        aria-label={t("nav.wishlist")}
+                      >
+                        <Heart
+                          className={`size-4 ${isFav ? "fill-[color:var(--brand-green)] text-[color:var(--brand-green)]" : "fill-none"}`}
+                          strokeWidth={2}
+                        />
+                      </button>
+                    </div>
+
+                    <div className="flex flex-1 flex-col px-3 pb-3 pt-2.5 sm:px-3.5 sm:pb-3.5 sm:pt-3">
+                      <a
+                        href={detailTo}
+                        className="line-clamp-2 min-h-[2.5rem] font-bold leading-snug text-slate-900 hover:underline"
+                        style={{ fontSize: "clamp(0.8125rem, 0.6vw + 0.5rem, 0.9375rem)" }}
+                      >
+                        {tour.title}
+                      </a>
+
+                      <div className="mt-auto flex items-end justify-between gap-2 pt-3">
+                        <div className="flex min-w-0 items-center gap-1">
+                          <Star
+                            className="size-4 shrink-0 fill-amber-500 text-amber-500"
+                            strokeWidth={1.5}
+                            aria-hidden
+                          />
+                          <span className="text-[13px] font-bold tabular-nums text-slate-900 sm:text-[12px]">
+                            {tour.rating}
+                          </span>
+                          <span className="text-[12px] text-slate-500 sm:text-[11px]">
+                            ({reviewsDisplay})
+                          </span>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <p className="text-[11px] font-medium leading-none text-slate-500">{t("common.from")}</p>
+                          <p className="mt-0.5 text-sm font-bold tabular-nums text-slate-900">{converted.formatted}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <button
+            ref={scrollBtnRightRef}
+            type="button"
+            className="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md transition-opacity duration-200 sm:grid sm:size-10"
+            style={{ opacity: 0, pointerEvents: "none" }}
+            aria-label={t("tourDetail.similarScrollNext")}
+            onClick={() => scrollByDirection(1)}
+          >
+            <ChevronRight className="size-5" strokeWidth={2} aria-hidden />
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 

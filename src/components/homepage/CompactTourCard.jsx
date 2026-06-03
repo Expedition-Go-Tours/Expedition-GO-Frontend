@@ -104,7 +104,7 @@ export function CompactTourCard({
       onPointerMove={handlePointerMove}
       onPointerUp={endPointerGesture}
       onPointerCancel={endPointerGesture}
-      className="group relative contain-none touch-manipulation overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition duration-300 hover:shadow-md"
+      className="group relative h-full contain-none touch-manipulation overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition duration-300 hover:shadow-md"
     >
       {/* Vertical Image */}
       <div className="relative z-0 h-32 overflow-hidden bg-slate-100">

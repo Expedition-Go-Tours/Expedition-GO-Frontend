@@ -91,7 +91,7 @@ function AuthShell({ title, description, badgeLabel, children, footerText, foote
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.65)),radial-gradient(circle_at_top,rgba(255,185,71,0.15),transparent_40%)]" />
 
           <div className="relative flex w-full flex-col justify-between p-10 xl:p-14">
-            <Link to="/" className="inline-flex items-center gap-3 self-start">
+            <Link to="/" state={{ postAuthSplash: true }} className="inline-flex items-center gap-3 self-start">
               <img
                 src={companyLogo}
                 alt="Expedition-Go Group Limited"

@@ -111,7 +111,8 @@ export function buildDescriptionSteps(tour) {
 }
 
 export function parseItineraryStops(rawTour) {
-  const itineraryText = rawTour?.productContent?.itinerary || "";
+  const rawItinerary = rawTour?.productContent?.itinerary;
+  const itineraryText = typeof rawItinerary === "string" ? rawItinerary : "";
   const location = rawTour?.city || rawTour?.productContent?.location?.city || "Accra";
   const stops = [
     { label: "Start", title: `You'll start at ${location}`, meta: "Or, you can also get picked up" },

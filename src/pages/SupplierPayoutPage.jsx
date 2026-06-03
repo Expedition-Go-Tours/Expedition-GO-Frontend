@@ -690,7 +690,7 @@ export default function SupplierPayoutPage() {
       <div className="border-b border-slate-100 bg-white px-4 py-4">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/", { state: { postAuthSplash: true } })}
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
           >
             <ArrowLeft className="size-4" />
@@ -784,7 +784,7 @@ export default function SupplierPayoutPage() {
                 type="button"
                 variant="outline"
                 className="border-slate-300 bg-white"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/", { state: { postAuthSplash: true } })}
               >
                 Back to homepage
               </Button>

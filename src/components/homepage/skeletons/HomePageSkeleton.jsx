@@ -9,7 +9,6 @@ import { Navbar } from "@/components/homepage/Navbar";
 import { Footer } from "@/components/homepage/Footer";
 import { HeroSkeleton } from "./HeroSkeleton";
 import { TourCarouselSkeleton, DestinationsSkeleton } from "./SectionSkeleton";
-import { SidebarSkeleton } from "./SidebarSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function HomePageSkeleton() {
@@ -20,18 +19,13 @@ export function HomePageSkeleton() {
       <HeroSkeleton />
 
       <main className="mx-auto w-full max-w-[1520px] overflow-hidden px-4 pb-[3.4rem] sm:px-6 sm:pb-14">
-        <div className="grid gap-[1.65rem] min-[640px]:gap-[2.125rem] md:gap-8 xl:grid-cols-[minmax(0,1fr)_430px] xl:gap-7">
-          <div className="min-w-0 space-y-[1.7rem] pt-[1.4875rem] md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
-            <TourCarouselSkeleton delay={0} />
-            <div className="space-y-[1.7rem] pt-0 md:space-y-6 md:pt-4 xl:space-y-4 xl:pt-5">
-              <DestinationsSkeleton delay={50} />
-              <TourCarouselSkeleton delay={100} />
-              <TourCarouselSkeleton delay={150} />
-              <TourCarouselSkeleton delay={200} />
-            </div>
-          </div>
-          <div className="min-w-0 pt-[1.7rem] md:pt-6 xl:pt-4">
-            <SidebarSkeleton />
+        <div className="min-w-0 space-y-[1.7rem] pt-[1.4875rem] md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
+          <TourCarouselSkeleton delay={0} />
+          <div className="space-y-[1.7rem] pt-0 md:space-y-6 md:pt-4 xl:space-y-4 xl:pt-5">
+            <DestinationsSkeleton delay={50} />
+            <TourCarouselSkeleton delay={100} />
+            <TourCarouselSkeleton delay={150} />
+            <TourCarouselSkeleton delay={200} />
           </div>
         </div>
       </main>

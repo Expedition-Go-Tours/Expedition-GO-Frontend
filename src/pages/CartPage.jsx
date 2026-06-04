@@ -15,6 +15,8 @@ import { Footer } from "@/components/homepage/Footer";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { AuthModal } from "@/components/ui/auth-modal";
 import BrandLoader from "@/components/ui/BrandLoader";
 
 const formatCartDate = (dateString) =>
@@ -43,8 +45,10 @@ function CartPage() {
   const navigate = useNavigate();
   const { cart, removeFromCart, clearCart } = useCart();
   const { convertPrice } = useCurrency();
+  const { user } = useAuth();
   const [now, setNow] = useState(Date.now());
   const [showSplash, setShowSplash] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(Date.now()), 1000);
@@ -233,6 +237,10 @@ function CartPage() {
 
                 <Button
                   onClick={() => {
+                    if (!user) {
+                      setIsAuthModalOpen(true);
+                      return;
+                    }
                     setShowSplash(true);
                     const item = cart[0];
                     const totalTravelers =
@@ -292,6 +300,13 @@ function CartPage() {
       {showSplash && (
         <BrandLoader fullScreen splash label="Loading checkout..." />
       )}
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        title="Sign in to complete your booking"
+        description="Create an account or sign in to continue with checkout."
+      />
 
       <Footer />
     </div>

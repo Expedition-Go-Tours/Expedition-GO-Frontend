@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { Button } from "./button";
 import { useEffect } from "react";
 
-export function AuthModal({ isOpen, onClose }) {
+export function AuthModal({ isOpen, onClose, title, description }) {
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -70,12 +70,12 @@ export function AuthModal({ isOpen, onClose }) {
 
           {/* Title */}
           <h3 className="mt-4 text-xl font-bold text-slate-900 sm:text-2xl">
-            Sign in to save favorites
+            {title || "Sign in to save favorites"}
           </h3>
 
           {/* Description */}
           <p className="mt-2 text-sm text-slate-600 sm:text-base">
-            Create an account or sign in to save your favorite tours and destinations for later.
+            {description || "Create an account or sign in to save your favorite tours and destinations for later."}
           </p>
 
           {/* Actions */}

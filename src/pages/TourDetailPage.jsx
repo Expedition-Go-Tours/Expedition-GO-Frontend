@@ -50,7 +50,9 @@ import { Footer } from "@/components/homepage/Footer";
 import { SimilarExperiencesCarousel } from "@/components/tour-detail/SimilarExperiencesCarousel";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { AuthModalProvider } from "@/contexts/AuthModalContext";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { AuthModalProvider, useAuthModal } from "@/contexts/AuthModalContext";
+import { AuthModal } from "@/components/ui/auth-modal";
 import { RecentlyViewedProvider, useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -441,6 +443,8 @@ function TourDetailContent() {
   const { convertPrice } = useCurrency();
   const { addToCart } = useCart();
   const { addToRecentlyViewed } = useRecentlyViewed();
+  const { user } = useAuth();
+  const { isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModal();
   const { data: rawTour, isLoading, error } = useTourById(id);
   const fallbackTour = useMemo(() => {
     if (!error || rawTour) return null;
@@ -658,6 +662,11 @@ function TourDetailContent() {
 
   const handleCheckAvailability = () => {
     if (!bookingDateRange?.start) return;
+
+    if (!user) {
+      openAuthModal();
+      return;
+    }
 
     const added = addToCart({
       tourId: id,
@@ -1181,6 +1190,7 @@ function TourDetailContent() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-[color:var(--page-bg)]">
       <Navbar />
       
@@ -2256,6 +2266,14 @@ function TourDetailContent() {
 
       <Footer />
     </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={closeAuthModal}
+        title="Sign in to book a tour"
+        description="Create an account or sign in to continue with your booking."
+      />
+    </>
   );
 }
 

@@ -5,42 +5,34 @@
  */
 import { MapPin, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, useEffect, useLayoutEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigationLoader } from "@/contexts/NavigationContext";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import heroPic from "@/assets/images/hero_pic.jpg";
 import { HeroTourCard } from "./HeroTourCard";
 import { heroStats } from "./data";
 import { useRecentlyViewed } from "@/contexts/RecentlyViewedContext";
 import { useSearchAutocomplete } from "@/hooks/useSearchAutocomplete";
 import { SearchAutocomplete } from "./SearchAutocomplete";
-
-const MOBILE_STICK_EARLY_PX = 14;
+import { HeroImageCarousel } from "./HeroImageCarousel";
 
 export function HeroSection({
   _sharedDateRange,
   _onSharedDateRangeChange,
-  onSearchBarVisibilityChange,
   externalSearchQuery,
   onExternalSearchChange,
 }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { navigateWithLoader } = useNavigationLoader();
   const [_currentIndex, _setCurrentIndex] = useState(0);
-  const [isSearchBarSticky, setIsSearchBarSticky] = useState(false);
-  const [searchBarHeight, setSearchBarHeight] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const scrollContainerRef = useRef(null);
   const desktopScrollRef = useRef(null);
-  const searchBarRef = useRef(null);
-  const searchStickSentinelRef = useRef(null);
   const searchInputRef = useRef(null);
   const autocompleteRef = useRef(null);
-  const _isScrollingRef = useRef(false);
-  const prevStickyRef = useRef(false);
 
   const { recentlyViewed } = useRecentlyViewed();
   const isExternalSearchMode = typeof onExternalSearchChange === "function";
@@ -99,46 +91,10 @@ export function HeroSection({
     }
   };
 
-  // Remove infinite scroll initialization and listeners
-  useEffect(() => {
-    // No special initialization needed for finite scroll
-  }, []);
-
-  // Simple mobile scroll (no infinite loop)
-  useEffect(() => {
-    // No special mobile infinite scroll logic needed
-  }, []);
-
-  // Handle click outside to close autocomplete
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        searchInputRef.current &&
-        !searchInputRef.current.contains(event.target) &&
-        autocompleteRef.current &&
-        !autocompleteRef.current.contains(event.target)
-      ) {
-        setShowAutocomplete(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Show autocomplete when there are results
-  useEffect(() => {
-    if (activeSearchQuery.trim().length >= 2 && searchResults.total > 0) {
-      setShowAutocomplete(true);
-    } else {
-      setShowAutocomplete(false);
-    }
-  }, [activeSearchQuery, searchResults.total]);
-
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (activeSearchQuery.trim()) {
-      navigate(`/tours?search=${encodeURIComponent(activeSearchQuery.trim())}`);
+      navigateWithLoader(`/tours?search=${encodeURIComponent(activeSearchQuery.trim())}`);
       setShowAutocomplete(false);
     }
   };
@@ -156,88 +112,73 @@ export function HeroSection({
     setShowAutocomplete(false);
   };
 
-  const measureSearchBar = useCallback(() => {
-    if (!searchBarRef.current) return;
-    const rect = searchBarRef.current.getBoundingClientRect();
-    const nextHeight = Math.ceil(rect.height);
-    setSearchBarHeight((prev) => (prev === nextHeight ? prev : nextHeight));
-    if (nextHeight > 0) {
-      document.documentElement.style.setProperty("--mobile-sticky-search-height", `${nextHeight}px`);
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    measureSearchBar();
-  }, [measureSearchBar]);
-
+  // Track autocomplete position using the full search bar width
+  const [autocompletePos, setAutocompletePos] = useState({ top: 0, left: 0, width: 0 });
   useEffect(() => {
-    const getNavbarBottom = () => {
-      const header = document.querySelector("header.fixed");
-      return header?.getBoundingClientRect().bottom ?? 0;
+    if (!showAutocomplete) return;
+    const updatePosition = () => {
+      const bar = document.getElementById("hero-search-bar");
+      if (!bar) return;
+      const rect = bar.getBoundingClientRect();
+      setAutocompletePos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
     };
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, { passive: true });
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [showAutocomplete, activeSearchQuery]);
 
-    const updateStickyState = () => {
-      const sentinel = searchStickSentinelRef.current;
-      if (!sentinel) return;
-
-      const navbarBottom = getNavbarBottom();
-      const sentinelTop = sentinel.getBoundingClientRect().top;
-      const shouldBeSticky = sentinelTop <= navbarBottom - MOBILE_STICK_EARLY_PX;
-
-      if (prevStickyRef.current === shouldBeSticky) return;
-
-      prevStickyRef.current = shouldBeSticky;
-      setIsSearchBarSticky(shouldBeSticky);
-      onSearchBarVisibilityChange?.(shouldBeSticky);
-
-      if (!shouldBeSticky) {
-        measureSearchBar();
+  // Handle click outside to close autocomplete
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target) &&
+        autocompleteRef.current &&
+        !autocompleteRef.current.contains(event.target)
+      ) {
+        setShowAutocomplete(false);
       }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    updateStickyState();
-    window.addEventListener("scroll", updateStickyState, { passive: true });
-    window.addEventListener("resize", updateStickyState);
+  // Close hero autocomplete on scroll so the navbar autocomplete takes over
+  useEffect(() => {
+    const close = () => setShowAutocomplete(false);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, []);
 
-    return () => {
-      window.removeEventListener("scroll", updateStickyState);
-      window.removeEventListener("resize", updateStickyState);
-    };
-  }, [measureSearchBar, onSearchBarVisibilityChange]);
+  // Show autocomplete when there are results
+  useEffect(() => {
+    if (activeSearchQuery.trim().length >= 2 && searchResults.total > 0) {
+      setShowAutocomplete(true);
+    } else {
+      setShowAutocomplete(false);
+    }
+  }, [activeSearchQuery, searchResults.total]);
 
   return (
+    <>
     <section
       id="home"
-      className="relative min-h-[50vh] sm:min-h-[52vh] md:min-h-[50vh] lg:min-h-[52vh] xl:min-h-[60vh] flex items-start pt-[12vh] overflow-visible bg-(--brand-green) text-white pb-4"
+      className="relative z-10 min-h-[50vh] sm:min-h-[52vh] md:min-h-[50vh] lg:min-h-[52vh] xl:min-h-[60vh] flex items-start pt-[12vh] overflow-visible bg-(--brand-green) text-white pb-4"
     >
-      <div className="absolute inset-0">
-        <img
-          src={heroPic}
-          alt="African safari landscape at sunset"
-          className="h-full w-full object-cover object-[center_bottom] lg:object-[center_80%] xl:object-center opacity-80"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.18)_25%,rgba(122,69,11,0.14)_60%,rgba(0,0,0,0.2)),radial-gradient(circle_at_center,rgba(255,174,58,0.28),transparent_42%)]" />
-      </div>
+      <HeroImageCarousel />
 
       <div className="relative mx-auto w-full max-w-[1520px] px-2 py-10 sm:px-4 sm:py-14 md:py-16 overflow-visible">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="flex justify-center">
-          </div>
+          <div className="flex justify-center" />
 
+          {/* Hero Content */}
+          <div className="hero-content-wrap">
             <h1
-              className="
-                mt-4
-                mx-auto
-                text-center
-                text-white
-                drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)]
-                whitespace-nowrap
-                overflow-hidden
-                text-ellipsis
-                w-full
-                max-w-none
-                px-2
-              "
+              className="mt-4 mx-auto text-center text-white drop-shadow-[0_6px_20px_rgba(0,0,0,0.55)] whitespace-nowrap overflow-hidden text-ellipsis w-full max-w-none px-2"
               style={{
                 fontFamily: 'var(--font-hero)',
                 fontWeight: 700,
@@ -248,102 +189,72 @@ export function HeroSection({
             >
               {t('hero.title')}
             </h1>
-
-          <p 
-            className="mt-1 text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] px-2 whitespace-nowrap"
-            style={{
-              fontFamily: 'GT Eesti Pro Display, sans-serif',
-              fontWeight: 700,
-              fontSize: 'clamp(11px, 3.5vw, 24px)',
-              lineHeight: 'clamp(16px, 4.5vw, 30px)',
-              letterSpacing: '0px'
-            }}
-          >
-            {t('hero.subtitle')}
-          </p>
-
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 backdrop-blur-md">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-green)]" />
-            <p className="text-xs font-medium tracking-wide text-white/80">
-              {t("hero.availability")}
-            </p>
-          </div>
-          
-          {/* Hero Search Bar - On mobile: becomes fixed at top. On desktop: fades out when reaching navbar */}
-          <div 
-            className="relative mt-4 sm:mt-3.5 md:mt-4 mx-auto w-full max-w-4xl lg:max-w-2xl"
-            style={{ minHeight: searchBarHeight > 0 ? `${searchBarHeight}px` : "auto" }}
-          >
-            <div
-              ref={searchStickSentinelRef}
-              className="pointer-events-none absolute left-0 top-0 h-px w-full"
-              aria-hidden
-            />
-            <div 
-              ref={searchBarRef}
-              className={`${
-                isSearchBarSticky 
-                  ? "fixed left-0 right-0 z-[60] border-b border-slate-200/80 bg-white px-3 py-2 will-change-transform max-lg:top-[var(--navbar-offset)] lg:static lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:opacity-0 lg:pointer-events-none" 
-                  : "static opacity-100"
-              }`}
+            <p
+              className="mt-1 text-white/92 drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] px-2 whitespace-nowrap"
+              style={{
+                fontFamily: 'GT Eesti Pro Display, sans-serif',
+                fontWeight: 700,
+                fontSize: 'clamp(11px, 3.5vw, 24px)',
+                lineHeight: 'clamp(16px, 4.5vw, 30px)',
+                letterSpacing: '0px'
+              }}
             >
-              <form
-                onSubmit={handleSearchSubmit}
-                className="relative"
-              >
-                <div
-                  id="hero-search-bar"
-                  className="grid w-full gap-0 rounded-lg border border-slate-200 bg-white sm:grid-cols-[1fr_auto] grid-cols-[1fr_auto] shadow-md mx-auto"
-                >
-                  <div className="flex items-center gap-2 text-left text-slate-900 px-2 py-1.5">
-                    <MapPin className="text-(--brand-green) shrink-0 size-3" />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-[9px] sm:text-[10px] mb-0">
-                        {t('hero.destination')}
-                      </p>
-                      <Input
-                        ref={searchInputRef}
-                        value={activeSearchQuery}
-                        onChange={handleSearchChange}
-                        onFocus={() => activeSearchQuery.trim().length >= 2 && searchResults.total > 0 && setShowAutocomplete(true)}
-                        className="h-auto border-0 px-1 py-0 text-[11px] sm:text-[11px] text-slate-900 placeholder:text-slate-400 shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                        style={{ 
-                          caretColor: '#01311a',
-                          outline: 'none',
-                          textAlign: 'left'
-                        }}
-                        placeholder={t('hero.destinationPlaceholder')}
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="p-1">
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className="h-full w-full rounded-lg min-h-7 text-[10px] px-3 sm:min-h-8 sm:text-[11px] sm:px-4"
-                    >
-                      <Search className="size-2.5 sm:size-3" />
-                      {t('hero.search')}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Autocomplete Dropdown */}
-                <div ref={autocompleteRef}>
-                  <SearchAutocomplete
-                    results={searchResults}
-                    onSelect={handleAutocompleteSelect}
-                    isVisible={showAutocomplete}
-                    searchQuery={activeSearchQuery}
-                  />
-                </div>
-              </form>
+              {t('hero.subtitle')}
+            </p>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-green)]" />
+              <p className="text-xs font-medium tracking-wide text-white/80">
+                {t("hero.availability")}
+              </p>
             </div>
           </div>
 
-          <div className="mt-3 sm:mt-3.5 md:mt-4 hidden grid-cols-3 gap-2 md:grid">
+          {/* Hero Search Bar */}
+          <div className="hero-search-wrap relative z-10 mt-4 sm:mt-3.5 md:mt-4 mx-auto w-full max-w-4xl lg:max-w-2xl">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <div
+                id="hero-search-bar"
+                className="grid w-full gap-0 rounded-lg border border-slate-200 bg-white sm:grid-cols-[1fr_auto] grid-cols-[1fr_auto] shadow-md mx-auto"
+              >
+                <div className="flex items-center gap-2 text-left text-slate-900 px-2 py-1.5">
+                  <MapPin className="text-(--brand-green) shrink-0 size-3" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-[9px] sm:text-[10px] mb-0">
+                      {t('hero.destination')}
+                    </p>
+                    <Input
+                      ref={searchInputRef}
+                      value={activeSearchQuery}
+                      onChange={handleSearchChange}
+                      onFocus={() => activeSearchQuery.trim().length >= 2 && searchResults.total > 0 && setShowAutocomplete(true)}
+                      className="h-auto border-0 px-1 py-0 text-[11px] sm:text-[11px] text-slate-900 placeholder:text-slate-400 shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      style={{
+                        caretColor: '#01311a',
+                        outline: 'none',
+                        textAlign: 'left'
+                      }}
+                      placeholder={t('hero.destinationPlaceholder')}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+                <div className="p-1">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="h-full w-full rounded-lg min-h-7 text-[10px] px-3 sm:min-h-8 sm:text-[11px] sm:px-4"
+                  >
+                    <Search className="size-2.5 sm:size-3" />
+                    {t('hero.search')}
+                  </Button>
+                </div>
+              </div>
+              <div ref={autocompleteRef} />
+            </form>
+          </div>
+
+          {/* Hero Stats */}
+          <div className="hero-stats-wrap mt-3 sm:mt-3.5 md:mt-4 hidden md:grid grid-cols-3 gap-2">
             {heroStats.map((stat) => (
               <div
                 key={stat.label}
@@ -358,18 +269,16 @@ export function HeroSection({
           </div>
         </div>
 
-        {/* Compact carousel - only show if there are items */}
+        {/* Recently Viewed Carousel */}
         {carouselItems.length > 0 && (
-          <div className="mt-4 sm:mt-5 md:mt-6 overflow-visible">
-            <h2 
+          <div className="hero-carousel-wrap mt-4 sm:mt-5 md:mt-6 overflow-visible">
+            <h2
               className="mb-3 text-center font-semibold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
               style={{ fontSize: 'clamp(15px, 2.5vw, 16px)' }}
             >
               {t('sections.pickupTitle')}
             </h2>
-
             <div className="overflow-visible">
-              {/* Desktop: arrows outside the card strip (not over the cards) */}
               <div className="mx-auto hidden w-full max-w-full items-center gap-2 px-1 sm:gap-3 md:flex lg:gap-4">
                 {isOverflowing && (
                   <button
@@ -381,7 +290,6 @@ export function HeroSection({
                     <ChevronLeft className="size-5" />
                   </button>
                 )}
-
                 <div
                   ref={desktopScrollRef}
                   className="flex min-w-0 flex-1 gap-3 overflow-x-auto overflow-y-hidden pb-6 scrollbar-hide"
@@ -401,7 +309,6 @@ export function HeroSection({
                     </div>
                   ))}
                 </div>
-
                 {isOverflowing && (
                   <button
                     type="button"
@@ -413,14 +320,10 @@ export function HeroSection({
                   </button>
                 )}
               </div>
-
-              {/* Mobile carousel - finite scroll */}
               <div
                 ref={scrollContainerRef}
                 className="md:hidden overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
-                style={{
-                  WebkitOverflowScrolling: 'touch'
-                }}
+                style={{ WebkitOverflowScrolling: 'touch' }}
               >
                 <div className="flex gap-3 px-4">
                   {carouselItems.map((item, index) => (
@@ -438,5 +341,27 @@ export function HeroSection({
         )}
       </div>
     </section>
+    {showAutocomplete &&
+      createPortal(
+        <div
+          ref={autocompleteRef}
+          style={{
+            position: "fixed",
+            top: autocompletePos.top,
+            left: autocompletePos.left,
+            width: autocompletePos.width,
+            zIndex: 9999,
+          }}
+        >
+          <SearchAutocomplete
+            results={searchResults}
+            onSelect={handleAutocompleteSelect}
+            isVisible={showAutocomplete}
+            searchQuery={activeSearchQuery}
+          />
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }

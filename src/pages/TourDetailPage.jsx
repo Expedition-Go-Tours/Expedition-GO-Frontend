@@ -1938,7 +1938,7 @@ function TourDetailContent() {
           </div>
         </div>
 
-        <section className="py-8">
+        <section className="px-5 py-8 sm:px-6">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-xl font-bold text-slate-900">Similar Experiences</h2>
           </div>

@@ -5,7 +5,7 @@
  *
  * @see components/homepage/DestinationCard.jsx
  */
-import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -13,6 +13,40 @@ import { destinations as staticDestinations } from "./data";
 import { DestinationCard } from "./DestinationCard";
 import { DestinationsModal } from "./DestinationsModal";
 import { CarouselClipTrack } from "@/components/ui/CarouselClipTrack";
+
+function haversineDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const destinationCoords = {
+  "Accra": { lat: 5.6037, lng: -0.1870 },
+  "Cape Coast": { lat: 5.1053, lng: -1.2466 },
+  "Kakum National Park": { lat: 5.3500, lng: -1.3833 },
+  "Kumasi": { lat: 6.6885, lng: -1.6244 },
+  "Elmina": { lat: 5.0833, lng: -1.3500 },
+  "Mole National Park": { lat: 9.2833, lng: -1.8500 },
+  "Wli Waterfalls": { lat: 7.0833, lng: 0.5833 },
+  "Aburi Botanical Gardens": { lat: 5.8500, lng: -0.1833 },
+  "Ada Foah": { lat: 5.7833, lng: 0.6333 },
+  "Boti Falls": { lat: 6.1500, lng: -0.2500 },
+  "Busua Beach": { lat: 4.8667, lng: -2.3000 },
+  "Larabanga Mosque": { lat: 9.1167, lng: -1.7833 },
+  "Nzulezu Stilt Village": { lat: 5.1667, lng: -2.6667 },
+  "Shai Hills Reserve": { lat: 5.8333, lng: -0.0667 },
+  "Paga Crocodile Pond": { lat: 10.9833, lng: -0.7167 },
+  "Akosombo": { lat: 6.2667, lng: 0.2500 },
+  "Tafi Atome Monkey Sanctuary": { lat: 7.1333, lng: 0.4833 },
+  "Biriwa Beach": { lat: 5.1333, lng: -1.1667 },
+};
 
 const CAROUSEL_ARROW_SCROLL_MS = 260;
 
@@ -77,25 +111,42 @@ export function DestinationsSection({ apiDestinations = [] }) {
   const mobileScrollRef = useRef(null);
   const isScrollingRef = useRef(false);
   const scrollGenerationRef = useRef(0);
+  const [userLocation, setUserLocation] = useState(null);
 
-  const mergedDestinations = (() => {
-    if (apiDestinations.length === 0) return staticDestinations;
-    const seen = new Set();
-    const merged = [];
-    for (const d of apiDestinations) {
-      if (!seen.has(d.title)) {
-        seen.add(d.title);
-        merged.push(d);
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
+    );
+  }, []);
+
+  const mergedDestinations = useMemo(() => {
+    const base = apiDestinations.length === 0 ? staticDestinations : (() => {
+      const seen = new Set();
+      const merged = [];
+      for (const d of apiDestinations) {
+        if (!seen.has(d.title)) { seen.add(d.title); merged.push(d); }
       }
-    }
-    for (const d of staticDestinations) {
-      if (!seen.has(d.title)) {
-        seen.add(d.title);
-        merged.push(d);
+      for (const d of staticDestinations) {
+        if (!seen.has(d.title)) { seen.add(d.title); merged.push(d); }
       }
-    }
-    return merged;
-  })();
+      return merged;
+    })();
+
+    if (!userLocation) return base;
+
+    const withDistance = base.map((d) => {
+      const coords = destinationCoords[d.title];
+      const distance = coords
+        ? haversineDistance(userLocation.lat, userLocation.lng, coords.lat, coords.lng)
+        : Infinity;
+      return { ...d, distance };
+    });
+    withDistance.sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
+    return withDistance;
+  }, [apiDestinations, userLocation]);
 
   const infiniteDestinations = [...mergedDestinations, ...mergedDestinations, ...mergedDestinations];
   const cardWidth = 280;

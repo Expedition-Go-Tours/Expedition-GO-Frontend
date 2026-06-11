@@ -121,7 +121,7 @@ export function ReviewsCarousel() {
           className="mb-8 text-center font-semibold tracking-tight text-slate-900 sm:mb-10"
           style={{ fontSize: "clamp(1.75rem, 3vw + 0.5rem, 2.5rem)" }}
         >
-          {t("reviews.heading", "What are people saying about Ghana")}
+          {t("reviews.heading", "Stories from TravioAfrica Experiences")}
         </h5>
 
         {/* Desktop arrows */}

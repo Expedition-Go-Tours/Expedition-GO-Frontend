@@ -108,7 +108,7 @@ export function SimilarExperiencesCarousel({
 
   return (
     <section>
-      <div className="relative">
+      <div className="relative pr-12 pl-0 sm:pr-14">
         <CarouselClipTrack
           ref={scrollRef}
           cardWidth={280}
@@ -220,7 +220,7 @@ export function SimilarExperiencesCarousel({
         <button
           ref={scrollBtnLeftRef}
           type="button"
-          className="absolute left-0 top-1/2 z-10 hidden size-9 -translate-y-1/2 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md transition-opacity duration-200 sm:grid sm:size-10"
+          className="absolute -left-5 top-1/2 z-10 hidden size-9 -translate-y-1/2 place-items-center rounded-full border border-slate-900 bg-white text-slate-900 shadow-md transition-opacity duration-200 sm:grid sm:size-10"
           style={{ opacity: 0, pointerEvents: "none" }}
           aria-label={t("tourDetail.similarScrollPrev")}
           onClick={() => scrollByDirection(-1)}

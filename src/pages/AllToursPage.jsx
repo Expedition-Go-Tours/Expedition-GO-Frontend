@@ -196,6 +196,12 @@ function AllToursPageContent() {
   const [sortBy, setSortBy] = useState("featured");
   const [searchQuery, setSearchQuery] = useState(initialSearch);
 
+  // Sync search query state with URL changes (e.g., when navigating from navbar search)
+  useEffect(() => {
+    const urlSearch = new URLSearchParams(location.search).get("search") || "";
+    setSearchQuery(urlSearch);
+  }, [location.search]);
+
   const [appliedAdults, setAppliedAdults] = useState(2);
   const [appliedChildren, setAppliedChildren] = useState(0);
   const [appliedChildAges, setAppliedChildAges] = useState([]);

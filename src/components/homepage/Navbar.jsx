@@ -8,7 +8,7 @@
  * @see hooks/useSearchAutocomplete.js
  * @see contexts/CurrencyContext.jsx, WishlistContext.jsx, CartContext.jsx
  */
-import { Globe, Heart, Headset, LoaderCircle, Menu, ShoppingCart, Settings, UserCircle2, X, ChevronDown, Search } from "lucide-react";
+import { Globe, Heart, Headset, LoaderCircle, Menu, ShoppingCart, Settings, Store, UserCircle2, X, Search } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next";
 import companyPic from "@/assets/images/new_logo.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { getAuthToken } from "@/lib/auth";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useSearchAutocomplete } from "@/hooks/useSearchAutocomplete";
 import { SearchAutocomplete } from "./SearchAutocomplete";
@@ -34,7 +33,7 @@ export function Navbar({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLanguageCurrencyOpen, setIsLanguageCurrencyOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("language");
-  const [showCompactSearch, setShowCompactSearch] = useState(false);
+  const [searchBarSticky, setSearchBarSticky] = useState(false);
   const [compactSearchQuery, setCompactSearchQuery] = useState("");
   const [showNavAutocomplete, setShowNavAutocomplete] = useState(false);
   const [userIsTyping, setUserIsTyping] = useState(false);
@@ -68,7 +67,8 @@ export function Navbar({
   
   // Determine the active search query for autocomplete
   const activeSearchQuery = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
-  const isCompactSearchVisible = showCompactSearch || forceShowCompactSearch;
+  const isCompactSearchVisible = searchBarSticky || forceShowCompactSearch;
+  const renderCompactSearch = forceShowCompactSearch || location.pathname === "/";
   
   // Get search results for navbar
   const navSearchResults = useSearchAutocomplete(activeSearchQuery);
@@ -143,12 +143,11 @@ export function Navbar({
     setShowNavAutocomplete(false);
     setUserIsTyping(false); // User stopped typing
     const query = activeSearchQuery.trim();
-    if (isExternalSearchMode && location.pathname !== "/") return;
     if (!query) {
-      navigate("/tours");
+      navigateWithLoader("/tours");
       return;
     }
-    navigate(`/tours?search=${encodeURIComponent(query)}`);
+    navigateWithLoader(`/tours?search=${encodeURIComponent(query)}`);
   };
 
   const handleNavSearchChange = (e) => {
@@ -189,10 +188,6 @@ export function Navbar({
 
   // Show autocomplete when there are results AND user is actively typing
   useEffect(() => {
-    if (!isDesktopViewport) {
-      setShowNavAutocomplete(false);
-      return;
-    }
     if (!userIsTyping) return;
     
     const query = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
@@ -201,7 +196,7 @@ export function Navbar({
     } else {
       setShowNavAutocomplete(false);
     }
-  }, [compactSearchQuery, externalSearchQuery, isExternalSearchMode, navSearchResults.total, userIsTyping, isDesktopViewport]);
+  }, [compactSearchQuery, externalSearchQuery, isExternalSearchMode, navSearchResults.total, userIsTyping]);
 
   // Close autocomplete and reset typing state when route changes
   useEffect(() => {
@@ -218,16 +213,12 @@ export function Navbar({
 
   // If user searched in hero and then scrolls to navbar, keep results available.
   useEffect(() => {
-    if (!isDesktopViewport) {
-      setShowNavAutocomplete(false);
-      return;
-    }
     if (location.pathname !== "/") return;
     if (!isCompactSearchVisible) return;
     if (activeSearchQuery.trim().length >= 2 && navSearchResults.total > 0) {
       setShowNavAutocomplete(true);
     }
-  }, [isCompactSearchVisible, activeSearchQuery, navSearchResults.total, isDesktopViewport, location.pathname]);
+  }, [isCompactSearchVisible, activeSearchQuery, navSearchResults.total, location.pathname]);
 
   // Keep viewport mode in sync so mobile/tablet never mount desktop autocomplete.
   useEffect(() => {
@@ -271,34 +262,50 @@ export function Navbar({
   const compactSearchValue = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
   const _compactSearchMaxWidthClass = forceShowCompactSearch ? "max-w-[460px]" : "max-w-[360px]";
 
+  // Toggle body.hero--search-sticky based on scroll position vs hero search bar
   useEffect(() => {
-    const handleScroll = () => {
-      // If forceShowCompactSearch is true, don't hide the search bar
-      if (forceShowCompactSearch) {
-        return;
-      }
-      
-      if (location.pathname !== "/") {
-        setShowCompactSearch((prev) => (prev ? false : prev));
-        return;
-      }
+    if (forceShowCompactSearch) {
+      document.body.classList.remove("hero--search-sticky");
+      setSearchBarSticky(true);
+      return;
+    }
+    if (location.pathname !== "/") {
+      document.body.classList.remove("hero--search-sticky");
+      setSearchBarSticky(false);
+      return;
+    }
 
+    let rafId;
+    const update = () => {
       const heroSearch = document.getElementById("hero-search-bar");
       if (!heroSearch) {
-        setShowCompactSearch((prev) => (prev ? false : prev));
+        document.body.classList.remove("hero--search-sticky");
+        setSearchBarSticky(false);
         return;
       }
-
       const heroSearchBottom = heroSearch.getBoundingClientRect().bottom + window.scrollY;
-      setShowCompactSearch((prev) => { const next = window.scrollY > heroSearchBottom; return prev === next ? prev : next; });
+      const sticky = document.body.classList.contains("hero--search-sticky");
+      // 15px hysteresis: sticky persists a bit longer, activates a bit later
+      const next = sticky
+        ? window.scrollY > heroSearchBottom - 15
+        : window.scrollY > heroSearchBottom + 15;
+      document.body.classList.toggle("hero--search-sticky", next);
+      setSearchBarSticky(next);
     };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", update);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", update);
+      if (rafId) cancelAnimationFrame(rafId);
+      document.body.classList.remove("hero--search-sticky");
     };
   }, [location.pathname, forceShowCompactSearch]);
 
@@ -323,23 +330,25 @@ export function Navbar({
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-slate-200/80 bg-white transition-all duration-300">
-      <div className="mx-auto flex min-h-[var(--navbar-logo-height)] max-w-[1520px] items-center justify-between gap-2 px-3 py-0 text-slate-950 sm:gap-4 sm:px-4 lg:px-6 dark:text-slate-950">
-<button
-  onClick={handleBrandClick}
-  className="flex h-[var(--navbar-logo-height)] shrink-0 items-center overflow-hidden leading-none cursor-pointer transition-opacity hover:opacity-80"
->
-<img
-  src={companyPic}
-  alt="Expedition-Go Group Limited"
-  className="block h-full w-auto max-w-none object-contain object-left object-top"
-/>
-</button>
+      <div className="navbar-inner mx-auto flex min-h-[var(--navbar-logo-height)] max-w-[1520px] items-center justify-between gap-2 px-3 py-0 text-slate-950 sm:gap-4 sm:px-4 lg:px-6 dark:text-slate-950">
+        <button
+          onClick={handleBrandClick}
+          className="navbar-brand flex h-[var(--navbar-logo-height)] shrink-0 items-center overflow-hidden leading-none cursor-pointer transition-opacity hover:opacity-80"
+        >
+          <img
+            src={companyPic}
+            alt="Expedition-Go Group Limited"
+            className="block h-full w-auto max-w-none object-contain object-left object-top"
+          />
+        </button>
 
-        {isCompactSearchVisible && isDesktopViewport && (
-          <div className="flex-1 justify-center hidden lg:flex">
+        {renderCompactSearch && (
+          <div
+            className={`navbar-compact-search${forceShowCompactSearch ? " navbar-compact-search--forced" : ""} flex-1 justify-center max-w-[600px] ${isDesktopViewport ? "hidden lg:flex" : "flex lg:hidden"}`}
+          >
             <form
               onSubmit={handleCompactSearchSubmit}
-              className="relative flex w-full max-w-[600px] lg:max-w-[420px] xl:max-w-[600px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm hover:shadow-md"
+              className="navbar-search-form relative flex w-full max-w-[360px] lg:max-w-[420px] xl:max-w-[600px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm hover:shadow-md"
             >
               <Search className="size-4 text-(--brand-green)" />
               <input
@@ -361,7 +370,6 @@ export function Navbar({
                   }
                 }}
                 onBlur={() => {
-                  // Delay closing to allow click events on autocomplete items to fire
                   setTimeout(() => {
                     setShowNavAutocomplete(false);
                     setUserIsTyping(false);
@@ -378,9 +386,9 @@ export function Navbar({
               >
                 Search
               </button>
-              
+
               {/* Autocomplete Dropdown */}
-              <div ref={navAutocompleteRef} className="absolute top-full left-0 right-0 mt-1 z-50">
+              <div ref={navAutocompleteRef}>
                 <SearchAutocomplete
                   results={navSearchResults}
                   onSelect={handleNavAutocompleteSelect}
@@ -393,29 +401,26 @@ export function Navbar({
         )}
 
         <div className="hidden items-center gap-6 lg:gap-3 xl:gap-6 lg:flex">
-          <Link to="/wishlist" className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer lg:p-2 xl:p-0">
+          <Link
+            to="/wishlist"
+            className="group font-semibold flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 lg:p-2 xl:p-0"
+          >
             <Heart className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
-            <span className="hidden xl:block text-xs font-semibold relative">
+            <span className="hidden xl:block text-xs relative font-semibold">
               {t('nav.wishlist')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
             </span>
           </Link>
-          <Link to="/cart" className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer lg:p-2 xl:p-0">
-            <ShoppingCart className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
-            <span className="hidden xl:block text-xs font-semibold relative">
-              {t('nav.cart')}
+          <Link
+            to="/supplier/portal"
+            className="group font-semibold flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 lg:p-2 xl:p-0"
+          >
+            <Store className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
+            <span className="hidden xl:block text-xs relative font-semibold whitespace-nowrap">
+              {t('nav.listAnExperience', 'List an experience')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
             </span>
           </Link>
-          <button className="group flex flex-col items-center gap-1 text-slate-700 transition hover:text-slate-950 cursor-pointer lg:p-2 xl:p-0">
-            <svg className="size-5 transition group-hover:text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="hidden xl:block text-xs relative font-semibold">
-              {t('nav.bookings')}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
-            </span>
-          </button>
           <button
             type="button"
             onClick={() => setIsLanguageCurrencyOpen(!isLanguageCurrencyOpen)}
@@ -483,6 +488,24 @@ export function Navbar({
                           <Globe className="size-4" />
                           <span>{t('nav.updates')}</span>
                         </button>
+                        <div className="border-t border-slate-100 my-1" />
+                        <Link
+                          to="/cart"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                        >
+                          <ShoppingCart className="size-4" />
+                          <span>{t('nav.cart')}</span>
+                        </Link>
+                        <button
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                        >
+                          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span>{t('nav.bookings')}</span>
+                        </button>
                       </div>
                       <div className="border-t border-slate-100 p-2">
                         <button
@@ -534,11 +557,29 @@ export function Navbar({
                           <span>{t('nav.support')}</span>
                         </Link>
                          <button
-                          onClick={() => setIsUserMenuOpen(false)}
+                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <Globe className="size-4" />
                           <span>{t('nav.updates')}</span>
+                        </button>
+                        <div className="border-t border-slate-100 my-1" />
+                        <Link
+                          to="/cart"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                        >
+                          <ShoppingCart className="size-4" />
+                          <span>{t('nav.cart')}</span>
+                        </Link>
+                        <button
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                        >
+                          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span>{t('nav.bookings')}</span>
                         </button>
                       </div>
                       <div className="border-t border-slate-100 p-2">
@@ -571,7 +612,7 @@ export function Navbar({
         <button
           type="button"
           onClick={toggleMobileMenu}
-          className="grid size-9 shrink-0 place-items-center rounded-full border border-slate-300 text-slate-950 sm:size-10 lg:hidden"
+          className="navbar-hamburger grid size-9 shrink-0 place-items-center rounded-full border border-slate-300 text-slate-950 sm:size-10 lg:hidden"
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}

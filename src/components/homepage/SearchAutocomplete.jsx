@@ -5,11 +5,11 @@
  * @see hooks/useSearchAutocomplete.js — fuzzy matching logic
  */
 import { MapPin, Clock, Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigationLoader } from "@/contexts/NavigationContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
-export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery }) {
-  const navigate = useNavigate();
+export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery, className = "absolute top-full left-0 right-0 mt-1 max-h-[400px] overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg z-50" }) {
+  const { navigateWithLoader } = useNavigationLoader();
   const { convertPrice } = useCurrency();
 
   if (!isVisible || results.total === 0) {
@@ -18,23 +18,23 @@ export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery }
 
   const handleTourClick = (tour) => {
     const path = tour.slug ? `/tour/${tour.slug}` : `/tour/${encodeURIComponent(tour.title)}`;
-    navigate(path);
+    navigateWithLoader(path);
     onSelect();
   };
 
   const handleDestinationClick = (destination) => {
-    navigate(`/tours?search=${encodeURIComponent(destination.title)}`);
+    navigateWithLoader(`/tours?search=${encodeURIComponent(destination.title)}`);
     onSelect();
   };
 
   const handleViewAllClick = () => {
     // Use the actual search query instead of a specific result
-    navigate(`/tours?search=${encodeURIComponent(searchQuery || "")}`);
+    navigateWithLoader(`/tours?search=${encodeURIComponent(searchQuery || "")}`);
     onSelect();
   };
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-1 max-h-[400px] overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg z-50">
+    <div className={className}>
       {/* Destinations Section */}
       {results.destinations.length > 0 && (
         <div className="border-b border-slate-100">

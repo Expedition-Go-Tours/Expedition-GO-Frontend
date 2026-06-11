@@ -3,9 +3,9 @@
  * @description Main landing route (/). Composes homepage sections and handles
  *   post-auth splash → skeleton loading handoff.
  *
- * Section order: Navbar → Hero → New Experiences → Destinations → Recommended →
- *   Top Rated → Featured → Likely to Sellout → Last Minute Deals → Newsletter →
- *   Features → Reviews → Supplier CTA → Explore More → Footer
+ * Section order: Navbar → Hero → Recommended → Destinations → Top Rated → Featured → Extra Categories →
+ *   Last Minute Deals → New Experiences → Top Attractions Nearby → Newsletter →
+ *   Features → Reviews → Explore More → Footer
  *
  * Local providers: AuthModalProvider, RecentlyViewedProvider (page-scoped)
  * Loading: useHomePageData gate + HomePageSkeleton; post-auth uses BrandLoader splash
@@ -24,11 +24,12 @@ import { Footer } from "@/components/homepage/Footer";
 import { HeroSection } from "@/components/homepage/HeroSection";
 import { Navbar } from "@/components/homepage/Navbar";
 import { TourCarouselSection } from "@/components/homepage/TourCarouselSection";
+import { TopAttractionsNearby } from "@/components/homepage/TopAttractionsNearby";
 import { NewsletterSection } from "@/components/homepage/NewsletterSection";
 import { FeaturesSection } from "@/components/homepage/FeaturesSection";
+import { DiscoverExperiencesSection } from "@/components/homepage/DiscoverExperiencesSection";
+import { NewsArticlesSection } from "@/components/homepage/NewsArticlesSection";
 import { ReviewsCarousel } from "@/components/homepage/ReviewsCarousel";
-import { SupplierSection } from "@/components/homepage/SupplierSection";
-import { ExploreMoreSection } from "@/components/homepage/ExploreMoreSection";
 import { HomePageSkeleton } from "@/components/homepage/skeletons/HomePageSkeleton";
 import BrandLoader from "@/components/ui/BrandLoader";
 import { SectionHeading } from "@/components/homepage/SectionHeading";
@@ -74,8 +75,9 @@ function HomePageContent() {
   /** Use fetchStatus + fresh handoff nonce so skeleton does not disappear when TanStack skips isLoading during cache quirks. */
   const categories = homeLoad.data?.categories || {};
   const apiDestinations = homeLoad.data?.destinations || [];
+  const EXCLUDED_CATEGORIES = new Set(["cultural", "wildlife", "beach", "food & drink", "food and drink", "food & culinary"]);
   const categoryKeys = Object.keys(categories).filter(
-    (key) => key.toLowerCase() !== "cultural" && key.toLowerCase() !== "wildlife"
+    (key) => !EXCLUDED_CATEGORIES.has(key.toLowerCase())
   );
   const MIN_SLOT_ITEMS = 8;
   const MIN_SLOT_IDS = [categoryKeys[0], categoryKeys[1], categoryKeys[2], categoryKeys[3]];
@@ -135,7 +137,6 @@ function HomePageContent() {
   const [sharedHeroDateRange, setSharedHeroDateRange] = useState({ from: null, to: null });
   const [sharedSearchQuery, setSharedSearchQuery] = useState("");
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [showCompactSearch, setShowCompactSearch] = useState(false);
 
   const CAROUSEL_SCROLL_MS = 260;
   const scrollRafRef = useRef({});
@@ -280,21 +281,13 @@ function HomePageContent() {
         <Navbar
           sharedDateRange={sharedHeroDateRange}
           onSharedDateRangeChange={setSharedHeroDateRange}
-          forceShowCompactSearch={showCompactSearch}
           externalSearchQuery={sharedSearchQuery}
           onExternalSearchChange={setSharedSearchQuery}
         />
-        {/* Mobile spacer — reserves room for sticky search below the navbar */}
-        <div
-          className={`lg:hidden overflow-hidden ${
-            showCompactSearch ? "h-[var(--mobile-sticky-search-height,3.25rem)]" : "h-0"
-          }`}
-          aria-hidden
-        />
+
         <HeroSection
           sharedDateRange={sharedHeroDateRange}
           onSharedDateRangeChange={setSharedHeroDateRange}
-          onSearchBarVisibilityChange={setShowCompactSearch}
           externalSearchQuery={sharedSearchQuery}
           onExternalSearchChange={setSharedSearchQuery}
         />
@@ -442,12 +435,15 @@ function HomePageContent() {
                 ))}
               </CarouselClipTrack>
             </section>
+
+            {/* 8. Top Attractions Nearby */}
+            <TopAttractionsNearby />
           </div>
         </main>
 
-        {/* Newsletter Section - Full Width */}
-        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14 overflow-hidden">
-          <NewsletterSection />
+        {/* Discover Experiences Section - Tabbed cards */}
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
+          <DiscoverExperiencesSection />
         </div>
 
         {/* Features Section - Full Width before footer */}
@@ -455,16 +451,18 @@ function HomePageContent() {
           <FeaturesSection />
         </div>
 
+        {/* Newsletter Section - Full Width */}
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14 overflow-hidden">
+          <NewsletterSection />
+        </div>
+
         <div className="mb-14">
           <ReviewsCarousel />
         </div>
 
-        <div className="mb-14">
-          <SupplierSection />
-        </div>
-
-        <div className="mb-14">
-          <ExploreMoreSection />
+        {/* News & Articles Section - Last before footer */}
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
+          <NewsArticlesSection />
         </div>
 
         <Footer />

@@ -3,8 +3,8 @@
  * @description Root component and single source of truth for client-side routing.
  *
  * Provider tree:
- *   ErrorBoundary → AuthProvider → AppContent
- *     AppContent → CurrencyProvider → WishlistProvider → CartProvider → Routes
+ *   ErrorBoundary → CurrencyProvider → NavigationProvider → AuthProvider → Toaster + AppContent
+ *     AppContent → WishlistProvider → CartProvider → Routes
  *
  * Route map:
  *   /                    HomePage
@@ -62,10 +62,8 @@ function AppContent() {
   }
 
   return (
-    <CurrencyProvider>
       <WishlistProvider>
         <CartProvider>
-          <NavigationProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/tours" element={<AllToursPage />} />
@@ -87,32 +85,34 @@ function AppContent() {
             <Route path="/supplier/profile/:tourTitle" element={<SupplierPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          </NavigationProvider>
         </CartProvider>
       </WishlistProvider>
-    </CurrencyProvider>
   );
 }
 
 function App() {
   return (
     <ErrorBoundary goHomeLink="/" goHomeLabel="Go Home">
-      <Toaster
-        position="top-right"
-        richColors
-        closeButton
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "var(--brand-mist)",
-            color: "var(--brand-green)",
-            border: "1px solid rgba(9, 106, 79, 0.18)",
-          },
-        }}
-      />
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <CurrencyProvider>
+        <NavigationProvider>
+          <AuthProvider>
+            <Toaster
+              position="top-right"
+              richColors
+              closeButton
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: "var(--brand-mist)",
+                  color: "var(--brand-green)",
+                  border: "1px solid rgba(9, 106, 79, 0.18)",
+                },
+              }}
+            />
+            <AppContent />
+          </AuthProvider>
+        </NavigationProvider>
+      </CurrencyProvider>
     </ErrorBoundary>
   );
 }

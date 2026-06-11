@@ -44,7 +44,7 @@ export function SupplierNavMenuItem({ onNavigate, className }) {
       <span
         className={`${baseClassName} text-slate-700 opacity-50`}
         aria-busy="true"
-        aria-label={t("nav.becomeSupplier", "Become a supplier")}
+        aria-label={t("nav.becomeSupplier", "List an experience")}
       />
     );
   }
@@ -111,7 +111,7 @@ export function SupplierNavMenuItem({ onNavigate, className }) {
   return (
     <Link to={href} onClick={onNavigate} className={itemClassName}>
       <Store className="size-4" />
-      <span>{t("nav.becomeSupplier", "Become a supplier")}</span>
+      <span>{t("nav.becomeSupplier", "List an experience")}</span>
     </Link>
   );
 }

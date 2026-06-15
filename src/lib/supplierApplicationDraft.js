@@ -7,52 +7,52 @@
  *   Drafts stay keyed to the last signed-in user after logout (localStorage last-user pointer).
  */
 
-const DRAFT_PREFIX = "supplier_application_draft:";
-const LAST_DRAFT_USER_KEY = "supplier_application_draft_last_user";
+const DRAFT_PREFIX = 'supplier_application_draft:';
+const LAST_DRAFT_USER_KEY = 'supplier_application_draft_last_user';
 const STEPS_COUNT = 5;
 
 const STORAGES = [
-  { name: "session", get: () => sessionStorage },
-  { name: "local", get: () => localStorage },
+  { name: 'session', get: () => sessionStorage },
+  { name: 'local', get: () => localStorage },
 ];
 
 export function createEmptySupplierApplicationForm() {
   return {
     businessInfo: {
-      legalBusinessName: "",
-      displayName: "",
-      businessType: "",
-      country: "",
+      legalBusinessName: '',
+      displayName: '',
+      businessType: '',
+      country: '',
       address: {
-        line1: "",
-        line2: "",
-        city: "",
-        state: "",
-        postalCode: "",
+        line1: '',
+        line2: '',
+        city: '',
+        state: '',
+        postalCode: '',
       },
-      website: "",
-      phoneNumber: "",
+      website: '',
+      phoneNumber: '',
     },
     operatingInfo: {
       tourCategories: [],
       destinations: [],
       languages: [],
-      yearsInBusiness: "",
-      cancellationPolicy: "",
-      meetingStyle: "",
+      yearsInBusiness: '',
+      cancellationPolicy: '',
+      meetingStyle: '',
     },
     representativeInfo: {
-      fullName: "",
-      email: "",
-      dateOfBirth: "",
+      fullName: '',
+      email: '',
+      dateOfBirth: '',
       address: {
-        line1: "",
-        line2: "",
-        city: "",
-        state: "",
-        postalCode: "",
+        line1: '',
+        line2: '',
+        city: '',
+        state: '',
+        postalCode: '',
       },
-      idType: "",
+      idType: '',
       idDocument: null,
     },
     businessDocuments: {
@@ -69,14 +69,14 @@ export function createEmptySupplierApplicationForm() {
 }
 
 function draftStorageKey(userId) {
-  const id = String(userId || "").trim();
-  return `${DRAFT_PREFIX}${id || "anonymous"}`;
+  const id = String(userId || '').trim();
+  return `${DRAFT_PREFIX}${id || 'anonymous'}`;
 }
 
 /** Remember who last saved a draft so logout does not lose progress. */
 export function rememberDraftUserId(userId) {
-  const id = String(userId || "").trim();
-  if (!id || typeof window === "undefined") return;
+  const id = String(userId || '').trim();
+  if (!id || typeof window === 'undefined') return;
   try {
     localStorage.setItem(LAST_DRAFT_USER_KEY, id);
   } catch {
@@ -85,7 +85,7 @@ export function rememberDraftUserId(userId) {
 }
 
 export function getLastDraftUserId() {
-  if (typeof window === "undefined") return null;
+  if (typeof window === 'undefined') return null;
   try {
     return localStorage.getItem(LAST_DRAFT_USER_KEY)?.trim() || null;
   } catch {
@@ -103,7 +103,7 @@ export function resolveDraftUserId(user) {
 
 /** Promote pre-login (anonymous) draft when the user signs in. */
 export function migrateAnonymousDraftToUser(userId) {
-  if (!userId || typeof window === "undefined") return;
+  if (!userId || typeof window === 'undefined') return;
 
   const userKey = draftStorageKey(userId);
   const anonKey = draftStorageKey(null);
@@ -121,8 +121,7 @@ export function migrateAnonymousDraftToUser(userId) {
 
   if (!anonDraft) return;
 
-  const shouldMigrate =
-    !userDraft || anonDraft.updatedAt > userDraft.updatedAt;
+  const shouldMigrate = !userDraft || anonDraft.updatedAt > userDraft.updatedAt;
 
   if (!shouldMigrate) {
     for (const { get } of STORAGES) {
@@ -169,11 +168,10 @@ function serializeFormForDraft(form) {
 }
 
 function normalizeDraftPayload(parsed) {
-  if (!parsed || typeof parsed !== "object") return null;
+  if (!parsed || typeof parsed !== 'object') return null;
 
   const step = Number(parsed.step);
-  const safeStep =
-    Number.isFinite(step) && step >= 0 && step < STEPS_COUNT ? Math.floor(step) : 0;
+  const safeStep = Number.isFinite(step) && step >= 0 && step < STEPS_COUNT ? Math.floor(step) : 0;
   const updatedAt = Number(parsed.updatedAt) || 0;
 
   return {
@@ -204,7 +202,7 @@ function writeRawDraft(storage, key, payload) {
 
 export function mergeSupplierApplicationDraft(saved) {
   const empty = createEmptySupplierApplicationForm();
-  if (!saved || typeof saved !== "object") return empty;
+  if (!saved || typeof saved !== 'object') return empty;
 
   return {
     businessInfo: {
@@ -221,9 +219,7 @@ export function mergeSupplierApplicationDraft(saved) {
       destinations: Array.isArray(saved.operatingInfo?.destinations)
         ? saved.operatingInfo.destinations
         : [],
-      languages: Array.isArray(saved.operatingInfo?.languages)
-        ? saved.operatingInfo.languages
-        : [],
+      languages: Array.isArray(saved.operatingInfo?.languages) ? saved.operatingInfo.languages : [],
     },
     representativeInfo: {
       ...empty.representativeInfo,
@@ -244,7 +240,7 @@ export function mergeSupplierApplicationDraft(saved) {
  * @returns {{ step: number; form: ReturnType<typeof createEmptySupplierApplicationForm> } | null}
  */
 export function loadSupplierApplicationDraft(userId) {
-  if (typeof window === "undefined") return null;
+  if (typeof window === 'undefined') return null;
 
   const key = draftStorageKey(userId);
   let best = null;
@@ -267,13 +263,12 @@ export function loadSupplierApplicationDraft(userId) {
  * @param {{ step: number; form: object }} draft
  */
 export function saveSupplierApplicationDraft(userId, draft) {
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
 
   if (userId) rememberDraftUserId(userId);
 
   const step = Number(draft?.step);
-  const safeStep =
-    Number.isFinite(step) && step >= 0 && step < STEPS_COUNT ? Math.floor(step) : 0;
+  const safeStep = Number.isFinite(step) && step >= 0 && step < STEPS_COUNT ? Math.floor(step) : 0;
 
   const payload = {
     step: safeStep,
@@ -289,7 +284,7 @@ export function saveSupplierApplicationDraft(userId, draft) {
 
 /** @param {string | undefined} userId */
 export function clearSupplierApplicationDraft(userId) {
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
 
   const key = draftStorageKey(userId);
   for (const { get } of STORAGES) {

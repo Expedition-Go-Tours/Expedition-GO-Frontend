@@ -1,12 +1,12 @@
-import { apiRequest, unwrap } from "./client";
+import { apiRequest, unwrap } from './client';
 
 export async function fetchTours(params = {}) {
-  const data = await apiRequest("/tours", { params, auth: false });
+  const data = await apiRequest('/tours', { params, auth: false });
   return unwrap(data);
 }
 
 export async function fetchPopularByCategory(params = {}) {
-  const data = await apiRequest("/tours/popular/by-category", {
+  const data = await apiRequest('/tours/popular/by-category', {
     params,
     auth: false,
   });
@@ -14,7 +14,7 @@ export async function fetchPopularByCategory(params = {}) {
 }
 
 export async function fetchFilterOptions() {
-  const data = await apiRequest("/tours/filters/options", { auth: false });
+  const data = await apiRequest('/tours/filters/options', { auth: false });
   return unwrap(data);
 }
 

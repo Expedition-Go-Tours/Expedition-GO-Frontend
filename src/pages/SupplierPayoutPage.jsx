@@ -5,9 +5,9 @@
  *
  * @see api/payout.js
  */
-import { useState, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import {
   Landmark,
   Smartphone,
@@ -24,9 +24,9 @@ import {
   Mail,
   BadgeCheck,
   Clock,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -34,11 +34,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { invalidateSupplierAccess } from "@/api/supplierAccessQuery";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { refreshStoredUserFromBackend } from "@/lib/auth";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { invalidateSupplierAccess } from '@/api/supplierAccessQuery';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { refreshStoredUserFromBackend } from '@/lib/auth';
 import {
   fetchSupplierAccessSnapshot,
   isSupplierActive,
@@ -48,38 +48,38 @@ import {
   requiresPayoutSetup,
   resolveSupplierNavState,
   SUPPLIER_SIGNIN_PATH,
-} from "@/lib/supplierPortal";
+} from '@/lib/supplierPortal';
 import {
   getMyPayoutMethods,
   addPayoutMethod,
   deletePayoutMethod,
   setDefaultPayoutMethod,
   parseCreatedPayoutMethod,
-} from "@/api/payout";
-import companyLogo from "@/assets/images/new_logo.png";
+} from '@/api/payout';
+import companyLogo from '@/assets/images/new_logo.png';
 
 const PAYOUT_TYPES = [
   {
-    key: "BANK_TRANSFER",
-    label: "Bank Transfer",
+    key: 'BANK_TRANSFER',
+    label: 'Bank Transfer',
     icon: Landmark,
-    description: "Receive payouts directly to your bank account via wire transfer.",
+    description: 'Receive payouts directly to your bank account via wire transfer.',
   },
   {
-    key: "PAYPAL",
-    label: "PayPal",
+    key: 'PAYPAL',
+    label: 'PayPal',
     icon: Wallet,
-    description: "Receive payouts to your PayPal account.",
+    description: 'Receive payouts to your PayPal account.',
   },
 ];
 
 /** Shape payload to match Expedition-Go-Backend-v2 payoutMethodController validation. */
 function buildPayoutPayload(data) {
-  const currency = (data.currency || "USD").trim().toUpperCase();
+  const currency = (data.currency || 'USD').trim().toUpperCase();
 
-  if (data.type === "BANK_TRANSFER") {
+  if (data.type === 'BANK_TRANSFER') {
     const payload = {
-      type: "BANK_TRANSFER",
+      type: 'BANK_TRANSFER',
       currency,
       accountName: data.accountName?.trim(),
       bankName: data.bankName?.trim(),
@@ -91,13 +91,7 @@ function buildPayoutPayload(data) {
     if (accountNumber) payload.accountNumber = accountNumber;
     if (iban) payload.iban = iban;
 
-    const optionalFields = [
-      "bankAddress",
-      "routingNumber",
-      "swiftCode",
-      "sortCode",
-      "branchCode",
-    ];
+    const optionalFields = ['bankAddress', 'routingNumber', 'swiftCode', 'sortCode', 'branchCode'];
     for (const field of optionalFields) {
       const value = data[field]?.trim();
       if (value) payload[field] = value;
@@ -106,9 +100,9 @@ function buildPayoutPayload(data) {
     return payload;
   }
 
-  if (data.type === "PAYPAL") {
+  if (data.type === 'PAYPAL') {
     return {
-      type: "PAYPAL",
+      type: 'PAYPAL',
       currency,
       paypalEmail: data.paypalEmail?.trim().toLowerCase(),
     };
@@ -118,23 +112,23 @@ function buildPayoutPayload(data) {
 }
 
 function validateBankTransferForm(form) {
-  if (!form.accountName?.trim()) return "Account holder name is required.";
+  if (!form.accountName?.trim()) return 'Account holder name is required.';
   if (!form.accountNumber?.trim() && !form.iban?.trim()) {
-    return "Account number or IBAN is required.";
+    return 'Account number or IBAN is required.';
   }
-  if (!form.bankName?.trim()) return "Bank name is required.";
-  if (!form.bankCountry?.trim()) return "Bank country code is required (e.g. GH, US).";
+  if (!form.bankName?.trim()) return 'Bank name is required.';
+  if (!form.bankCountry?.trim()) return 'Bank country code is required (e.g. GH, US).';
   if (form.bankCountry.trim().length !== 2) {
-    return "Bank country must be a 2-letter ISO code (e.g. GH, NG, US).";
+    return 'Bank country must be a 2-letter ISO code (e.g. GH, NG, US).';
   }
   return null;
 }
 
 function validatePayPalForm(form) {
   const email = form.paypalEmail?.trim();
-  if (!email) return "PayPal email is required.";
+  if (!email) return 'PayPal email is required.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return "Enter a valid PayPal email address.";
+    return 'Enter a valid PayPal email address.';
   }
   return null;
 }
@@ -152,27 +146,24 @@ function StyledInput({ icon: Icon, ...props }) {
   return (
     <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm transition focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
       {Icon && <Icon className="size-4 shrink-0 text-slate-400" />}
-      <Input
-        className="border-0 bg-transparent px-3 shadow-none focus:ring-0"
-        {...props}
-      />
+      <Input className="border-0 bg-transparent px-3 shadow-none focus:ring-0" {...props} />
     </div>
   );
 }
 
 function BankTransferForm({ onSubmit, onValidationError, loading }) {
   const [form, setForm] = useState({
-    accountName: "",
-    accountNumber: "",
-    iban: "",
-    bankName: "",
-    bankCountry: "",
-    bankAddress: "",
-    routingNumber: "",
-    swiftCode: "",
-    sortCode: "",
-    branchCode: "",
-    currency: "USD",
+    accountName: '',
+    accountNumber: '',
+    iban: '',
+    bankName: '',
+    bankCountry: '',
+    bankAddress: '',
+    routingNumber: '',
+    swiftCode: '',
+    sortCode: '',
+    branchCode: '',
+    currency: 'USD',
   });
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
@@ -184,7 +175,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
       onValidationError?.(validationError);
       return;
     }
-    onSubmit(buildPayoutPayload({ type: "BANK_TRANSFER", ...form }));
+    onSubmit(buildPayoutPayload({ type: 'BANK_TRANSFER', ...form }));
   };
 
   return (
@@ -195,7 +186,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
           icon={CreditCard}
           placeholder="e.g. John Doe"
           value={form.accountName}
-          onChange={(e) => update("accountName", e.target.value)}
+          onChange={(e) => update('accountName', e.target.value)}
         />
       </div>
       <div>
@@ -204,7 +195,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
           icon={CreditCard}
           placeholder="e.g. 1234567890"
           value={form.accountNumber}
-          onChange={(e) => update("accountNumber", e.target.value)}
+          onChange={(e) => update('accountNumber', e.target.value)}
         />
       </div>
       <div>
@@ -213,7 +204,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
           icon={CreditCard}
           placeholder="e.g. GB82 WEST 1234 5698 7654 32"
           value={form.iban}
-          onChange={(e) => update("iban", e.target.value)}
+          onChange={(e) => update('iban', e.target.value)}
         />
       </div>
       <div>
@@ -222,7 +213,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
           icon={Building2}
           placeholder="e.g. Chase Bank"
           value={form.bankName}
-          onChange={(e) => update("bankName", e.target.value)}
+          onChange={(e) => update('bankName', e.target.value)}
         />
       </div>
       <div>
@@ -232,7 +223,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
           placeholder="2-letter code, e.g. US, GH, NG"
           maxLength={2}
           value={form.bankCountry}
-          onChange={(e) => update("bankCountry", e.target.value.toUpperCase())}
+          onChange={(e) => update('bankCountry', e.target.value.toUpperCase())}
         />
       </div>
       <div className="sm:col-span-2">
@@ -241,7 +232,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
           icon={Building2}
           placeholder="e.g. 270 Park Ave, New York, NY"
           value={form.bankAddress}
-          onChange={(e) => update("bankAddress", e.target.value)}
+          onChange={(e) => update('bankAddress', e.target.value)}
         />
       </div>
       <div>
@@ -249,7 +240,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
         <StyledInput
           placeholder="e.g. 021000021"
           value={form.routingNumber}
-          onChange={(e) => update("routingNumber", e.target.value)}
+          onChange={(e) => update('routingNumber', e.target.value)}
         />
       </div>
       <div>
@@ -257,7 +248,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
         <StyledInput
           placeholder="e.g. CHASUS33"
           value={form.swiftCode}
-          onChange={(e) => update("swiftCode", e.target.value)}
+          onChange={(e) => update('swiftCode', e.target.value)}
         />
       </div>
       <div>
@@ -265,7 +256,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
         <StyledInput
           placeholder="e.g. 12-34-56"
           value={form.sortCode}
-          onChange={(e) => update("sortCode", e.target.value)}
+          onChange={(e) => update('sortCode', e.target.value)}
         />
       </div>
       <div>
@@ -273,7 +264,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
         <StyledInput
           placeholder="e.g. 001"
           value={form.branchCode}
-          onChange={(e) => update("branchCode", e.target.value)}
+          onChange={(e) => update('branchCode', e.target.value)}
         />
       </div>
       <div>
@@ -281,7 +272,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
         <StyledInput
           placeholder="e.g. USD, GHS, NGN"
           value={form.currency}
-          onChange={(e) => update("currency", e.target.value.toUpperCase())}
+          onChange={(e) => update('currency', e.target.value.toUpperCase())}
         />
       </div>
       <div className="sm:col-span-2">
@@ -293,7 +284,7 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
           {loading ? (
             <LoaderCircle className="mr-2 size-4 animate-spin" />
           ) : (
-            "Save Bank Transfer Method"
+            'Save Bank Transfer Method'
           )}
         </Button>
       </div>
@@ -303,8 +294,8 @@ function BankTransferForm({ onSubmit, onValidationError, loading }) {
 
 function PayPalForm({ onSubmit, onValidationError, loading }) {
   const [form, setForm] = useState({
-    paypalEmail: "",
-    currency: "USD",
+    paypalEmail: '',
+    currency: 'USD',
   });
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }));
@@ -316,7 +307,7 @@ function PayPalForm({ onSubmit, onValidationError, loading }) {
       onValidationError?.(validationError);
       return;
     }
-    onSubmit(buildPayoutPayload({ type: "PAYPAL", ...form }));
+    onSubmit(buildPayoutPayload({ type: 'PAYPAL', ...form }));
   };
 
   return (
@@ -328,7 +319,7 @@ function PayPalForm({ onSubmit, onValidationError, loading }) {
           type="email"
           placeholder="you@example.com"
           value={form.paypalEmail}
-          onChange={(e) => update("paypalEmail", e.target.value)}
+          onChange={(e) => update('paypalEmail', e.target.value)}
         />
       </div>
       <div className="sm:col-span-2">
@@ -336,7 +327,7 @@ function PayPalForm({ onSubmit, onValidationError, loading }) {
         <StyledInput
           placeholder="e.g. USD"
           value={form.currency}
-          onChange={(e) => update("currency", e.target.value.toUpperCase())}
+          onChange={(e) => update('currency', e.target.value.toUpperCase())}
         />
       </div>
       <div className="sm:col-span-2">
@@ -345,11 +336,7 @@ function PayPalForm({ onSubmit, onValidationError, loading }) {
           disabled={loading}
           className="h-12 w-full rounded-lg text-base font-semibold"
         >
-          {loading ? (
-            <LoaderCircle className="mr-2 size-4 animate-spin" />
-          ) : (
-            "Save PayPal Method"
-          )}
+          {loading ? <LoaderCircle className="mr-2 size-4 animate-spin" /> : 'Save PayPal Method'}
         </Button>
       </div>
     </form>
@@ -357,17 +344,17 @@ function PayPalForm({ onSubmit, onValidationError, loading }) {
 }
 
 function getPayoutMethodLabel(method) {
-  if (!method) return "this payout method";
-  if (method.type === "BANK_TRANSFER") {
-    return method.bankName || "Bank transfer";
+  if (!method) return 'this payout method';
+  if (method.type === 'BANK_TRANSFER') {
+    return method.bankName || 'Bank transfer';
   }
-  if (method.type === "PAYPAL") {
-    return method.paypalEmail || "PayPal";
+  if (method.type === 'PAYPAL') {
+    return method.paypalEmail || 'PayPal';
   }
-  if (method.type === "MOBILE_MONEY") {
-    return method.mobileProvider || "Mobile money";
+  if (method.type === 'MOBILE_MONEY') {
+    return method.mobileProvider || 'Mobile money';
   }
-  return "this payout method";
+  return 'this payout method';
 }
 
 function ExistingMethodCard({ method, onDeleteRequest, onSetDefault }) {
@@ -387,9 +374,9 @@ function ExistingMethodCard({ method, onDeleteRequest, onSetDefault }) {
         <div>
           <div className="flex items-center gap-2">
             <p className="text-sm font-bold text-slate-900">
-              {method.type === "BANK_TRANSFER" && method.bankName}
-              {method.type === "MOBILE_MONEY" && method.mobileProvider}
-              {method.type === "PAYPAL" && "PayPal"}
+              {method.type === 'BANK_TRANSFER' && method.bankName}
+              {method.type === 'MOBILE_MONEY' && method.mobileProvider}
+              {method.type === 'PAYPAL' && 'PayPal'}
             </p>
             {method.isDefault && (
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
@@ -410,13 +397,14 @@ function ExistingMethodCard({ method, onDeleteRequest, onSetDefault }) {
             )}
           </div>
           <p className="mt-0.5 text-xs text-slate-500">
-            {method.type === "BANK_TRANSFER" && (
+            {method.type === 'BANK_TRANSFER' && (
               <>
-                {method.accountName} · {method.accountNumber ? `****${method.accountNumber.slice(-4)}` : "—"}
+                {method.accountName} ·{' '}
+                {method.accountNumber ? `****${method.accountNumber.slice(-4)}` : '—'}
               </>
             )}
-            {method.type === "MOBILE_MONEY" && method.mobileNumber}
-            {method.type === "PAYPAL" && method.paypalEmail}
+            {method.type === 'MOBILE_MONEY' && method.mobileNumber}
+            {method.type === 'PAYPAL' && method.paypalEmail}
           </p>
         </div>
       </div>
@@ -447,15 +435,15 @@ export default function SupplierPayoutPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("BANK_TRANSFER");
+  const [activeTab, setActiveTab] = useState('BANK_TRANSFER');
   const [methods, setMethods] = useState([]);
   const [reviewStatus, setReviewStatus] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [statusChecking, setStatusChecking] = useState(true);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -476,15 +464,12 @@ export default function SupplierPayoutPage() {
       .then((snapshot) => {
         if (cancelled) return;
 
-        if (
-          snapshot.reviewStatus &&
-          !requiresPayoutSetup(snapshot.reviewStatus)
-        ) {
+        if (snapshot.reviewStatus && !requiresPayoutSetup(snapshot.reviewStatus)) {
           navigate(SUPPLIER_SIGNIN_PATH, { replace: true });
           return;
         }
 
-        if (snapshot.route === "portal") {
+        if (snapshot.route === 'portal') {
           redirectToSupplierPortalLogin();
           return;
         }
@@ -525,8 +510,8 @@ export default function SupplierPayoutPage() {
 
   async function handleAdd(payload) {
     setLoading(true);
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
     try {
       const res = await addPayoutMethod(payload);
       const created = parseCreatedPayoutMethod(res);
@@ -534,7 +519,7 @@ export default function SupplierPayoutPage() {
       const snapshot = await fetchSupplierAccessSnapshot();
       if (!snapshot.hasPayout) {
         throw new Error(
-          "Payout details were not saved. Check your connection and try again, or contact support."
+          'Payout details were not saved. Check your connection and try again, or contact support.'
         );
       }
 
@@ -549,21 +534,21 @@ export default function SupplierPayoutPage() {
       }
 
       if (isSupplierActive(snapshot.reviewStatus)) {
-        setSuccess("Payout method saved. Opening your supplier dashboard...");
+        setSuccess('Payout method saved. Opening your supplier dashboard...');
         redirectToSupplierPortalLogin();
         return;
       }
 
       if (isSupplierApproved(snapshot.reviewStatus)) {
         setSuccess(
-          "Payout method saved to your supplier profile. Your account is pending admin activation."
+          'Payout method saved to your supplier profile. Your account is pending admin activation.'
         );
         return;
       }
 
-      setSuccess("Payout method saved successfully.");
+      setSuccess('Payout method saved successfully.');
     } catch (err) {
-      setError(err?.message || "Failed to add payout method. Please try again.");
+      setError(err?.message || 'Failed to add payout method. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -573,7 +558,7 @@ export default function SupplierPayoutPage() {
     if (!deleteTarget) return;
 
     setDeleteLoading(true);
-    setError("");
+    setError('');
     try {
       await deletePayoutMethod(deleteTarget.id);
       setMethods((prev) => {
@@ -581,12 +566,12 @@ export default function SupplierPayoutPage() {
         if (next.length === 0) setShowAddForm(true);
         return next;
       });
-      setSuccess("Payout method removed.");
+      setSuccess('Payout method removed.');
       setDeleteTarget(null);
       const snapshot = await fetchSupplierAccessSnapshot();
       await syncSupplierNav(snapshot);
     } catch (err) {
-      setError(err?.message || "Failed to remove payout method.");
+      setError(err?.message || 'Failed to remove payout method.');
     } finally {
       setDeleteLoading(false);
     }
@@ -595,22 +580,22 @@ export default function SupplierPayoutPage() {
   async function handleSetDefault(id) {
     try {
       await setDefaultPayoutMethod(id);
-      setSuccess("Default payout method updated.");
+      setSuccess('Default payout method updated.');
       await refreshMethods();
       await invalidateSupplierAccess(queryClient, user);
     } catch (err) {
-      setError(err?.message || "Failed to update default method.");
+      setError(err?.message || 'Failed to update default method.');
     }
   }
 
   const reportValidationError = (message) => {
-    setSuccess("");
+    setSuccess('');
     setError(message);
   };
 
   const renderForm = () => {
     switch (activeTab) {
-      case "BANK_TRANSFER":
+      case 'BANK_TRANSFER':
         return (
           <BankTransferForm
             onSubmit={handleAdd}
@@ -618,7 +603,7 @@ export default function SupplierPayoutPage() {
             loading={loading}
           />
         );
-      case "PAYPAL":
+      case 'PAYPAL':
         return (
           <PayPalForm
             onSubmit={handleAdd}
@@ -651,7 +636,7 @@ export default function SupplierPayoutPage() {
           <DialogHeader>
             <DialogTitle>Delete payout method?</DialogTitle>
             <DialogDescription>
-              Are you sure you want to remove{" "}
+              Are you sure you want to remove{' '}
               <span className="font-semibold text-slate-800">
                 {getPayoutMethodLabel(deleteTarget)}
               </span>
@@ -679,7 +664,7 @@ export default function SupplierPayoutPage() {
                   Deleting...
                 </>
               ) : (
-                "Delete payout method"
+                'Delete payout method'
               )}
             </Button>
           </DialogFooter>
@@ -690,17 +675,13 @@ export default function SupplierPayoutPage() {
       <div className="border-b border-slate-100 bg-white px-4 py-4">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
           <button
-            onClick={() => navigate("/", { state: { postAuthSplash: true } })}
+            onClick={() => navigate('/', { state: { postAuthSplash: true } })}
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
           >
             <ArrowLeft className="size-4" />
             Back
           </button>
-          <img
-            src={companyLogo}
-            alt="TravioAfrica"
-            className="h-auto w-[140px] object-contain"
-          />
+          <img src={companyLogo} alt="TravioAfrica" className="h-auto w-[140px] object-contain" />
           <div className="w-16" />
         </div>
       </div>
@@ -712,13 +693,11 @@ export default function SupplierPayoutPage() {
               <BadgeCheck className="size-8 text-emerald-600" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-            Payout Setup
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Payout Setup</h1>
           <p className="mt-2 text-sm text-slate-500">
             {payoutComplete
-              ? "Your payout method is on file. Finance will verify it before your dashboard is activated."
-              : "Your application has been approved! Add at least one payout method (Bank Transfer or PayPal) to continue."}
+              ? 'Your payout method is on file. Finance will verify it before your dashboard is activated.'
+              : 'Your application has been approved! Add at least one payout method (Bank Transfer or PayPal) to continue.'}
           </p>
         </div>
 
@@ -767,9 +746,9 @@ export default function SupplierPayoutPage() {
         {payoutComplete && (
           <div className="mb-8 space-y-4 rounded-2xl border border-amber-200 bg-amber-50/80 p-5">
             <p className="text-sm text-amber-900">
-              <strong>Payout setup complete.</strong> Your bank details are saved in our system.
-              You do not need to submit the form again. An admin will verify your method and
-              activate your supplier dashboard.
+              <strong>Payout setup complete.</strong> Your bank details are saved in our system. You
+              do not need to submit the form again. An admin will verify your method and activate
+              your supplier dashboard.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button
@@ -784,7 +763,7 @@ export default function SupplierPayoutPage() {
                 type="button"
                 variant="outline"
                 className="border-slate-300 bg-white"
-                onClick={() => navigate("/", { state: { postAuthSplash: true } })}
+                onClick={() => navigate('/', { state: { postAuthSplash: true } })}
               >
                 Back to homepage
               </Button>
@@ -806,48 +785,48 @@ export default function SupplierPayoutPage() {
 
         {showAddForm && (
           <>
-        {/* Tabs */}
-        <div className="mb-6 grid grid-cols-2 gap-2">
-          {PAYOUT_TYPES.map((t) => {
-            const Icon = t.icon;
-            const isActive = activeTab === t.key;
-            return (
-              <button
-                key={t.key}
-                onClick={() => {
-                  setActiveTab(t.key);
-                  setError("");
-                  setSuccess("");
-                }}
-                className={`flex flex-col items-center gap-1.5 rounded-2xl border px-3 py-4 text-center transition ${
-                  isActive
-                    ? "border-emerald-200 bg-emerald-50/60 ring-1 ring-emerald-200"
-                    : "border-slate-200 bg-white hover:bg-slate-50"
-                }`}
-              >
-                <Icon
-                  className={`size-5 ${isActive ? "text-emerald-600" : "text-slate-400"}`}
-                />
-                <span
-                  className={`text-xs font-bold ${isActive ? "text-emerald-800" : "text-slate-600"}`}
-                >
-                  {t.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+            {/* Tabs */}
+            <div className="mb-6 grid grid-cols-2 gap-2">
+              {PAYOUT_TYPES.map((t) => {
+                const Icon = t.icon;
+                const isActive = activeTab === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => {
+                      setActiveTab(t.key);
+                      setError('');
+                      setSuccess('');
+                    }}
+                    className={`flex flex-col items-center gap-1.5 rounded-2xl border px-3 py-4 text-center transition ${
+                      isActive
+                        ? 'border-emerald-200 bg-emerald-50/60 ring-1 ring-emerald-200'
+                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                    }`}
+                  >
+                    <Icon
+                      className={`size-5 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`}
+                    />
+                    <span
+                      className={`text-xs font-bold ${isActive ? 'text-emerald-800' : 'text-slate-600'}`}
+                    >
+                      {t.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* Form */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <h3 className="mb-1 text-base font-bold text-slate-900">
-            {PAYOUT_TYPES.find((t) => t.key === activeTab)?.label}
-          </h3>
-          <p className="mb-6 text-sm text-slate-500">
-            {PAYOUT_TYPES.find((t) => t.key === activeTab)?.description}
-          </p>
-          {renderForm()}
-        </div>
+            {/* Form */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <h3 className="mb-1 text-base font-bold text-slate-900">
+                {PAYOUT_TYPES.find((t) => t.key === activeTab)?.label}
+              </h3>
+              <p className="mb-6 text-sm text-slate-500">
+                {PAYOUT_TYPES.find((t) => t.key === activeTab)?.description}
+              </p>
+              {renderForm()}
+            </div>
           </>
         )}
       </div>

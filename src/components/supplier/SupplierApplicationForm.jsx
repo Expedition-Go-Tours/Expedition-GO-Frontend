@@ -6,10 +6,10 @@
  * @see api/supplier.js
  * @see pages/SupplierRegisterPage.jsx
  */
-import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   AlertCircle,
   Building2,
@@ -29,26 +29,23 @@ import {
   BadgeCheck,
   Upload,
   X,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { applyAsSupplier } from "@/api/supplier";
-import { invalidateSupplierAccess } from "@/api/supplierAccessQuery";
-import { useAuth } from "@/components/auth/AuthProvider";
-import GhanaDestinationSelect from "@/components/supplier/GhanaDestinationSelect";
-import {
-  filterLanguagesForCountry,
-  getLanguagesForCountry,
-} from "@/lib/countryLanguages";
+} from '@/components/ui/select';
+import { applyAsSupplier } from '@/api/supplier';
+import { invalidateSupplierAccess } from '@/api/supplierAccessQuery';
+import { useAuth } from '@/components/auth/AuthProvider';
+import GhanaDestinationSelect from '@/components/supplier/GhanaDestinationSelect';
+import { filterLanguagesForCountry, getLanguagesForCountry } from '@/lib/countryLanguages';
 import {
   clearSupplierApplicationDraft,
   createEmptySupplierApplicationForm,
@@ -58,61 +55,61 @@ import {
   rememberDraftUserId,
   resolveDraftUserId,
   saveSupplierApplicationDraft,
-} from "@/lib/supplierApplicationDraft";
+} from '@/lib/supplierApplicationDraft';
 
 const STEPS = [
-  { key: "business", label: "Business Info", icon: Building2 },
-  { key: "operating", label: "Operating Info", icon: Briefcase },
-  { key: "representative", label: "Representative", icon: UserCircle },
-  { key: "documents", label: "Documents", icon: FileText },
-  { key: "compliance", label: "Review & Submit", icon: ShieldCheck },
+  { key: 'business', label: 'Business Info', icon: Building2 },
+  { key: 'operating', label: 'Operating Info', icon: Briefcase },
+  { key: 'representative', label: 'Representative', icon: UserCircle },
+  { key: 'documents', label: 'Documents', icon: FileText },
+  { key: 'compliance', label: 'Review & Submit', icon: ShieldCheck },
 ];
 
 const BUSINESS_TYPES = [
-  { value: "individual", label: "Individual / Sole Proprietor" },
-  { value: "company", label: "Company / Corporation" },
-  { value: "non_profit", label: "Non-Profit Organization" },
+  { value: 'individual', label: 'Individual / Sole Proprietor' },
+  { value: 'company', label: 'Company / Corporation' },
+  { value: 'non_profit', label: 'Non-Profit Organization' },
 ];
 
 const COUNTRIES = [
-  { code: "GH", name: "Ghana" },
-  { code: "NG", name: "Nigeria" },
-  { code: "ZA", name: "South Africa" },
-  { code: "KE", name: "Kenya" },
-  { code: "TZ", name: "Tanzania" },
-  { code: "UG", name: "Uganda" },
-  { code: "RW", name: "Rwanda" },
-  { code: "ET", name: "Ethiopia" },
-  { code: "EG", name: "Egypt" },
-  { code: "MA", name: "Morocco" },
-  { code: "US", name: "United States" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "DE", name: "Germany" },
-  { code: "FR", name: "France" },
-  { code: "NL", name: "Netherlands" },
-  { code: "ES", name: "Spain" },
-  { code: "IT", name: "Italy" },
-  { code: "CA", name: "Canada" },
-  { code: "AU", name: "Australia" },
-  { code: "OTHER", name: "Other" },
+  { code: 'GH', name: 'Ghana' },
+  { code: 'NG', name: 'Nigeria' },
+  { code: 'ZA', name: 'South Africa' },
+  { code: 'KE', name: 'Kenya' },
+  { code: 'TZ', name: 'Tanzania' },
+  { code: 'UG', name: 'Uganda' },
+  { code: 'RW', name: 'Rwanda' },
+  { code: 'ET', name: 'Ethiopia' },
+  { code: 'EG', name: 'Egypt' },
+  { code: 'MA', name: 'Morocco' },
+  { code: 'US', name: 'United States' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'FR', name: 'France' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'OTHER', name: 'Other' },
 ];
 
 const ID_TYPES = [
-  { value: "passport", label: "Passport" },
-  { value: "national_id", label: "National ID Card" },
-  { value: "drivers_license", label: "Driver's License" },
+  { value: 'passport', label: 'Passport' },
+  { value: 'national_id', label: 'National ID Card' },
+  { value: 'drivers_license', label: "Driver's License" },
 ];
 
 const MEETING_STYLES = [
-  { value: "pickup", label: "Pickup from hotel/location" },
-  { value: "meeting_point", label: "Meet at designated point" },
-  { value: "flexible", label: "Flexible / Both options" },
+  { value: 'pickup', label: 'Pickup from hotel/location' },
+  { value: 'meeting_point', label: 'Meet at designated point' },
+  { value: 'flexible', label: 'Flexible / Both options' },
 ];
 
 const CANCELLATION_POLICY_OPTIONS = [
   {
-    value: "individual",
-    label: "Individual Tour Bookings",
+    value: 'individual',
+    label: 'Individual Tour Bookings',
     text: `Individual Tour Bookings
 
 More than 30 days before departure:
@@ -125,8 +122,8 @@ Less than 1 day before departure:
 No refund will be provided. However, we may offer you the option to reschedule your tour to another date, subject to availability.`,
   },
   {
-    value: "group",
-    label: "Group Bookings (10 or more participants)",
+    value: 'group',
+    label: 'Group Bookings (10 or more participants)',
     text: `Group Bookings (10 or more participants)
 
 More than 60 days before departure:
@@ -142,75 +139,76 @@ Unfortunately, we cannot offer a refund, but we will try to accommodate reschedu
 
 function getCancellationPolicyText(policyKey) {
   const option = CANCELLATION_POLICY_OPTIONS.find((p) => p.value === policyKey);
-  return option?.text || "";
+  return option?.text || '';
 }
 
 function getCancellationPolicyLabel(policyKey) {
   const option = CANCELLATION_POLICY_OPTIONS.find((p) => p.value === policyKey);
-  return option?.label || "";
+  return option?.label || '';
 }
 
 const TOUR_CATEGORIES_OPTIONS = [
-  "Adventure",
-  "Cultural",
-  "Nature",
-  "Wildlife",
-  "Historical",
-  "Food & Culinary",
-  "Photography",
-  "Beach & Water",
-  "City Tours",
-  "Mountain & Hiking",
-  "Luxury",
-  "Family Friendly",
+  'Adventure',
+  'Cultural',
+  'Nature',
+  'Wildlife',
+  'Historical',
+  'Food & Culinary',
+  'Photography',
+  'Beach & Water',
+  'City Tours',
+  'Mountain & Hiking',
+  'Luxury',
+  'Family Friendly',
 ];
 
 function getStepValidationError(stepKey, form) {
-  if (stepKey === "business") {
+  if (stepKey === 'business') {
     const b = form.businessInfo;
-    if (!b.legalBusinessName.trim()) return "Legal business name is required";
-    if (!b.displayName.trim()) return "Display name is required";
-    if (!b.businessType) return "Business type is required";
-    if (!b.country) return "Country is required";
-    if (!b.address.line1.trim()) return "Address line 1 is required";
-    if (!b.address.city.trim()) return "City is required";
-    if (!b.address.state.trim()) return "State / Province is required";
-    if (!b.address.postalCode.trim()) return "Postal code is required";
-    if (!b.phoneNumber.trim()) return "Phone number is required";
+    if (!b.legalBusinessName.trim()) return 'Legal business name is required';
+    if (!b.displayName.trim()) return 'Display name is required';
+    if (!b.businessType) return 'Business type is required';
+    if (!b.country) return 'Country is required';
+    if (!b.address.line1.trim()) return 'Address line 1 is required';
+    if (!b.address.city.trim()) return 'City is required';
+    if (!b.address.state.trim()) return 'State / Province is required';
+    if (!b.address.postalCode.trim()) return 'Postal code is required';
+    if (!b.phoneNumber.trim()) return 'Phone number is required';
   }
 
-  if (stepKey === "operating") {
+  if (stepKey === 'operating') {
     const o = form.operatingInfo;
-    if (o.tourCategories.length === 0) return "Select at least one tour category";
-    if (o.destinations.length === 0) return "Add at least one destination";
-    if (o.languages.length === 0) return "Select at least one language";
-    if (!o.yearsInBusiness || parseInt(o.yearsInBusiness, 10) < 0) return "Years in business is required";
-    if (!getCancellationPolicyText(o.cancellationPolicy)) return "Cancellation policy is required";
-    if (!o.meetingStyle) return "Meeting style is required";
+    if (o.tourCategories.length === 0) return 'Select at least one tour category';
+    if (o.destinations.length === 0) return 'Add at least one destination';
+    if (o.languages.length === 0) return 'Select at least one language';
+    if (!o.yearsInBusiness || parseInt(o.yearsInBusiness, 10) < 0)
+      return 'Years in business is required';
+    if (!getCancellationPolicyText(o.cancellationPolicy)) return 'Cancellation policy is required';
+    if (!o.meetingStyle) return 'Meeting style is required';
   }
 
-  if (stepKey === "representative") {
+  if (stepKey === 'representative') {
     const r = form.representativeInfo;
-    if (!r.fullName.trim()) return "Representative full name is required";
-    if (!r.email.trim()) return "Representative email is required";
-    if (!r.dateOfBirth) return "Date of birth is required";
-    if (!r.address.line1.trim()) return "Representative address line 1 is required";
-    if (!r.address.city.trim()) return "Representative city is required";
-    if (!r.address.state.trim()) return "Representative state / province is required";
-    if (!r.address.postalCode.trim()) return "Representative postal code is required";
-    if (!r.idType) return "ID type is required";
-    if (!r.idDocument) return "ID document image is required";
+    if (!r.fullName.trim()) return 'Representative full name is required';
+    if (!r.email.trim()) return 'Representative email is required';
+    if (!r.dateOfBirth) return 'Date of birth is required';
+    if (!r.address.line1.trim()) return 'Representative address line 1 is required';
+    if (!r.address.city.trim()) return 'Representative city is required';
+    if (!r.address.state.trim()) return 'Representative state / province is required';
+    if (!r.address.postalCode.trim()) return 'Representative postal code is required';
+    if (!r.idType) return 'ID type is required';
+    if (!r.idDocument) return 'ID document image is required';
   }
 
-  if (stepKey === "documents") {
+  if (stepKey === 'documents') {
     const d = form.businessDocuments;
-    if (!d.registrationDocument) return "Business registration document is required";
-    if (!d.taxDocument) return "Tax document is required";
-    if (!d.proofOfAddress) return "Proof of address document is required";
+    if (!d.registrationDocument) return 'Business registration document is required';
+    if (!d.taxDocument) return 'Tax document is required';
+    if (!d.proofOfAddress) return 'Proof of address document is required';
   }
 
-  if (stepKey === "compliance") {
-    if (!form.compliance.acceptedTerms) return "You must accept the terms and conditions";
+  if (stepKey === 'compliance') {
+    if (!form.compliance.acceptedTerms) return 'You must accept the terms and conditions';
   }
 
   return null;
@@ -230,17 +228,17 @@ function StepIndicator({ steps, currentStep, onStepClick, stepCompleted = [] }) 
               <button
                 type="button"
                 onClick={() => onStepClick?.(idx)}
-                aria-current={isActive ? "step" : undefined}
-                aria-label={`${step.label}${isCompleted ? ", completed" : ""}`}
+                aria-current={isActive ? 'step' : undefined}
+                aria-label={`${step.label}${isCompleted ? ', completed' : ''}`}
                 className="flex flex-col items-center gap-2 rounded-lg transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-green)] focus-visible:ring-offset-2"
               >
                 <div
                   className={`flex size-8 items-center justify-center rounded-full border-2 sm:size-10 ${
                     isActive
-                      ? "border-[color:var(--brand-green)] bg-[color:var(--brand-green)] text-white shadow-lg"
+                      ? 'border-[color:var(--brand-green)] bg-[color:var(--brand-green)] text-white shadow-lg'
                       : isCompleted
-                        ? "border-[color:var(--brand-green)] bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]"
-                        : "border-slate-200 bg-white text-slate-400"
+                        ? 'border-[color:var(--brand-green)] bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]'
+                        : 'border-slate-200 bg-white text-slate-400'
                   }`}
                 >
                   {isCompleted && !isActive ? (
@@ -251,7 +249,11 @@ function StepIndicator({ steps, currentStep, onStepClick, stepCompleted = [] }) 
                 </div>
                 <span
                   className={`hidden text-xs font-semibold sm:block ${
-                    isActive ? "text-[color:var(--brand-green)]" : isCompleted ? "text-slate-700" : "text-slate-400"
+                    isActive
+                      ? 'text-[color:var(--brand-green)]'
+                      : isCompleted
+                        ? 'text-slate-700'
+                        : 'text-slate-400'
                   }`}
                 >
                   {step.label}
@@ -260,7 +262,7 @@ function StepIndicator({ steps, currentStep, onStepClick, stepCompleted = [] }) 
               {!isLast && (
                 <div
                   className={`mx-1.5 h-px flex-1 sm:mx-4 ${
-                    isCompleted ? "bg-[color:var(--brand-green)]" : "bg-slate-200"
+                    isCompleted ? 'bg-[color:var(--brand-green)]' : 'bg-slate-200'
                   }`}
                 />
               )}
@@ -388,14 +390,18 @@ function MultiImageUploadField({ label, files, onChange, required }) {
                 >
                   <X className="size-3.5" />
                 </button>
-                <p className="truncate px-3 pb-2 text-center text-[10px] text-slate-500">{item.name}</p>
+                <p className="truncate px-3 pb-2 text-center text-[10px] text-slate-500">
+                  {item.name}
+                </p>
               </div>
             ))}
           </div>
         )}
         <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-8 transition hover:border-[color:var(--brand-green)]/50 hover:bg-[color:var(--brand-mist)]/30">
           <Upload className="mb-2 size-7 text-slate-400" />
-          <span className="text-sm font-semibold text-slate-700">Click to upload license images</span>
+          <span className="text-sm font-semibold text-slate-700">
+            Click to upload license images
+          </span>
           <span className="mt-1 text-xs text-slate-400">PNG, JPG, JPEG up to 5MB each</span>
           <input
             type="file"
@@ -435,8 +441,8 @@ function MultiSelect({ label, options, selected, onChange, required }) {
               onClick={() => toggleOption(option)}
               className={`rounded-full px-4 py-2 text-xs font-semibold transition-all ${
                 isSelected
-                  ? "bg-[color:var(--brand-green)] text-white shadow-md"
-                  : "border border-slate-200 bg-white text-slate-600 hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)]"
+                  ? 'bg-[color:var(--brand-green)] text-white shadow-md'
+                  : 'border border-slate-200 bg-white text-slate-600 hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)]'
               }`}
             >
               {isSelected && <CheckCircle2 className="mr-1 inline size-3" />}
@@ -458,8 +464,8 @@ export function SupplierApplicationForm() {
   const restoredForIdRef = useRef(null);
 
   const [step, setStep] = useState(0);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState(createEmptySupplierApplicationForm);
@@ -473,7 +479,7 @@ export function SupplierApplicationForm() {
   }, [user?.uid, user?.email]);
 
   useEffect(() => {
-    const id = draftUserId || "anonymous";
+    const id = draftUserId || 'anonymous';
     if (restoredForIdRef.current === id) return;
     restoredForIdRef.current = id;
 
@@ -496,8 +502,8 @@ export function SupplierApplicationForm() {
 
   const updateForm = useCallback((section, key, value) => {
     setForm((prev) => {
-      if (key.includes(".")) {
-        const [parent, child] = key.split(".");
+      if (key.includes('.')) {
+        const [parent, child] = key.split('.');
         return {
           ...prev,
           [section]: {
@@ -525,8 +531,7 @@ export function SupplierApplicationForm() {
   );
 
   const stepCompleted = useMemo(
-    () =>
-      STEPS.map((s) => getStepValidationError(s.key, form) === null),
+    () => STEPS.map((s) => getStepValidationError(s.key, form) === null),
     [form]
   );
 
@@ -554,10 +559,7 @@ export function SupplierApplicationForm() {
     }));
   }, [form.businessInfo.country]);
 
-  const isFormComplete = useMemo(
-    () => stepCompleted.every(Boolean),
-    [stepCompleted]
-  );
+  const isFormComplete = useMemo(() => stepCompleted.every(Boolean), [stepCompleted]);
 
   const validateStep = useCallback(() => {
     const err = getStepValidationError(STEPS[step].key, form);
@@ -565,7 +567,7 @@ export function SupplierApplicationForm() {
       setError(err);
       return false;
     }
-    setError("");
+    setError('');
     return true;
   }, [step, form]);
 
@@ -578,7 +580,7 @@ export function SupplierApplicationForm() {
         return false;
       }
     }
-    setError("");
+    setError('');
     return true;
   }, [form]);
 
@@ -588,19 +590,19 @@ export function SupplierApplicationForm() {
   }, [validateStep]);
 
   const handleBack = useCallback(() => {
-    setError("");
+    setError('');
     setStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const handleStepClick = useCallback((idx) => {
-    setError("");
+    setError('');
     setStep(idx);
   }, []);
 
   const normalizeWebsite = (url) => {
-    if (!url || typeof url !== "string") return "";
+    if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
-    if (!trimmed) return "";
+    if (!trimmed) return '';
     if (/^https?:\/\//i.test(trimmed)) return trimmed;
     return `https://${trimmed}`;
   };
@@ -611,8 +613,8 @@ export function SupplierApplicationForm() {
       if (!validateAllSteps()) return;
 
       setLoading(true);
-      setError("");
-      setSuccess("");
+      setError('');
+      setSuccess('');
 
       try {
         const docs = form.businessDocuments;
@@ -623,7 +625,7 @@ export function SupplierApplicationForm() {
 
         // JSON sections as strings (required by backend Swagger spec)
         payload.append(
-          "businessInfo",
+          'businessInfo',
           JSON.stringify({
             ...form.businessInfo,
             website: normalizeWebsite(form.businessInfo.website),
@@ -631,7 +633,7 @@ export function SupplierApplicationForm() {
         );
 
         payload.append(
-          "operatingInfo",
+          'operatingInfo',
           JSON.stringify({
             ...form.operatingInfo,
             yearsInBusiness: parseInt(form.operatingInfo.yearsInBusiness, 10) || 0,
@@ -641,7 +643,7 @@ export function SupplierApplicationForm() {
 
         // Representative info without the file (idDocument is sent separately)
         payload.append(
-          "representativeInfo",
+          'representativeInfo',
           JSON.stringify({
             fullName: rep.fullName,
             email: rep.email,
@@ -652,39 +654,41 @@ export function SupplierApplicationForm() {
         );
 
         payload.append(
-          "payoutInfo",
+          'payoutInfo',
           JSON.stringify({
-            bankAccountName: "",
-            bankCountry: "",
-            payoutCurrency: "",
+            bankAccountName: '',
+            bankCountry: '',
+            payoutCurrency: '',
           })
         );
 
-        payload.append("compliance", JSON.stringify(form.compliance));
+        payload.append('compliance', JSON.stringify(form.compliance));
 
         // Actual file uploads (processed by multer → Cloudinary)
         if (docs.registrationDocument) {
-          payload.append("registrationDocument", docs.registrationDocument);
+          payload.append('registrationDocument', docs.registrationDocument);
         }
         if (docs.taxDocument) {
-          payload.append("taxDocument", docs.taxDocument);
+          payload.append('taxDocument', docs.taxDocument);
         }
         if (docs.proofOfAddress) {
-          payload.append("proofOfAddress", docs.proofOfAddress);
+          payload.append('proofOfAddress', docs.proofOfAddress);
         }
         if (rep.idDocument) {
-          payload.append("idDocument", rep.idDocument);
+          payload.append('idDocument', rep.idDocument);
         }
         docs.licenses.forEach((file) => {
-          payload.append("licenses", file);
+          payload.append('licenses', file);
         });
 
         await applyAsSupplier(payload);
         await invalidateSupplierAccess(queryClient, user);
         clearSupplierApplicationDraft(draftUserId);
-        setSuccess("Your supplier application has been submitted successfully! Our team will review it and get back to you within 3-5 business days.");
+        setSuccess(
+          'Your supplier application has been submitted successfully! Our team will review it and get back to you within 3-5 business days.'
+        );
       } catch (err) {
-        setError(err?.message || "Failed to submit application. Please try again.");
+        setError(err?.message || 'Failed to submit application. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -693,7 +697,10 @@ export function SupplierApplicationForm() {
   );
 
   const renderBusinessInfo = () => (
-    <FormSection title="Business Information" description="Tell us about your business. This information will be displayed to travellers.">
+    <FormSection
+      title="Business Information"
+      description="Tell us about your business. This information will be displayed to travellers."
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <FieldLabel required>Legal Business Name</FieldLabel>
@@ -703,7 +710,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="e.g. Adventure Tours Ltd"
               value={form.businessInfo.legalBusinessName}
-              onChange={(e) => updateForm("businessInfo", "legalBusinessName", e.target.value)}
+              onChange={(e) => updateForm('businessInfo', 'legalBusinessName', e.target.value)}
             />
           </div>
         </div>
@@ -716,7 +723,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="e.g. Adventure Tours"
               value={form.businessInfo.displayName}
-              onChange={(e) => updateForm("businessInfo", "displayName", e.target.value)}
+              onChange={(e) => updateForm('businessInfo', 'displayName', e.target.value)}
             />
           </div>
         </div>
@@ -725,7 +732,7 @@ export function SupplierApplicationForm() {
           <FieldLabel required>Business Type</FieldLabel>
           <Select
             value={form.businessInfo.businessType}
-            onValueChange={(value) => updateForm("businessInfo", "businessType", value)}
+            onValueChange={(value) => updateForm('businessInfo', 'businessType', value)}
           >
             <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
               <SelectValue placeholder="Select business type" />
@@ -742,10 +749,7 @@ export function SupplierApplicationForm() {
 
         <div>
           <FieldLabel required>Country</FieldLabel>
-          <Select
-            value={form.businessInfo.country}
-            onValueChange={handleCountryChange}
-          >
+          <Select value={form.businessInfo.country} onValueChange={handleCountryChange}>
             <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
               <SelectValue placeholder="Select country" />
             </SelectTrigger>
@@ -767,7 +771,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="Street address"
               value={form.businessInfo.address.line1}
-              onChange={(e) => updateForm("businessInfo", "address.line1", e.target.value)}
+              onChange={(e) => updateForm('businessInfo', 'address.line1', e.target.value)}
             />
           </div>
         </div>
@@ -780,7 +784,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="Apartment, suite, unit, etc. (optional)"
               value={form.businessInfo.address.line2}
-              onChange={(e) => updateForm("businessInfo", "address.line2", e.target.value)}
+              onChange={(e) => updateForm('businessInfo', 'address.line2', e.target.value)}
             />
           </div>
         </div>
@@ -790,7 +794,7 @@ export function SupplierApplicationForm() {
           <Input
             placeholder="City"
             value={form.businessInfo.address.city}
-            onChange={(e) => updateForm("businessInfo", "address.city", e.target.value)}
+            onChange={(e) => updateForm('businessInfo', 'address.city', e.target.value)}
           />
         </div>
 
@@ -799,7 +803,7 @@ export function SupplierApplicationForm() {
           <Input
             placeholder="State / Province"
             value={form.businessInfo.address.state}
-            onChange={(e) => updateForm("businessInfo", "address.state", e.target.value)}
+            onChange={(e) => updateForm('businessInfo', 'address.state', e.target.value)}
           />
         </div>
 
@@ -808,7 +812,7 @@ export function SupplierApplicationForm() {
           <Input
             placeholder="Postal Code"
             value={form.businessInfo.address.postalCode}
-            onChange={(e) => updateForm("businessInfo", "address.postalCode", e.target.value)}
+            onChange={(e) => updateForm('businessInfo', 'address.postalCode', e.target.value)}
           />
         </div>
 
@@ -820,7 +824,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="+1-555-123-4567"
               value={form.businessInfo.phoneNumber}
-              onChange={(e) => updateForm("businessInfo", "phoneNumber", e.target.value)}
+              onChange={(e) => updateForm('businessInfo', 'phoneNumber', e.target.value)}
             />
           </div>
         </div>
@@ -834,11 +838,11 @@ export function SupplierApplicationForm() {
               placeholder="https://yourbusiness.com"
               type="url"
               value={form.businessInfo.website}
-              onChange={(e) => updateForm("businessInfo", "website", e.target.value)}
+              onChange={(e) => updateForm('businessInfo', 'website', e.target.value)}
               onBlur={(e) => {
                 const val = e.target.value.trim();
                 if (val && !/^https?:\/\//i.test(val)) {
-                  updateForm("businessInfo", "website", `https://${val}`);
+                  updateForm('businessInfo', 'website', `https://${val}`);
                 }
               }}
             />
@@ -849,18 +853,21 @@ export function SupplierApplicationForm() {
   );
 
   const renderOperatingInfo = () => (
-    <FormSection title="Operating Information" description="Tell us about the tours and experiences you offer.">
+    <FormSection
+      title="Operating Information"
+      description="Tell us about the tours and experiences you offer."
+    >
       <MultiSelect
         label="Tour Categories"
         options={TOUR_CATEGORIES_OPTIONS}
         selected={form.operatingInfo.tourCategories}
-        onChange={(value) => updateForm("operatingInfo", "tourCategories", value)}
+        onChange={(value) => updateForm('operatingInfo', 'tourCategories', value)}
         required
       />
 
       <GhanaDestinationSelect
         selected={form.operatingInfo.destinations}
-        onChange={(value) => updateForm("operatingInfo", "destinations", value)}
+        onChange={(value) => updateForm('operatingInfo', 'destinations', value)}
         required
       />
 
@@ -868,13 +875,13 @@ export function SupplierApplicationForm() {
         label="Languages Offered"
         options={languageOptions}
         selected={form.operatingInfo.languages}
-        onChange={(value) => updateForm("operatingInfo", "languages", value)}
+        onChange={(value) => updateForm('operatingInfo', 'languages', value)}
         required
       />
       <p className="-mt-3 text-xs text-slate-500">
         {form.businessInfo.country
-          ? "English and French are always available, plus local languages for your country."
-          : "Select your business country (step 1) to see local language options. English and French are always available."}
+          ? 'English and French are always available, plus local languages for your country.'
+          : 'Select your business country (step 1) to see local language options. English and French are always available.'}
       </p>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -885,7 +892,7 @@ export function SupplierApplicationForm() {
             min="0"
             placeholder="e.g. 5"
             value={form.operatingInfo.yearsInBusiness}
-            onChange={(e) => updateForm("operatingInfo", "yearsInBusiness", e.target.value)}
+            onChange={(e) => updateForm('operatingInfo', 'yearsInBusiness', e.target.value)}
           />
         </div>
 
@@ -893,7 +900,7 @@ export function SupplierApplicationForm() {
           <FieldLabel required>Meeting Style</FieldLabel>
           <Select
             value={form.operatingInfo.meetingStyle}
-            onValueChange={(value) => updateForm("operatingInfo", "meetingStyle", value)}
+            onValueChange={(value) => updateForm('operatingInfo', 'meetingStyle', value)}
           >
             <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
               <SelectValue placeholder="Select meeting style" />
@@ -914,7 +921,7 @@ export function SupplierApplicationForm() {
         <Select
           modal={false}
           value={form.operatingInfo.cancellationPolicy || undefined}
-          onValueChange={(value) => updateForm("operatingInfo", "cancellationPolicy", value)}
+          onValueChange={(value) => updateForm('operatingInfo', 'cancellationPolicy', value)}
         >
           <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
             <SelectValue placeholder="Select a cancellation policy" />
@@ -936,9 +943,7 @@ export function SupplierApplicationForm() {
               {getCancellationPolicyText(form.operatingInfo.cancellationPolicy)}
             </p>
           ) : (
-            <p className="text-slate-400">
-              Select a policy above to preview the full terms.
-            </p>
+            <p className="text-slate-400">Select a policy above to preview the full terms.</p>
           )}
         </div>
       </div>
@@ -946,7 +951,10 @@ export function SupplierApplicationForm() {
   );
 
   const renderRepresentativeInfo = () => (
-    <FormSection title="Representative Information" description="Provide details about the primary contact person for your business.">
+    <FormSection
+      title="Representative Information"
+      description="Provide details about the primary contact person for your business."
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <FieldLabel required>Full Name</FieldLabel>
@@ -956,7 +964,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="John Smith"
               value={form.representativeInfo.fullName}
-              onChange={(e) => updateForm("representativeInfo", "fullName", e.target.value)}
+              onChange={(e) => updateForm('representativeInfo', 'fullName', e.target.value)}
             />
           </div>
         </div>
@@ -970,7 +978,7 @@ export function SupplierApplicationForm() {
               type="email"
               placeholder="john@example.com"
               value={form.representativeInfo.email}
-              onChange={(e) => updateForm("representativeInfo", "email", e.target.value)}
+              onChange={(e) => updateForm('representativeInfo', 'email', e.target.value)}
             />
           </div>
         </div>
@@ -979,7 +987,7 @@ export function SupplierApplicationForm() {
           <FieldLabel required>Date of Birth</FieldLabel>
           <DatePicker
             value={form.representativeInfo.dateOfBirth}
-            onChange={(value) => updateForm("representativeInfo", "dateOfBirth", value)}
+            onChange={(value) => updateForm('representativeInfo', 'dateOfBirth', value)}
             placeholder="dd-mm-yyyy"
             maxDate={new Date()}
             minDate={new Date(1920, 0, 1)}
@@ -990,7 +998,7 @@ export function SupplierApplicationForm() {
           <FieldLabel required>ID Type</FieldLabel>
           <Select
             value={form.representativeInfo.idType}
-            onValueChange={(value) => updateForm("representativeInfo", "idType", value)}
+            onValueChange={(value) => updateForm('representativeInfo', 'idType', value)}
           >
             <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
               <SelectValue placeholder="Select ID type" />
@@ -1009,7 +1017,7 @@ export function SupplierApplicationForm() {
           <ImageUploadField
             label="ID Document"
             file={form.representativeInfo.idDocument}
-            onChange={(file) => updateForm("representativeInfo", "idDocument", file)}
+            onChange={(file) => updateForm('representativeInfo', 'idDocument', file)}
             required
           />
         </div>
@@ -1022,7 +1030,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="Street address"
               value={form.representativeInfo.address.line1}
-              onChange={(e) => updateForm("representativeInfo", "address.line1", e.target.value)}
+              onChange={(e) => updateForm('representativeInfo', 'address.line1', e.target.value)}
             />
           </div>
         </div>
@@ -1035,7 +1043,7 @@ export function SupplierApplicationForm() {
               className="border-0 bg-transparent shadow-none focus:ring-0"
               placeholder="Apartment, suite, unit, etc. (optional)"
               value={form.representativeInfo.address.line2}
-              onChange={(e) => updateForm("representativeInfo", "address.line2", e.target.value)}
+              onChange={(e) => updateForm('representativeInfo', 'address.line2', e.target.value)}
             />
           </div>
         </div>
@@ -1045,7 +1053,7 @@ export function SupplierApplicationForm() {
           <Input
             placeholder="City"
             value={form.representativeInfo.address.city}
-            onChange={(e) => updateForm("representativeInfo", "address.city", e.target.value)}
+            onChange={(e) => updateForm('representativeInfo', 'address.city', e.target.value)}
           />
         </div>
 
@@ -1054,7 +1062,7 @@ export function SupplierApplicationForm() {
           <Input
             placeholder="State / Province"
             value={form.representativeInfo.address.state}
-            onChange={(e) => updateForm("representativeInfo", "address.state", e.target.value)}
+            onChange={(e) => updateForm('representativeInfo', 'address.state', e.target.value)}
           />
         </div>
 
@@ -1063,7 +1071,7 @@ export function SupplierApplicationForm() {
           <Input
             placeholder="Postal Code"
             value={form.representativeInfo.address.postalCode}
-            onChange={(e) => updateForm("representativeInfo", "address.postalCode", e.target.value)}
+            onChange={(e) => updateForm('representativeInfo', 'address.postalCode', e.target.value)}
           />
         </div>
       </div>
@@ -1071,77 +1079,92 @@ export function SupplierApplicationForm() {
   );
 
   const renderDocuments = () => (
-    <FormSection title="Documents" description="Upload images of your business verification documents. You will be able to add your payout method after your application is approved.">
+    <FormSection
+      title="Documents"
+      description="Upload images of your business verification documents. You will be able to add your payout method after your application is approved."
+    >
       <div className="space-y-6">
         <ImageUploadField
           label="Business Registration Document"
           file={form.businessDocuments.registrationDocument}
-          onChange={(file) => updateForm("businessDocuments", "registrationDocument", file)}
+          onChange={(file) => updateForm('businessDocuments', 'registrationDocument', file)}
           required
         />
 
         <ImageUploadField
           label="Tax Document"
           file={form.businessDocuments.taxDocument}
-          onChange={(file) => updateForm("businessDocuments", "taxDocument", file)}
+          onChange={(file) => updateForm('businessDocuments', 'taxDocument', file)}
           required
         />
 
         <ImageUploadField
           label="Proof of Address"
           file={form.businessDocuments.proofOfAddress}
-          onChange={(file) => updateForm("businessDocuments", "proofOfAddress", file)}
+          onChange={(file) => updateForm('businessDocuments', 'proofOfAddress', file)}
           required
         />
 
         <MultiImageUploadField
           label="Business Licenses"
           files={form.businessDocuments.licenses}
-          onChange={(value) => updateForm("businessDocuments", "licenses", value)}
+          onChange={(value) => updateForm('businessDocuments', 'licenses', value)}
         />
       </div>
     </FormSection>
   );
 
   const renderCompliance = () => (
-    <FormSection title="Review & Submit" description="Please review your information and accept the terms before submitting.">
+    <FormSection
+      title="Review & Submit"
+      description="Please review your information and accept the terms before submitting."
+    >
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
         <h4 className="text-sm font-bold text-slate-900">Application Summary</h4>
         <div className="space-y-2 text-sm text-slate-600">
           <div className="flex justify-between">
             <span>Business:</span>
-            <span className="font-semibold text-slate-900">{form.businessInfo.legalBusinessName || "—"}</span>
+            <span className="font-semibold text-slate-900">
+              {form.businessInfo.legalBusinessName || '—'}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Display Name:</span>
-            <span className="font-semibold text-slate-900">{form.businessInfo.displayName || "—"}</span>
+            <span className="font-semibold text-slate-900">
+              {form.businessInfo.displayName || '—'}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Country:</span>
             <span className="font-semibold text-slate-900">
-              {COUNTRIES.find((c) => c.code === form.businessInfo.country)?.name || "—"}
+              {COUNTRIES.find((c) => c.code === form.businessInfo.country)?.name || '—'}
             </span>
           </div>
           <div className="flex justify-between">
             <span>Categories:</span>
-            <span className="font-semibold text-slate-900">{form.operatingInfo.tourCategories.join(", ") || "—"}</span>
+            <span className="font-semibold text-slate-900">
+              {form.operatingInfo.tourCategories.join(', ') || '—'}
+            </span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="shrink-0">Cancellation policy:</span>
             <span className="text-right font-semibold text-slate-900">
-              {getCancellationPolicyLabel(form.operatingInfo.cancellationPolicy) || "—"}
+              {getCancellationPolicyLabel(form.operatingInfo.cancellationPolicy) || '—'}
             </span>
           </div>
           <div className="flex justify-between">
             <span>Representative:</span>
-            <span className="font-semibold text-slate-900">{form.representativeInfo.fullName || "—"}</span>
+            <span className="font-semibold text-slate-900">
+              {form.representativeInfo.fullName || '—'}
+            </span>
           </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">
         <p>
-          <span className="font-semibold">Note:</span> Payout information will be collected after your application is approved by our team.
+          <span className="font-semibold">Note:</span> Payout information will be collected after
+          your application is approved by our team.
         </p>
       </div>
 
@@ -1151,14 +1174,20 @@ export function SupplierApplicationForm() {
             <input
               type="checkbox"
               checked={form.compliance.acceptedTerms}
-              onChange={(e) => updateForm("compliance", "acceptedTerms", e.target.checked)}
+              onChange={(e) => updateForm('compliance', 'acceptedTerms', e.target.checked)}
               className="h-4 w-4 rounded border-slate-300 text-[color:var(--brand-green)] focus:ring-[color:var(--brand-green)]"
             />
           </div>
           <span className="text-sm text-slate-700">
-            I have read and accept the{" "}
-            <span className="font-semibold text-[color:var(--brand-green)]">Terms and Conditions</span> and{" "}
-            <span className="font-semibold text-[color:var(--brand-green)]">Supplier Agreement</span>.
+            I have read and accept the{' '}
+            <span className="font-semibold text-[color:var(--brand-green)]">
+              Terms and Conditions
+            </span>{' '}
+            and{' '}
+            <span className="font-semibold text-[color:var(--brand-green)]">
+              Supplier Agreement
+            </span>
+            .
           </span>
         </label>
       </div>
@@ -1172,7 +1201,7 @@ export function SupplierApplicationForm() {
               <p className="mt-1">{success}</p>
               <button
                 type="button"
-                onClick={() => navigate("/", { state: { postAuthSplash: true } })}
+                onClick={() => navigate('/', { state: { postAuthSplash: true } })}
                 className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
               >
                 Return to Homepage
@@ -1186,12 +1215,18 @@ export function SupplierApplicationForm() {
 
   const renderStepContent = () => {
     switch (STEPS[step].key) {
-      case "business": return renderBusinessInfo();
-      case "operating": return renderOperatingInfo();
-      case "representative": return renderRepresentativeInfo();
-      case "documents": return renderDocuments();
-      case "compliance": return renderCompliance();
-      default: return null;
+      case 'business':
+        return renderBusinessInfo();
+      case 'operating':
+        return renderOperatingInfo();
+      case 'representative':
+        return renderRepresentativeInfo();
+      case 'documents':
+        return renderDocuments();
+      case 'compliance':
+        return renderCompliance();
+      default:
+        return null;
     }
   };
 
@@ -1241,20 +1276,20 @@ export function SupplierApplicationForm() {
               title={
                 !isFormComplete
                   ? t(
-                      "supplierRegister.completeAllSteps",
-                      "Complete all steps and required fields before submitting"
+                      'supplierRegister.completeAllSteps',
+                      'Complete all steps and required fields before submitting'
                     )
                   : undefined
               }
             >
               {loading ? <LoaderCircle className="mr-2 size-4 animate-spin" /> : null}
-              {t("supplierRegister.submitApplication", "Submit Application")}
+              {t('supplierRegister.submitApplication', 'Submit Application')}
             </Button>
             {!isFormComplete && !success && (
               <p className="text-xs text-slate-500">
                 {t(
-                  "supplierRegister.completeAllStepsHint",
-                  "Fill in every step to enable submission"
+                  'supplierRegister.completeAllStepsHint',
+                  'Fill in every step to enable submission'
                 )}
               </p>
             )}

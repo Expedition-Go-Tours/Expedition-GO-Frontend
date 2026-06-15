@@ -6,10 +6,10 @@
  * Props: goHomeLink, goHomeLabel, goAdminLink (optional), goAdminLabel (optional)
  * Logs errors via devError (dev-only — see lib/logger.js).
  */
-import { Component } from "react";
+import { Component } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { devError } from "@/lib/logger";
+import { Button } from '@/components/ui/button';
+import { devError } from '@/lib/logger';
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -22,7 +22,7 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    devError("[ErrorBoundary]", error, info);
+    devError('[ErrorBoundary]', error, info);
   }
 
   reset = () => {
@@ -31,7 +31,7 @@ export default class ErrorBoundary extends Component {
 
   render() {
     const { error } = this.state;
-    const { goHomeLink = "/", goHomeLabel = "Go Home", goAdminLink, goAdminLabel } = this.props;
+    const { goHomeLink = '/', goHomeLabel = 'Go Home', goAdminLink, goAdminLabel } = this.props;
 
     if (error) {
       return (
@@ -39,18 +39,26 @@ export default class ErrorBoundary extends Component {
           <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-lg">
             <h2 className="text-lg font-semibold text-slate-900">Something went wrong</h2>
             <p className="mt-2 text-sm text-slate-600">
-              {error?.message || "An unexpected error occurred while rendering this view."}
+              {error?.message || 'An unexpected error occurred while rendering this view.'}
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               <Button type="button" onClick={this.reset}>
                 Try again
               </Button>
-              <Button type="button" variant="outline" onClick={() => window.location.assign(goHomeLink)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => window.location.assign(goHomeLink)}
+              >
                 {goHomeLabel}
               </Button>
               {goAdminLink && (
-                <Button type="button" variant="outline" onClick={() => window.location.assign(goAdminLink)}>
-                  {goAdminLabel || "Open admin"}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => window.location.assign(goAdminLink)}
+                >
+                  {goAdminLabel || 'Open admin'}
                 </Button>
               )}
             </div>

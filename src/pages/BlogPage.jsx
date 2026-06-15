@@ -2,12 +2,12 @@
  * @file BlogPage.jsx
  * @description Blog listing page (/blog). Displays all articles in a responsive grid.
  */
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { ArticleCard } from "@/components/homepage/ArticleCard";
-import { getAllPosts } from "@/lib/blogLoader";
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { ArticleCard } from '@/components/homepage/ArticleCard';
+import { getAllPosts } from '@/lib/blogLoader';
 
 export function BlogPage() {
   const posts = getAllPosts();

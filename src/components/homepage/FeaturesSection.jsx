@@ -4,30 +4,30 @@
  *   Copy from WHY_BOOK_ITEMS; icons mapped per item. i18n via useTranslation.
  *   Mobile: swipeable carousel with dots. Desktop: grid layout.
  */
-import { useState, useRef } from "react";
-import { CheckCircle, CreditCard, Star, MessageCircle } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useState, useRef } from 'react';
+import { CheckCircle, CreditCard, Star, MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const WHY_BOOK_ITEMS = [
   {
     Icon: CheckCircle,
-    titleKey: "whyBookVerifiedTitle",
-    descKey: "whyBookVerifiedDesc",
+    titleKey: 'whyBookVerifiedTitle',
+    descKey: 'whyBookVerifiedDesc',
   },
   {
     Icon: CreditCard,
-    titleKey: "whyBookPaymentsTitle",
-    descKey: "whyBookPaymentsDesc",
+    titleKey: 'whyBookPaymentsTitle',
+    descKey: 'whyBookPaymentsDesc',
   },
   {
     Icon: Star,
-    titleKey: "whyBookReviewsTitle",
-    descKey: "whyBookReviewsDesc",
+    titleKey: 'whyBookReviewsTitle',
+    descKey: 'whyBookReviewsDesc',
   },
   {
     Icon: MessageCircle,
-    titleKey: "whyBookSupportTitle",
-    descKey: "whyBookSupportDesc",
+    titleKey: 'whyBookSupportTitle',
+    descKey: 'whyBookSupportDesc',
   },
 ];
 
@@ -63,10 +63,10 @@ export function FeaturesSection() {
         <div className="mb-10 text-center sm:mb-12 lg:mb-14">
           <h5
             className="font-semibold tracking-tight text-slate-900"
-            style={{ fontSize: "clamp(1.75rem, 3vw + 0.5rem, 2.5rem)" }}
+            style={{ fontSize: 'clamp(1.75rem, 3vw + 0.5rem, 2.5rem)' }}
           >
-            {t("features.whyBookHeading")}
-         </h5>
+            {t('features.whyBookHeading')}
+          </h5>
         </div>
 
         {/* Mobile carousel */}
@@ -111,9 +111,7 @@ export function FeaturesSection() {
                 type="button"
                 onClick={() => setActiveIndex(idx)}
                 className={`h-2 rounded-full transition-all ${
-                  idx === activeIndex
-                    ? "w-8 bg-[color:var(--brand-green)]"
-                    : "w-2 bg-slate-300"
+                  idx === activeIndex ? 'w-8 bg-[color:var(--brand-green)]' : 'w-2 bg-slate-300'
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />

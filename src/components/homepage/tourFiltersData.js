@@ -7,111 +7,129 @@
  */
 export const SPECIALS_FILTERS = [
   {
-    id: "deals-discounts",
-    label: "Deals & Discounts",
+    id: 'deals-discounts',
+    label: 'Deals & Discounts',
     match: (item) => Boolean(item.discount),
   },
   {
-    id: "likely-sell-out",
-    label: "Likely to Sell Out",
+    id: 'likely-sell-out',
+    label: 'Likely to Sell Out',
     match: (item) =>
-      String(item.discount || "").toLowerCase().includes("sell out") ||
-      String(item.title || "").toLowerCase().includes("sell out"),
+      String(item.discount || '')
+        .toLowerCase()
+        .includes('sell out') ||
+      String(item.title || '')
+        .toLowerCase()
+        .includes('sell out'),
   },
   {
-    id: "free-cancellation",
-    label: "Free Cancellation",
+    id: 'free-cancellation',
+    label: 'Free Cancellation',
     match: () => true,
   },
   {
-    id: "skip-the-line",
-    label: "Skip-The-Line",
+    id: 'skip-the-line',
+    label: 'Skip-The-Line',
     match: (item) => {
       const haystack = Object.values(item)
-        .filter((value) => typeof value === "string")
-        .join(" ")
+        .filter((value) => typeof value === 'string')
+        .join(' ')
         .toLowerCase();
-      return haystack.includes("skip") || haystack.includes("fast track");
+      return haystack.includes('skip') || haystack.includes('fast track');
     },
   },
 ];
 
 export const SPECIALS_MORE_FILTERS = [
   {
-    id: "small-group",
-    label: "Small Group Tours",
-    match: (item) => String(item.title || "").toLowerCase().includes("group"),
+    id: 'small-group',
+    label: 'Small Group Tours',
+    match: (item) =>
+      String(item.title || '')
+        .toLowerCase()
+        .includes('group'),
   },
   {
-    id: "private-tours",
-    label: "Private Tours",
-    match: (item) => String(item.title || "").toLowerCase().includes("private"),
+    id: 'private-tours',
+    label: 'Private Tours',
+    match: (item) =>
+      String(item.title || '')
+        .toLowerCase()
+        .includes('private'),
   },
 ];
 
 export const GHANA_TOUR_CATEGORIES = [
   {
-    id: "art-culture",
-    label: "Art & Culture",
+    id: 'art-culture',
+    label: 'Art & Culture',
     subcategories: [
-      { id: "museums", label: "Museums", keywords: ["museum", "castle", "heritage", "culture"] },
-      { id: "galleries", label: "Galleries & Studios", keywords: ["art", "gallery", "culture"] },
+      { id: 'museums', label: 'Museums', keywords: ['museum', 'castle', 'heritage', 'culture'] },
+      { id: 'galleries', label: 'Galleries & Studios', keywords: ['art', 'gallery', 'culture'] },
     ],
   },
   {
-    id: "classes-workshops",
-    label: "Classes & Workshops",
+    id: 'classes-workshops',
+    label: 'Classes & Workshops',
     subcategories: [
-      { id: "cooking", label: "Cooking Classes", keywords: ["cooking", "food", "culinary"] },
-      { id: "crafts", label: "Craft Workshops", keywords: ["workshop", "craft", "class"] },
+      { id: 'cooking', label: 'Cooking Classes', keywords: ['cooking', 'food', 'culinary'] },
+      { id: 'crafts', label: 'Craft Workshops', keywords: ['workshop', 'craft', 'class'] },
     ],
   },
   {
-    id: "food-drink",
-    label: "Food & Drink",
+    id: 'food-drink',
+    label: 'Food & Drink',
     subcategories: [
-      { id: "tastings", label: "Tastings", keywords: ["food", "drink", "tasting", "culinary"] },
-      { id: "markets", label: "Markets & Street Food", keywords: ["market", "street", "food"] },
+      { id: 'tastings', label: 'Tastings', keywords: ['food', 'drink', 'tasting', 'culinary'] },
+      { id: 'markets', label: 'Markets & Street Food', keywords: ['market', 'street', 'food'] },
     ],
   },
   {
-    id: "outdoor-activities",
-    label: "Outdoor Activities",
+    id: 'outdoor-activities',
+    label: 'Outdoor Activities',
     subcategories: [
-      { id: "hiking", label: "Hiking & Nature", keywords: ["park", "forest", "waterfall", "nature", "hike"] },
-      { id: "wildlife", label: "Wildlife", keywords: ["safari", "wildlife", "monkey", "animal"] },
+      {
+        id: 'hiking',
+        label: 'Hiking & Nature',
+        keywords: ['park', 'forest', 'waterfall', 'nature', 'hike'],
+      },
+      { id: 'wildlife', label: 'Wildlife', keywords: ['safari', 'wildlife', 'monkey', 'animal'] },
     ],
   },
   {
-    id: "seasonal-occasions",
-    label: "Seasonal & Special Occasions",
+    id: 'seasonal-occasions',
+    label: 'Seasonal & Special Occasions',
     subcategories: [
-      { id: "festivals", label: "Festivals", keywords: ["festival", "seasonal", "celebration"] },
-      { id: "events", label: "Special Events", keywords: ["event", "occasion", "holiday"] },
+      { id: 'festivals', label: 'Festivals', keywords: ['festival', 'seasonal', 'celebration'] },
+      { id: 'events', label: 'Special Events', keywords: ['event', 'occasion', 'holiday'] },
     ],
   },
   {
-    id: "tickets-passes",
-    label: "Tickets & Passes",
+    id: 'tickets-passes',
+    label: 'Tickets & Passes',
     subcategories: [
-      { id: "attraction-tickets", label: "Attraction Tickets", keywords: ["ticket", "pass", "entry"] },
-      { id: "city-passes", label: "City Passes", keywords: ["pass", "city", "admission"] },
+      {
+        id: 'attraction-tickets',
+        label: 'Attraction Tickets',
+        keywords: ['ticket', 'pass', 'entry'],
+      },
+      { id: 'city-passes', label: 'City Passes', keywords: ['pass', 'city', 'admission'] },
     ],
   },
   {
-    id: "tours-sightseeing",
-    label: "Tours, Sightseeing & Cruises",
+    id: 'tours-sightseeing',
+    label: 'Tours, Sightseeing & Cruises',
     subcategories: [
-      { id: "city-tours", label: "City Tours", keywords: ["city", "tour", "sightseeing"] },
-      { id: "cruises", label: "Boat Cruises", keywords: ["boat", "cruise", "coast", "ada"] },
+      { id: 'city-tours', label: 'City Tours', keywords: ['city', 'tour', 'sightseeing'] },
+      { id: 'cruises', label: 'Boat Cruises', keywords: ['boat', 'cruise', 'coast', 'ada'] },
     ],
   },
   {
-    id: "travel-transport",
-    label: "Travel & Transportation Services",
+    id: 'travel-transport',
+    label: 'Travel & Transportation Services',
     subcategories: [
-      { id: "transfers", label: "Transfers", keywords: ["transfer", "transport", "pickup"] },
-      { id: "bus-tours", label: "Bus Tours", keywords: ["bus", "transportation"] },
+      { id: 'transfers', label: 'Transfers', keywords: ['transfer', 'transport', 'pickup'] },
+      { id: 'bus-tours', label: 'Bus Tours', keywords: ['bus', 'transportation'] },
     ],
   },
 ];
@@ -129,8 +147,8 @@ export function matchesTourFilters(item, selectedSpecials, selectedSubcategories
   }
 
   const haystack = Object.values(item)
-    .filter((value) => typeof value === "string")
-    .join(" ")
+    .filter((value) => typeof value === 'string')
+    .join(' ')
     .toLowerCase();
 
   const activeKeywords = GHANA_TOUR_CATEGORIES.flatMap((category) =>

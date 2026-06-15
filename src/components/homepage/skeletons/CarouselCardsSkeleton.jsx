@@ -1,10 +1,16 @@
-import { useRef } from "react";
-import { useCarouselLayout } from "@/hooks/useCarouselLayout";
-import { CardSkeleton } from "./CardSkeleton";
+import { useRef } from 'react';
+import { useCarouselLayout } from '@/hooks/useCarouselLayout';
+import { CardSkeleton } from './CardSkeleton';
 
-export function CarouselCardsSkeleton({ delay = 0, cardWidth = 280, gap = 12, clipAt = "xl" }) {
+export function CarouselCardsSkeleton({ delay = 0, cardWidth = 280, gap = 12, clipAt = 'xl' }) {
   const containerRef = useRef(null);
-  const { count, clipWidth } = useCarouselLayout(containerRef, { cardWidth, gap, minCards: 1, maxCards: 6, clipAt });
+  const { count, clipWidth } = useCarouselLayout(containerRef, {
+    cardWidth,
+    gap,
+    minCards: 1,
+    maxCards: 6,
+    clipAt,
+  });
   const displayCount = clipWidth == null ? Math.min(count + 1, 3) : count;
 
   return (

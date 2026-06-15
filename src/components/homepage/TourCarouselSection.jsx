@@ -6,11 +6,11 @@
  * @see components/homepage/FeaturedExperiencesCard.jsx (default card)
  * @see components/homepage/SectionHeading.jsx
  */
-import { useRef, useEffect, useLayoutEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { FeaturedExperiencesCard } from "./FeaturedExperiencesCard";
-import { SectionHeading } from "./SectionHeading";
-import { CarouselClipTrack } from "@/components/ui/CarouselClipTrack";
+import { useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { FeaturedExperiencesCard } from './FeaturedExperiencesCard';
+import { SectionHeading } from './SectionHeading';
+import { CarouselClipTrack } from '@/components/ui/CarouselClipTrack';
 
 const CAROUSEL_ARROW_SCROLL_MS = 260;
 
@@ -33,7 +33,7 @@ function smoothScrollTo(element, target, duration, generationRef, generation, on
   let startTime = null;
   const originalSnap = element.style.scrollSnapType;
 
-  element.style.scrollSnapType = "none";
+  element.style.scrollSnapType = 'none';
 
   const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -67,7 +67,18 @@ function smoothScrollTo(element, target, duration, generationRef, generation, on
   requestAnimationFrame(step);
 }
 
-export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, hideViewAll, hideTitle, sideArrows, badge, CardComponent }) {
+export function TourCarouselSection({
+  id,
+  title,
+  subtitle,
+  items,
+  fallbackKey,
+  hideViewAll,
+  hideTitle,
+  sideArrows,
+  badge,
+  CardComponent,
+}) {
   const scrollContainerRef = useRef(null);
   const mobileScrollRef = useRef(null);
   const isScrollingRef = useRef(false);
@@ -93,7 +104,7 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
     if (scrollLeft <= threshold) {
       isScrollingRef.current = true;
       const originalSnap = container.style.scrollSnapType;
-      container.style.scrollSnapType = "none";
+      container.style.scrollSnapType = 'none';
       container.scrollLeft = scrollLeft + singleSetWidth;
       container.style.scrollSnapType = originalSnap;
       setTimeout(() => {
@@ -102,7 +113,7 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
     } else if (scrollLeft >= maxScroll - threshold) {
       isScrollingRef.current = true;
       const originalSnap = container.style.scrollSnapType;
-      container.style.scrollSnapType = "none";
+      container.style.scrollSnapType = 'none';
       container.scrollLeft = scrollLeft - singleSetWidth;
       container.style.scrollSnapType = originalSnap;
       setTimeout(() => {
@@ -123,11 +134,11 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
 
     let newScrollPosition;
 
-    if (direction === "left") {
+    if (direction === 'left') {
       newScrollPosition = currentScroll - scrollAmount;
       if (newScrollPosition < scrollAmount) {
         const originalSnap = container.style.scrollSnapType;
-        container.style.scrollSnapType = "none";
+        container.style.scrollSnapType = 'none';
         container.scrollLeft = singleSetWidth + newScrollPosition;
         container.style.scrollSnapType = originalSnap;
         return;
@@ -136,7 +147,7 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
       newScrollPosition = currentScroll + scrollAmount;
       if (newScrollPosition > singleSetWidth * 2 - scrollAmount) {
         const originalSnap = container.style.scrollSnapType;
-        container.style.scrollSnapType = "none";
+        container.style.scrollSnapType = 'none';
         container.scrollLeft = singleSetWidth + (newScrollPosition - singleSetWidth * 2);
         container.style.scrollSnapType = originalSnap;
         return;
@@ -148,7 +159,7 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
       newScrollPosition,
       CAROUSEL_ARROW_SCROLL_MS,
       scrollGenerationRef,
-      gen,
+      gen
     );
   };
 
@@ -183,12 +194,12 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
       });
     };
 
-    el.addEventListener("scroll", onScroll, { passive: true });
+    el.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
-      el.removeEventListener("scroll", onScroll);
+      el.removeEventListener('scroll', onScroll);
     };
   }, [nudgeMobileInfiniteLoop]);
 
@@ -201,15 +212,15 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
         fallbackKey={fallbackKey}
         hideViewAll={hideViewAll}
         hideTitle={hideTitle}
-        onScrollLeft={!sideArrows ? () => scroll("left") : undefined}
-        onScrollRight={!sideArrows ? () => scroll("right") : undefined}
+        onScrollLeft={!sideArrows ? () => scroll('left') : undefined}
+        onScrollRight={!sideArrows ? () => scroll('right') : undefined}
       />
 
-      <div className={`flex items-center gap-0 ${sideArrows ? "xl:gap-1" : ""}`}>
+      <div className={`flex items-center gap-0 ${sideArrows ? 'xl:gap-1' : ''}`}>
         {sideArrows && (
           <button
             type="button"
-            onClick={() => scroll("left")}
+            onClick={() => scroll('left')}
             className="z-10 hidden shrink-0 rounded-full border border-slate-200 bg-white/90 p-2.5 text-slate-700 shadow-lg backdrop-blur transition hover:bg-white hover:text-slate-900 xl:grid place-items-center"
             aria-label="Scroll left"
           >
@@ -225,13 +236,13 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
           clipAt="xl"
           syncSectionClipWidth
           trackClassName="gap-3 overflow-x-hidden pb-1 overscroll-x-contain scrollbar-hide"
-          style={{ scrollSnapType: "x mandatory" }}
+          style={{ scrollSnapType: 'x mandatory' }}
         >
           {infiniteItems.map((item, index) => (
             <div
               key={`${item.title}-${index}`}
               className="w-[280px] shrink-0 h-full"
-              style={{ scrollSnapAlign: "start" }}
+              style={{ scrollSnapAlign: 'start' }}
             >
               <Card {...item} badge={badge} />
             </div>
@@ -241,7 +252,7 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
         {sideArrows && (
           <button
             type="button"
-            onClick={() => scroll("right")}
+            onClick={() => scroll('right')}
             className="z-10 hidden shrink-0 rounded-full border border-slate-200 bg-white/90 p-2.5 text-slate-700 shadow-lg backdrop-blur transition hover:bg-white hover:text-slate-900 xl:grid place-items-center"
             aria-label="Scroll right"
           >
@@ -258,15 +269,15 @@ export function TourCarouselSection({ id, title, subtitle, items, fallbackKey, h
         clipAt={false}
         trackClassName="gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-1 scrollbar-hide"
         style={{
-          WebkitOverflowScrolling: "touch",
-          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: 'touch',
+          scrollSnapType: 'x mandatory',
         }}
       >
         {infiniteItems.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
             className="w-[280px] shrink-0 h-full"
-            style={{ scrollSnapAlign: "start" }}
+            style={{ scrollSnapAlign: 'start' }}
           >
             <Card {...item} />
           </div>

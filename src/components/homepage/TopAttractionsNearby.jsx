@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { useWishlist } from "@/contexts/WishlistContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { useNavigationLoader } from "@/contexts/NavigationContext";
-import { CarouselClipTrack } from "@/components/ui/CarouselClipTrack";
-import { attractionsNearby } from "./data";
+import { useWishlist } from '@/contexts/WishlistContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { useNavigationLoader } from '@/contexts/NavigationContext';
+import { CarouselClipTrack } from '@/components/ui/CarouselClipTrack';
+import { attractionsNearby } from './data';
 
 function haversineDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -76,7 +76,7 @@ function AttractionCard({ title, slug, price, image }) {
       <Link
         to={detailTo}
         onClick={handleDetailLinkClick}
-        aria-label={`${t("common.viewDetails", { defaultValue: "View details" })}: ${title}`}
+        aria-label={`${t('common.viewDetails', { defaultValue: 'View details' })}: ${title}`}
         className="absolute inset-0 z-[5] rounded-lg outline-none ring-inset focus-visible:ring-2 focus-visible:ring-white/50"
       />
       <button
@@ -110,7 +110,7 @@ function smoothScrollTo(element, target) {
     cancelAnimationFrame(scrollRafRef[element]);
   }
   const originalSnap = element.style.scrollSnapType;
-  if (originalSnap) element.style.scrollSnapType = "none";
+  if (originalSnap) element.style.scrollSnapType = 'none';
   const start = element.scrollLeft;
   const distance = target - start;
   if (Math.abs(distance) < 1) {
@@ -143,7 +143,7 @@ export function TopAttractionsNearby() {
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setLocationError("Geolocation not supported");
+      setLocationError('Geolocation not supported');
       setSortedAttractions(attractionsNearby);
       return;
     }
@@ -159,7 +159,7 @@ export function TopAttractionsNearby() {
         setSortedAttractions(withDistance);
       },
       () => {
-        setLocationError("Location access denied");
+        setLocationError('Location access denied');
         setSortedAttractions(attractionsNearby);
       },
       { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
@@ -170,7 +170,7 @@ export function TopAttractionsNearby() {
     const container = scrollRef.current;
     if (!container) return;
     const amount = 280 + 12;
-    const target = container.scrollLeft + (direction === "left" ? -amount : amount);
+    const target = container.scrollLeft + (direction === 'left' ? -amount : amount);
     smoothScrollTo(container, target);
   }, []);
 
@@ -198,8 +198,8 @@ export function TopAttractionsNearby() {
             to="/tours?category=attractions&title=Top%20Attractions%20Nearby"
             onClick={(e) => {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "auto" });
-              navigateWithLoader("/tours?category=attractions&title=Top%20Attractions%20Nearby");
+              window.scrollTo({ top: 0, behavior: 'auto' });
+              navigateWithLoader('/tours?category=attractions&title=Top%20Attractions%20Nearby');
             }}
             className="group relative inline-flex min-h-[44px] min-w-[44px] shrink-0 touch-manipulation items-center justify-center gap-1 whitespace-nowrap rounded-md py-2 pl-2 pr-1.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100/90 hover:text-slate-950 sm:text-[13px] lg:min-h-0 lg:min-w-0 lg:py-1.5 lg:px-2 lg:text-[14px]"
           >
@@ -211,14 +211,14 @@ export function TopAttractionsNearby() {
           </Link>
           <div className="section-header-scroll-arrows">
             <button
-              onClick={() => scrollCarousel("left")}
+              onClick={() => scrollCarousel('left')}
               className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
               aria-label="Scroll left"
             >
               <ChevronLeft className="size-4" />
             </button>
             <button
-              onClick={() => scrollCarousel("right")}
+              onClick={() => scrollCarousel('right')}
               className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
               aria-label="Scroll right"
             >
@@ -238,7 +238,7 @@ export function TopAttractionsNearby() {
           <div
             key={`${attraction.title}-${index}`}
             className="w-[280px] shrink-0 snap-start"
-            style={{ scrollSnapAlign: "start" }}
+            style={{ scrollSnapAlign: 'start' }}
           >
             <AttractionCard {...attraction} />
           </div>

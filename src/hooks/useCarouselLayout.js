@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 const BREAKPOINTS = {
   sm: 640,
@@ -9,7 +9,7 @@ const BREAKPOINTS = {
 
 function resolveClipEnabled(clipAt, width) {
   if (clipAt === false) return false;
-  const minWidth = typeof clipAt === "number" ? clipAt : BREAKPOINTS[clipAt] ?? BREAKPOINTS.xl;
+  const minWidth = typeof clipAt === 'number' ? clipAt : (BREAKPOINTS[clipAt] ?? BREAKPOINTS.xl);
   return width >= minWidth;
 }
 
@@ -19,11 +19,11 @@ function resolveClipEnabled(clipAt, width) {
  */
 export function useCarouselLayout(
   containerRef,
-  { cardWidth = 280, gap = 12, minCards = 1, maxCards = 12, clipAt = "xl" } = {},
+  { cardWidth = 280, gap = 12, minCards = 1, maxCards = 12, clipAt = 'xl' } = {}
 ) {
   const [layout, setLayout] = useState({ count: minCards, clipWidth: null });
   const [shouldClip, setShouldClip] = useState(() =>
-    typeof window !== "undefined" ? resolveClipEnabled(clipAt, window.innerWidth) : clipAt !== false,
+    typeof window !== 'undefined' ? resolveClipEnabled(clipAt, window.innerWidth) : clipAt !== false
   );
 
   useEffect(() => {
@@ -32,12 +32,12 @@ export function useCarouselLayout(
       return undefined;
     }
 
-    const minWidth = typeof clipAt === "number" ? clipAt : BREAKPOINTS[clipAt] ?? BREAKPOINTS.xl;
+    const minWidth = typeof clipAt === 'number' ? clipAt : (BREAKPOINTS[clipAt] ?? BREAKPOINTS.xl);
     const mq = window.matchMedia(`(min-width: ${minWidth}px)`);
     const updateClip = () => setShouldClip(mq.matches);
     updateClip();
-    mq.addEventListener("change", updateClip);
-    return () => mq.removeEventListener("change", updateClip);
+    mq.addEventListener('change', updateClip);
+    return () => mq.removeEventListener('change', updateClip);
   }, [clipAt]);
 
   useEffect(() => {
@@ -53,19 +53,19 @@ export function useCarouselLayout(
       const clipWidth = shouldClip ? Math.min(available, count * step - gap) : null;
 
       setLayout((prev) =>
-        prev.count === count && prev.clipWidth === clipWidth ? prev : { count, clipWidth },
+        prev.count === count && prev.clipWidth === clipWidth ? prev : { count, clipWidth }
       );
     };
 
     update();
     const resizeObserver =
-      typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
     resizeObserver?.observe(container);
-    window.addEventListener("resize", update);
+    window.addEventListener('resize', update);
 
     return () => {
       resizeObserver?.disconnect();
-      window.removeEventListener("resize", update);
+      window.removeEventListener('resize', update);
     };
   }, [containerRef, cardWidth, gap, minCards, maxCards, shouldClip]);
 

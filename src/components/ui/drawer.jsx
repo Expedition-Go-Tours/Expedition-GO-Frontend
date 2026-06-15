@@ -2,10 +2,10 @@
  * @file drawer.jsx
  * @description Vaul drawer primitive — bottom/side sheet for mobile menus and filters.
  */
-import * as React from "react";
-import { Drawer as DrawerPrimitive } from "vaul";
+import * as React from 'react';
+import { Drawer as DrawerPrimitive } from 'vaul';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 const Drawer = ({ shouldScaleBackground = true, ...props }) => (
   <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
@@ -19,21 +19,27 @@ const DrawerOverlay = React.forwardRef(function DrawerOverlay({ className, ...pr
   return (
     <DrawerPrimitive.Overlay
       ref={ref}
-      className={cn("fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-sm cursor-pointer", className)}
+      className={cn(
+        'fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-sm cursor-pointer',
+        className
+      )}
       {...props}
     />
   );
 });
 
-const DrawerContent = React.forwardRef(function DrawerContent({ className, children, ...props }, ref) {
+const DrawerContent = React.forwardRef(function DrawerContent(
+  { className, children, ...props },
+  ref
+) {
   return (
     <DrawerPortal>
       <DrawerOverlay />
       <DrawerPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-3xl border border-[color:var(--admin-border)] bg-[color:var(--admin-panel)] shadow-[var(--admin-shadow-strong)]",
-          className,
+          'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-3xl border border-[color:var(--admin-border)] bg-[color:var(--admin-panel)] shadow-[var(--admin-shadow-strong)]',
+          className
         )}
         {...props}
       >
@@ -45,28 +51,34 @@ const DrawerContent = React.forwardRef(function DrawerContent({ className, child
 });
 
 function DrawerHeader({ className, ...props }) {
-  return <div className={cn("grid gap-1 px-6 py-4 text-left", className)} {...props} />;
+  return <div className={cn('grid gap-1 px-6 py-4 text-left', className)} {...props} />;
 }
 
 function DrawerFooter({ className, ...props }) {
-  return <div className={cn("mt-auto flex flex-col gap-2 px-6 py-4", className)} {...props} />;
+  return <div className={cn('mt-auto flex flex-col gap-2 px-6 py-4', className)} {...props} />;
 }
 
 const DrawerTitle = React.forwardRef(function DrawerTitle({ className, ...props }, ref) {
   return (
     <DrawerPrimitive.Title
       ref={ref}
-      className={cn("text-lg font-semibold tracking-tight text-[color:var(--admin-text)]", className)}
+      className={cn(
+        'text-lg font-semibold tracking-tight text-[color:var(--admin-text)]',
+        className
+      )}
       {...props}
     />
   );
 });
 
-const DrawerDescription = React.forwardRef(function DrawerDescription({ className, ...props }, ref) {
+const DrawerDescription = React.forwardRef(function DrawerDescription(
+  { className, ...props },
+  ref
+) {
   return (
     <DrawerPrimitive.Description
       ref={ref}
-      className={cn("text-sm text-[color:var(--admin-muted)]", className)}
+      className={cn('text-sm text-[color:var(--admin-muted)]', className)}
       {...props}
     />
   );

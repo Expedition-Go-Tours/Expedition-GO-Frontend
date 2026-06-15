@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchTourById } from "@/api/tours";
+import { useQuery } from '@tanstack/react-query';
+import { fetchTourById } from '@/api/tours';
 
 export function useTourById(id) {
   return useQuery({
-    queryKey: ["tour", "detail", id],
+    queryKey: ['tour', 'detail', id],
     queryFn: async () => {
       const data = await fetchTourById(id);
       return data?.tour || data || null;

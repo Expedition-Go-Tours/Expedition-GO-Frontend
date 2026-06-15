@@ -4,14 +4,14 @@
  *
  * @see hooks/useHomePageData.js — controls when skeleton is shown
  */
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { HeroSkeleton } from "./HeroSkeleton";
-import { TourCarouselSkeleton, DestinationsSkeleton } from "./SectionSkeleton";
-import { CarouselCardsSkeleton } from "./CarouselCardsSkeleton";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { HeroSkeleton } from './HeroSkeleton';
+import { TourCarouselSkeleton, DestinationsSkeleton } from './SectionSkeleton';
+import { CarouselCardsSkeleton } from './CarouselCardsSkeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
-function InlineSectionSkeleton({ titleWidth = "w-56", delay = 0 }) {
+function InlineSectionSkeleton({ titleWidth = 'w-56', delay = 0 }) {
   return (
     <section className="py-4 md:py-4 xl:py-5">
       <div className="section-header-row mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">

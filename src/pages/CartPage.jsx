@@ -5,27 +5,35 @@
  *
  * @see contexts/CartContext.jsx
  */
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, CalendarDays, Clock3, ShoppingCart, Trash2, ShieldCheck, Users } from "lucide-react";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft,
+  CalendarDays,
+  Clock3,
+  ShoppingCart,
+  Trash2,
+  ShieldCheck,
+  Users,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { Button } from "@/components/ui/button";
-import { useCart } from "@/contexts/CartContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { useNavigationLoader } from "@/contexts/NavigationContext";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { AuthModal } from "@/components/ui/auth-modal";
-import BrandLoader from "@/components/ui/BrandLoader";
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { Button } from '@/components/ui/button';
+import { useCart } from '@/contexts/CartContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { useNavigationLoader } from '@/contexts/NavigationContext';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { AuthModal } from '@/components/ui/auth-modal';
+import BrandLoader from '@/components/ui/BrandLoader';
 
 const formatCartDate = (dateString) =>
-  new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+  new Date(dateString).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 
 const formatBookingDateLabel = (selectedDate, selectedDateEnd) => {
@@ -37,8 +45,8 @@ const formatBookingDateLabel = (selectedDate, selectedDateEnd) => {
 
 const formatRemainingTime = (ms) => {
   const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
-  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
-  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+  const seconds = String(totalSeconds % 60).padStart(2, '0');
   return `${minutes}:${seconds}`;
 };
 
@@ -60,11 +68,11 @@ function CartPage() {
 
   const handleRemove = (key) => {
     removeFromCart(key);
-    toast.error("Tour removed", {
+    toast.error('Tour removed', {
       style: {
-        background: "#FEF2F2",
-        color: "#B91C1C",
-        border: "1px solid rgba(185, 28, 28, 0.25)",
+        background: '#FEF2F2',
+        color: '#B91C1C',
+        border: '1px solid rgba(185, 28, 28, 0.25)',
       },
       duration: 2500,
     });
@@ -72,7 +80,10 @@ function CartPage() {
 
   const total = useMemo(() => {
     return cart.reduce((acc, item) => {
-      const raw = typeof item.price === "number" ? item.price : Number.parseFloat(String(item.price).replace(/[^\d.]/g, "")) || 0;
+      const raw =
+        typeof item.price === 'number'
+          ? item.price
+          : Number.parseFloat(String(item.price).replace(/[^\d.]/g, '')) || 0;
       return acc + raw;
     }, 0);
   }, [cart]);
@@ -100,10 +111,10 @@ function CartPage() {
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                  {t("nav.cart")}
+                  {t('nav.cart')}
                 </h1>
                 <p className="mt-0.5 text-base font-medium text-slate-500 sm:text-sm">
-                  {cart.length} {cart.length === 1 ? "item" : "items"} in your cart
+                  {cart.length} {cart.length === 1 ? 'item' : 'items'} in your cart
                 </p>
               </div>
             </div>
@@ -131,7 +142,8 @@ function CartPage() {
               Your cart is empty
             </h2>
             <p className="mb-8 max-w-xs text-base leading-relaxed text-slate-500">
-              Activities you add will appear here. You have up to 25 minutes to complete your booking.
+              Activities you add will appear here. You have up to 25 minutes to complete your
+              booking.
             </p>
             <Link
               to="/tours"
@@ -163,7 +175,7 @@ function CartPage() {
                       />
                       <div className="flex min-w-0 flex-1 flex-col">
                         <div className="flex items-start justify-between gap-2">
-                           <h5 className="line-clamp-2 text-base font-bold leading-snug text-slate-900 sm:text-base lg:text-lg">
+                          <h5 className="line-clamp-2 text-base font-bold leading-snug text-slate-900 sm:text-base lg:text-lg">
                             {item.title}
                           </h5>
                           <button
@@ -186,10 +198,19 @@ function CartPage() {
                             <CalendarDays className="size-3.5" />
                             {formatBookingDateLabel(item.selectedDate, item.selectedDateEnd)}
                           </span>
-                          {(item.adults || item.seniors || item.youths || item.children || item.infants) && (
+                          {(item.adults ||
+                            item.seniors ||
+                            item.youths ||
+                            item.children ||
+                            item.infants) && (
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 sm:text-xs">
                               <Users className="size-3.5" />
-                              {(item.adults || 0) + (item.seniors || 0) + (item.youths || 0) + (item.children || 0) + (item.infants || 0)} travelers
+                              {(item.adults || 0) +
+                                (item.seniors || 0) +
+                                (item.youths || 0) +
+                                (item.children || 0) +
+                                (item.infants || 0)}{' '}
+                              travelers
                             </span>
                           )}
                           {!isExpired ? (
@@ -208,7 +229,7 @@ function CartPage() {
                         </div>
 
                         <div className="mt-4 flex items-center justify-between sm:mt-auto sm:pt-4">
-                           <p className="text-base font-bold text-slate-900 sm:text-lg lg:text-xl">
+                          <p className="text-base font-bold text-slate-900 sm:text-lg lg:text-xl">
                             {converted.formatted}
                           </p>
                           <button
@@ -230,11 +251,15 @@ function CartPage() {
             {/* Summary */}
             <aside className="h-fit space-y-4 lg:sticky lg:top-28">
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-                <h5 className="text-base font-bold text-slate-900 sm:text-lg lg:text-xl">Order Summary</h5>
+                <h5 className="text-base font-bold text-slate-900 sm:text-lg lg:text-xl">
+                  Order Summary
+                </h5>
 
                 <div className="mt-5 space-y-3">
                   <div className="flex items-center justify-between text-base text-slate-600 sm:text-sm">
-                    <span>Subtotal ({cart.length} {cart.length === 1 ? "item" : "items"})</span>
+                    <span>
+                      Subtotal ({cart.length} {cart.length === 1 ? 'item' : 'items'})
+                    </span>
                     <span>{convertPrice(total).formatted}</span>
                   </div>
                   <div className="flex items-center justify-between text-base text-slate-600 sm:text-sm">
@@ -247,7 +272,9 @@ function CartPage() {
 
                 <div className="flex items-center justify-between">
                   <span className="text-base font-semibold text-slate-900">Total</span>
-                  <span className="text-lg font-bold text-slate-900 sm:text-xl">{convertPrice(total).formatted}</span>
+                  <span className="text-lg font-bold text-slate-900 sm:text-xl">
+                    {convertPrice(total).formatted}
+                  </span>
                 </div>
 
                 <Button
@@ -265,21 +292,25 @@ function CartPage() {
                       (item.children || 0) +
                       (item.infants || 0);
                     window.setTimeout(() => {
-                      navigate("/booking", {
+                      navigate('/booking', {
                         state: {
                           tour: {
                             title: item.title,
                             image: item.image,
-                            provider: item.provider || "Expedition GO Tours",
+                            provider: item.provider || 'Expedition GO Tours',
                             rating: item.rating || 4.8,
                             reviews: item.reviews || 120,
                             date: formatBookingDateLabel(item.selectedDate, item.selectedDateEnd),
-                            time: item.time || "9:00 AM",
+                            time: item.time || '9:00 AM',
                             duration: item.duration,
-                            travelers: `${totalTravelers} ${totalTravelers === 1 ? "adult" : "travelers"}`,
-                            price: typeof item.price === "number" ? item.price : Number.parseFloat(String(item.price).replace(/[^\d.]/g, "")) || 0,
-                            cancellation: item.cancellation || "Free cancellation up to 24 hours before",
-                            language: item.language || "English - Guide",
+                            travelers: `${totalTravelers} ${totalTravelers === 1 ? 'adult' : 'travelers'}`,
+                            price:
+                              typeof item.price === 'number'
+                                ? item.price
+                                : Number.parseFloat(String(item.price).replace(/[^\d.]/g, '')) || 0,
+                            cancellation:
+                              item.cancellation || 'Free cancellation up to 24 hours before',
+                            language: item.language || 'English - Guide',
                           },
                         },
                       });
@@ -298,10 +329,15 @@ function CartPage() {
 
               {/* Trust / Help small card */}
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-                <h4 className="mb-3 text-base font-semibold text-slate-900 sm:text-lg">Need help?</h4>
+                <h4 className="mb-3 text-base font-semibold text-slate-900 sm:text-lg">
+                  Need help?
+                </h4>
                 <p className="text-base leading-relaxed text-slate-500 sm:text-sm">
-                  Your items are reserved for 25 minutes. If you have questions, visit our{" "}
-                  <Link to="/help" className="font-medium text-[color:var(--brand-green)] hover:underline">
+                  Your items are reserved for 25 minutes. If you have questions, visit our{' '}
+                  <Link
+                    to="/help"
+                    className="font-medium text-[color:var(--brand-green)] hover:underline"
+                  >
                     Help Centre
                   </Link>
                   .
@@ -312,9 +348,7 @@ function CartPage() {
         )}
       </main>
 
-      {showSplash && (
-        <BrandLoader fullScreen splash label="Loading checkout..." />
-      )}
+      {showSplash && <BrandLoader fullScreen splash label="Loading checkout..." />}
 
       <AuthModal
         isOpen={isAuthModalOpen}

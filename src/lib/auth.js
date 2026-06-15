@@ -43,10 +43,7 @@ import {
 const AUTH_PROVIDER = import.meta.env.VITE_AUTH_PROVIDER || 'mock';
 const AUTH_USER_KEY = 'expedition_go_auth_user';
 
-const rawBase =
-  import.meta.env.VITE_AUTH_API_BASE_URL ||
-  import.meta.env.VITE_API_URL ||
-  '/api';
+const rawBase = import.meta.env.VITE_AUTH_API_BASE_URL || import.meta.env.VITE_API_URL || '/api';
 
 let API_BASE = rawBase.replace(/\/+$/, '');
 
@@ -140,9 +137,7 @@ async function requestJson(endpoint, options = {}) {
 
   if (!response.ok) {
     const text = await response.text().catch(() => '');
-    throw new Error(
-      text || `Request failed with status ${response.status}`
-    );
+    throw new Error(text || `Request failed with status ${response.status}`);
   }
 
   const payload = await response.json().catch(() => null);
@@ -173,11 +168,7 @@ function normalizeBackendUser(user, firebaseUser) {
     firebaseUid,
     uid: firebaseUid,
     email: user.email ?? firebaseUser?.email ?? null,
-    name:
-      user.name ??
-      firebaseUser?.displayName ??
-      user.email?.split('@')[0] ??
-      'User',
+    name: user.name ?? firebaseUser?.displayName ?? user.email?.split('@')[0] ?? 'User',
     photoURL: user.photoURL ?? firebaseUser?.photoURL ?? null,
   };
 }
@@ -332,7 +323,7 @@ export async function signInWithEmail(email, password) {
     firebaseUid: `mock-${Date.now()}`,
     email,
     emailVerified: true,
-    name: (email || "").split('@')[0],
+    name: (email || '').split('@')[0],
     provider: 'email',
   };
 

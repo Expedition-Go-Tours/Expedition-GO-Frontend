@@ -3,24 +3,24 @@
  * @description Badge/chip component with CVA variants (default, outline, soft).
  *   Used for tour labels, discounts, and status tags.
  */
-import { cva } from "class-variance-authority";
+import { cva } from 'class-variance-authority';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold tracking-[0.14em] uppercase",
+  'inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold tracking-[0.14em] uppercase',
   {
     variants: {
       variant: {
-        default: "border-transparent bg-[color:var(--brand-green)] text-white",
-        outline: "border-[color:var(--brand-green)]/15 bg-white text-[color:var(--brand-green)]",
-        soft: "border-transparent bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]",
+        default: 'border-transparent bg-[color:var(--brand-green)] text-white',
+        outline: 'border-[color:var(--brand-green)]/15 bg-white text-[color:var(--brand-green)]',
+        soft: 'border-transparent bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]',
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: 'default',
     },
-  },
+  }
 );
 
 function Badge({ className, variant, ...props }) {

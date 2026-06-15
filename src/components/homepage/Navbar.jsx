@@ -8,18 +8,32 @@
  * @see hooks/useSearchAutocomplete.js
  * @see contexts/CurrencyContext.jsx, WishlistContext.jsx, CartContext.jsx
  */
-import { Globe, Heart, Headset, LoaderCircle, Menu, ShoppingCart, Settings, Store, UserCircle2, X, Search } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import {
+  Globe,
+  Heart,
+  Headset,
+  LoaderCircle,
+  MapPin,
+  Menu,
+  ShoppingCart,
+  Settings,
+  Store,
+  UserCircle2,
+  X,
+  Search,
+} from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import companyPic from "@/assets/images/new_logo.png";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { useSearchAutocomplete } from "@/hooks/useSearchAutocomplete";
-import { SearchAutocomplete } from "./SearchAutocomplete";
-import { useNavigationLoader } from "@/contexts/NavigationContext";
+import companyPic from '@/assets/images/new_logo.png';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { useSearchAutocomplete } from '@/hooks/useSearchAutocomplete';
+import { SearchAutocomplete } from './SearchAutocomplete';
+import { Input } from '@/components/ui/input';
+import { useNavigationLoader } from '@/contexts/NavigationContext';
 
 export function Navbar({
   sharedDateRange,
@@ -31,17 +45,18 @@ export function Navbar({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLanguageCurrencyOpen, setIsLanguageCurrencyOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("language");
+  const [activeTab, setActiveTab] = useState('language');
   const [searchBarSticky, setSearchBarSticky] = useState(false);
-  const [compactSearchQuery, setCompactSearchQuery] = useState("");
+  const [compactSearchQuery, setCompactSearchQuery] = useState('');
   const [showNavAutocomplete, setShowNavAutocomplete] = useState(false);
   const [userIsTyping, setUserIsTyping] = useState(false);
   const [isDesktopViewport, setIsDesktopViewport] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth >= 1024 : false
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : false
   );
   const [mobileDateRange, setMobileDateRange] = useState({ from: null, to: null });
   const [showMobileCalendar, setShowMobileCalendar] = useState(false);
   const [photoLoaded, setPhotoLoaded] = useState(false);
+
   const mobileCalendarRef = useRef(null);
   const mobileDateButtonRef = useRef(null);
   const navSearchInputRef = useRef(null);
@@ -60,22 +75,23 @@ export function Navbar({
   const { currency, setCurrency, availableCurrencies } = useCurrency();
   const activeMobileDateRange = sharedDateRange ?? mobileDateRange;
   const _setActiveMobileDateRange = onSharedDateRangeChange ?? setMobileDateRange;
-  
+
   // Determine if we're in external search mode
-  const isExternalSearchMode = typeof onExternalSearchChange === "function";
-  
+  const isExternalSearchMode = typeof onExternalSearchChange === 'function';
+
   // Determine the active search query for autocomplete
-  const activeSearchQuery = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
+  const activeSearchQuery = isExternalSearchMode ? (externalSearchQuery ?? '') : compactSearchQuery;
   const isCompactSearchVisible = searchBarSticky || forceShowCompactSearch;
-  const renderCompactSearch = forceShowCompactSearch || location.pathname === "/";
-  
+  const renderCompactSearch = forceShowCompactSearch || location.pathname === '/';
+
   // Get search results for navbar
   const navSearchResults = useSearchAutocomplete(activeSearchQuery);
+
 
   const handleBrandClick = (e) => {
     e.preventDefault();
     navigate('/', { state: { postAuthSplash: true } });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const toggleMobileMenu = () => {
@@ -95,7 +111,7 @@ export function Navbar({
       await signOut();
       setIsUserMenuOpen(false);
       setIsMobileMenuOpen(false);
-      navigate("/", { replace: true, state: { showLogoutToast: true } });
+      navigate('/', { replace: true, state: { showLogoutToast: true } });
     } catch {
       setIsSigningOut(false);
     }
@@ -104,12 +120,12 @@ export function Navbar({
   useEffect(() => {
     if (!isNavigatingToAuth) return;
 
-    if (location.pathname === "/signin") {
+    if (location.pathname === '/signin') {
       const timer = setTimeout(() => setIsNavigatingToAuth(false), 2100);
       return () => clearTimeout(timer);
     }
 
-    if (!["/signin", "/register"].includes(location.pathname)) {
+    if (!['/signin', '/register'].includes(location.pathname)) {
       setIsNavigatingToAuth(false);
     }
   }, [location.pathname, isNavigatingToAuth]);
@@ -122,7 +138,7 @@ export function Navbar({
       setIsNavigatingToAuth(true);
       setIsUserMenuOpen(false);
       setIsMobileMenuOpen(false);
-      navigateWithLoader("/signin");
+      navigateWithLoader('/signin');
     },
     [isNavigatingToAuth, navigateWithLoader]
   );
@@ -143,7 +159,7 @@ export function Navbar({
     setUserIsTyping(false); // User stopped typing
     const query = activeSearchQuery.trim();
     if (!query) {
-      navigateWithLoader("/tours");
+      navigateWithLoader('/tours');
       return;
     }
     navigateWithLoader(`/tours?search=${encodeURIComponent(query)}`);
@@ -176,8 +192,8 @@ export function Navbar({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Close autocomplete when route changes
@@ -188,14 +204,20 @@ export function Navbar({
   // Show autocomplete when there are results AND user is actively typing
   useEffect(() => {
     if (!userIsTyping) return;
-    
-    const query = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
+
+    const query = isExternalSearchMode ? (externalSearchQuery ?? '') : compactSearchQuery;
     if (query.trim().length >= 2 && navSearchResults.total > 0) {
       setShowNavAutocomplete(true);
     } else {
       setShowNavAutocomplete(false);
     }
-  }, [compactSearchQuery, externalSearchQuery, isExternalSearchMode, navSearchResults.total, userIsTyping]);
+  }, [
+    compactSearchQuery,
+    externalSearchQuery,
+    isExternalSearchMode,
+    navSearchResults.total,
+    userIsTyping,
+  ]);
 
   // Close autocomplete and reset typing state when route changes
   useEffect(() => {
@@ -206,13 +228,13 @@ export function Navbar({
   // Keep local query synced with shared query to avoid stale input state.
   useEffect(() => {
     if (isExternalSearchMode) {
-      setCompactSearchQuery(externalSearchQuery ?? "");
+      setCompactSearchQuery(externalSearchQuery ?? '');
     }
   }, [isExternalSearchMode, externalSearchQuery]);
 
   // If user searched in hero and then scrolls to navbar, keep results available.
   useEffect(() => {
-    if (location.pathname !== "/") return;
+    if (location.pathname !== '/') return;
     if (!isCompactSearchVisible) return;
     if (activeSearchQuery.trim().length >= 2 && navSearchResults.total > 0) {
       setShowNavAutocomplete(true);
@@ -225,67 +247,71 @@ export function Navbar({
       setIsDesktopViewport(window.innerWidth >= 1024);
     };
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const getCurrentLanguageLabel = () => {
     const langMap = {
-      en: "EN",
-      es: "ES",
-      fr: "FR",
-      de: "DE",
-      nl: "NL"
+      en: 'EN',
+      es: 'ES',
+      fr: 'FR',
+      de: 'DE',
+      nl: 'NL',
     };
-    return langMap[i18n.language] || "EN";
+    return langMap[i18n.language] || 'EN';
   };
 
   const languages = [
-    { code: "en", name: "English (United States)" },
-    { code: "es", name: "Español (España)" },
-    { code: "fr", name: "Français" },
-    { code: "de", name: "Deutsch (Deutschland)" },
-    { code: "nl", name: "Nederlands" }
+    { code: 'en', name: 'English (United States)' },
+    { code: 'es', name: 'Español (España)' },
+    { code: 'fr', name: 'Français' },
+    { code: 'de', name: 'Deutsch (Deutschland)' },
+    { code: 'nl', name: 'Nederlands' },
   ];
 
   const formatDate = (date) => {
-    if (!date) return "";
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (!date) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   const _mobileDateLabel = activeMobileDateRange?.from
     ? activeMobileDateRange?.to
       ? `${formatDate(activeMobileDateRange.from)} - ${formatDate(activeMobileDateRange.to)}`
       : `${formatDate(activeMobileDateRange.from)}`
-    : "";
-  const compactSearchValue = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
-  const _compactSearchMaxWidthClass = forceShowCompactSearch ? "max-w-[460px]" : "max-w-[360px]";
+    : '';
+  const compactSearchValue = isExternalSearchMode
+    ? (externalSearchQuery ?? '')
+    : compactSearchQuery;
+  const _compactSearchMaxWidthClass = forceShowCompactSearch ? 'max-w-[460px]' : 'max-w-[360px]';
 
-  // Toggle body.hero--search-sticky based on scroll position vs hero search bar
+  // Morph hero search bar into navbar on scroll
   useEffect(() => {
     if (forceShowCompactSearch) {
-      document.body.classList.remove("hero--search-sticky");
+      document.body.classList.remove('hero--search-sticky');
       setSearchBarSticky(true);
       return;
     }
-    if (location.pathname !== "/") {
-      document.body.classList.remove("hero--search-sticky");
+    if (location.pathname !== '/') {
+      document.body.classList.remove('hero--search-sticky');
       setSearchBarSticky(false);
       return;
     }
 
     let rafId;
+    let mounted = true;
+
     const update = () => {
-      const heroSearch = document.getElementById("hero-search-bar");
-      if (!heroSearch) {
-        document.body.classList.remove("hero--search-sticky");
-        setSearchBarSticky(false);
-        return;
+      const heroSearch = document.getElementById('hero-search-bar');
+      if (!heroSearch) return;
+      const header = document.querySelector('header');
+      const navbarHeight = header ? header.offsetHeight : 88;
+      const rect = heroSearch.getBoundingClientRect();
+      const sticky = rect.top < navbarHeight;
+      document.body.classList.toggle('hero--search-sticky', sticky);
+      if (searchBarSticky !== sticky) {
+        setSearchBarSticky(sticky);
       }
-      const heroSearchBottom = heroSearch.getBoundingClientRect().bottom + window.scrollY;
-      const next = window.scrollY > heroSearchBottom;
-      document.body.classList.toggle("hero--search-sticky", next);
-      setSearchBarSticky(next);
     };
 
     const onScroll = () => {
@@ -294,13 +320,15 @@ export function Navbar({
     };
 
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", update);
+      mounted = false;
       if (rafId) cancelAnimationFrame(rafId);
-      document.body.classList.remove("hero--search-sticky");
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', update);
+      document.body.classList.remove('hero--search-sticky');
     };
   }, [location.pathname, forceShowCompactSearch]);
 
@@ -315,11 +343,11 @@ export function Navbar({
     };
 
     if (showMobileCalendar) {
-      document.addEventListener("mousedown", handleOutsideClick);
+      document.addEventListener('mousedown', handleOutsideClick);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, [showMobileCalendar]);
 
@@ -330,67 +358,75 @@ export function Navbar({
           onClick={handleBrandClick}
           className="navbar-brand flex flex-col items-center justify-center h-[var(--navbar-logo-height)] shrink-0 overflow-hidden leading-none cursor-pointer transition-opacity hover:opacity-80"
         >
-          <span className="text-lg font-black tracking-tight sm:text-xl lg:text-2xl">
-            <span style={{ color: "#173169" }}>Travio</span><span style={{ color: "#079847" }}>Africa</span>
+          <span className="text-base font-black tracking-tight sm:text-lg lg:text-2xl">
+            <span style={{ color: '#173169' }}>Travio</span>
+            <span style={{ color: '#079847' }}>Africa</span>
           </span>
-          <span className="mt-0 text-[8px] font-medium text-black/70 sm:text-[9px]">by Expedition-Go Tours</span>
+          <span className="text-[7px] font-medium text-black/70 sm:text-[8px] lg:text-[10px] mt-0">
+            by Expedition-Go Tours
+          </span>
         </button>
 
         {renderCompactSearch && (
           <div
-            className={`navbar-compact-search${forceShowCompactSearch ? " navbar-compact-search--forced" : ""} flex-1 justify-center max-w-[600px] ${isDesktopViewport ? "hidden lg:flex" : "flex lg:hidden"}`}
+            className={`navbar-compact-search${forceShowCompactSearch ? ' navbar-compact-search--forced' : ''} w-[320px] sm:w-[380px] lg:w-full lg:max-w-[600px]`}
           >
             <form
               onSubmit={handleCompactSearchSubmit}
-              className="navbar-search-form relative flex w-full max-w-[360px] lg:max-w-[420px] xl:max-w-[600px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm hover:shadow-md"
+              className="navbar-search-form relative flex w-full max-w-[360px] sm:max-w-[440px] lg:max-w-[520px] xl:max-w-[700px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 shadow-md"
             >
-              <Search className="size-4 text-(--brand-green)" />
-              <input
-                ref={navSearchInputRef}
-                value={compactSearchValue}
-                onChange={(e) => {
-                  if (isExternalSearchMode) {
-                    onExternalSearchChange(e.target.value);
+              <MapPin className="text-(--brand-green) shrink-0 size-4" />
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-[10px] sm:text-[11px] mb-0">Destination</p>
+                <Input
+                  ref={navSearchInputRef}
+                  value={compactSearchValue}
+                  onChange={(e) => {
+                    if (isExternalSearchMode) {
+                      onExternalSearchChange(e.target.value);
+                      setUserIsTyping(true);
+                    } else {
+                      handleNavSearchChange(e);
+                    }
+                  }}
+                  onFocus={() => {
                     setUserIsTyping(true);
-                  } else {
-                    handleNavSearchChange(e);
-                  }
-                }}
-                onFocus={() => {
-                  setUserIsTyping(true);
-                  const query = isExternalSearchMode ? (externalSearchQuery ?? "") : compactSearchQuery;
-                  if (query.trim().length >= 2 && navSearchResults.total > 0) {
-                    setShowNavAutocomplete(true);
-                  }
-                }}
-                onBlur={() => {
-                  setTimeout(() => {
-                    setShowNavAutocomplete(false);
-                    setUserIsTyping(false);
-                  }, 200);
-                }}
-                placeholder="Where are you going?"
-                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
-                style={{ caretColor: '#01311a' }}
-                autoComplete="off"
-              />
-              <button
+                    const query = isExternalSearchMode
+                      ? (externalSearchQuery ?? '')
+                      : compactSearchQuery;
+                    if (query.trim().length >= 2 && navSearchResults.total > 0) {
+                      setShowNavAutocomplete(true);
+                    }
+                  }}
+                  onBlur={() => {
+                    setTimeout(() => {
+                      setShowNavAutocomplete(false);
+                      setUserIsTyping(false);
+                    }, 200);
+                  }}
+                  placeholder="Where are you going?"
+                  className="h-auto border-0 px-0 py-0 text-sm sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  style={{ caretColor: '#01311a', outline: 'none', textAlign: 'left' }}
+                  autoComplete="off"
+                />
+              </div>
+<button
                 type="submit"
-                className="rounded-md bg-(--brand-green) px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-semibold text-white transition hover:bg-(--brand-green-2)"
+                className="rounded-md bg-(--brand-green) px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-(--brand-green-2)"
               >
                 Search
               </button>
-
-              {/* Autocomplete Dropdown */}
-              <div ref={navAutocompleteRef}>
-                <SearchAutocomplete
-                  results={navSearchResults}
-                  onSelect={handleNavAutocompleteSelect}
-                  isVisible={showNavAutocomplete}
-                  searchQuery={activeSearchQuery}
-                />
-              </div>
             </form>
+
+            <div ref={navAutocompleteRef}>
+              <SearchAutocomplete
+                results={navSearchResults}
+                onSelect={handleNavAutocompleteSelect}
+                isVisible={showNavAutocomplete}
+                searchQuery={activeSearchQuery}
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[360px] sm:w-[420px] lg:w-[640px] max-h-[400px] overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg z-50"
+              />
+            </div>
           </div>
         )}
 
@@ -424,20 +460,18 @@ export function Navbar({
           >
             <Globe className="size-5 transition group-hover:text-[color:var(--brand-green)]" />
             <span className="hidden xl:block text-xs relative font-semibold">
-              {getCurrentLanguageLabel()}/{currency} {availableCurrencies.find(c => c.code === currency)?.symbol}
+              {getCurrentLanguageLabel()}/{currency}{' '}
+              {availableCurrencies.find((c) => c.code === currency)?.symbol}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-(--brand-green) transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:w-full"></span>
             </span>
           </button>
-          {!loading && (
-            user ? (
+          {!loading &&
+            (user ? (
               <div className="relative">
-                <button 
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="group"
-                >
+                <button onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} className="group">
                   <div className="relative size-12">
                     <div
-                      className={`absolute inset-0 grid place-items-center rounded-full border-2 border-slate-200 bg-white transition-opacity duration-300 ${photoLoaded ? "opacity-0" : "opacity-100"}`}
+                      className={`absolute inset-0 grid place-items-center rounded-full border-2 border-slate-200 bg-white transition-opacity duration-300 ${photoLoaded ? 'opacity-0' : 'opacity-100'}`}
                     >
                       <UserCircle2 className="size-8 text-black" strokeWidth={1.5} />
                     </div>
@@ -446,7 +480,7 @@ export function Navbar({
                         src={user.photoURL}
                         alt={user.name}
                         onLoad={() => setPhotoLoaded(true)}
-                        className={`absolute inset-0 size-12 rounded-full border-2 border-slate-200 object-cover transition hover:border-[color:var(--brand-green)] ${photoLoaded ? "opacity-100" : "opacity-0"} transition-opacity duration-300`}
+                        className={`absolute inset-0 size-12 rounded-full border-2 border-slate-200 object-cover transition hover:border-[color:var(--brand-green)] ${photoLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
                       />
                     )}
                   </div>
@@ -454,10 +488,7 @@ export function Navbar({
                 {isUserMenuOpen && (
                   <>
                     {/* Backdrop to close menu when clicking outside */}
-                    <div 
-                      className="fixed inset-0 z-40" 
-                      onClick={() => setIsUserMenuOpen(false)}
-                    />
+                    <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
                     <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-lg border border-slate-200 bg-white shadow-lg dark:!bg-white">
                       <div className="border-b border-slate-100 p-3">
                         <p className="text-sm font-semibold text-slate-900">{user.name}</p>
@@ -489,12 +520,25 @@ export function Navbar({
                           <span>{t('nav.cart')}</span>
                         </Link>
                         <Link
-                          to="/booking"
-                          onClick={() => setIsUserMenuOpen(false)}
+                          to="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsUserMenuOpen(false);
+                          }}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
-                          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          <svg
+                            className="size-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
                           </svg>
                           <span>{t('nav.bookings')}</span>
                         </Link>
@@ -509,12 +553,12 @@ export function Navbar({
                           {isSigningOut ? (
                             <>
                               <LoaderCircle className="size-4 shrink-0 animate-spin text-rose-600" />
-                              <span>{t("nav.pleaseWait")}</span>
+                              <span>{t('nav.pleaseWait')}</span>
                             </>
                           ) : (
                             <>
                               <X className="size-4 shrink-0" />
-                              <span>{t("nav.signOut")}</span>
+                              <span>{t('nav.signOut')}</span>
                             </>
                           )}
                         </button>
@@ -525,7 +569,7 @@ export function Navbar({
               </div>
             ) : (
               <div className="relative">
-                <button 
+                <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="grid size-12 place-items-center rounded-full border-2 border-slate-200 text-slate-400 transition hover:border-[color:var(--brand-green)]"
                 >
@@ -534,10 +578,7 @@ export function Navbar({
                 {isUserMenuOpen && (
                   <>
                     {/* Backdrop to close menu when clicking outside */}
-                    <div 
-                      className="fixed inset-0 z-40" 
-                      onClick={() => setIsUserMenuOpen(false)}
-                    />
+                    <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
                     <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-lg border border-slate-200 bg-white shadow-lg dark:!bg-white">
                       <div className="py-2">
                         <Link
@@ -548,13 +589,17 @@ export function Navbar({
                           <Headset className="size-4" />
                           <span>{t('nav.support')}</span>
                         </Link>
-                        <button
-                          onClick={() => setIsUserMenuOpen(false)}
+                        <Link
+                          to="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsUserMenuOpen(false);
+                          }}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <Globe className="size-4" />
                           <span>{t('nav.updates')}</span>
-                        </button>
+                        </Link>
                         <div className="border-t border-slate-100 my-1" />
                         <Link
                           to="/cart"
@@ -565,12 +610,25 @@ export function Navbar({
                           <span>{t('nav.cart')}</span>
                         </Link>
                         <Link
-                          to="/booking"
-                          onClick={() => setIsUserMenuOpen(false)}
+                          to="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsUserMenuOpen(false);
+                          }}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
-                          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          <svg
+                            className="size-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
                           </svg>
                           <span>{t('nav.bookings')}</span>
                         </Link>
@@ -581,7 +639,7 @@ export function Navbar({
                           onClick={handleAuthLinkClick}
                           aria-busy={isNavigatingToAuth}
                           className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] ${
-                            isNavigatingToAuth ? "pointer-events-none cursor-wait opacity-80" : ""
+                            isNavigatingToAuth ? 'pointer-events-none cursor-wait opacity-80' : ''
                           }`}
                         >
                           {isNavigatingToAuth ? (
@@ -590,7 +648,7 @@ export function Navbar({
                             <UserCircle2 className="size-4 shrink-0" />
                           )}
                           <span>
-                            {isNavigatingToAuth ? t("auth.loadingSignIn") : t("nav.signInSignUp")}
+                            {isNavigatingToAuth ? t('auth.loadingSignIn') : t('nav.signInSignUp')}
                           </span>
                         </Link>
                       </div>
@@ -598,18 +656,23 @@ export function Navbar({
                   </>
                 )}
               </div>
-            )
-          )}
+            ))}
         </div>
 
-        <button
-          type="button"
-          onClick={toggleMobileMenu}
-          className="navbar-hamburger grid size-9 shrink-0 place-items-center rounded-full border border-slate-300 text-slate-950 sm:size-10 lg:hidden"
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <button
+            type="button"
+            onClick={toggleMobileMenu}
+            className="navbar-hamburger grid size-9 shrink-0 place-items-center rounded-full border border-slate-300 text-slate-950 sm:size-10"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="size-4 sm:size-5" />
+            ) : (
+              <Menu className="size-4 sm:size-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {isLanguageCurrencyOpen && (
@@ -629,11 +692,11 @@ export function Navbar({
               <div className="flex gap-6">
                 <button
                   type="button"
-                  onClick={() => setActiveTab("language")}
+                  onClick={() => setActiveTab('language')}
                   className={`flex items-center gap-2 pb-2 text-sm font-semibold transition ${
-                    activeTab === "language"
-                      ? "border-b-2 border-[color:var(--brand-green)] text-[color:var(--brand-green)]"
-                      : "text-slate-600 hover:text-slate-900"
+                    activeTab === 'language'
+                      ? 'border-b-2 border-[color:var(--brand-green)] text-[color:var(--brand-green)]'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Globe className="size-4" />
@@ -641,15 +704,20 @@ export function Navbar({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActiveTab("currency")}
+                  onClick={() => setActiveTab('currency')}
                   className={`flex items-center gap-2 pb-2 text-sm font-semibold transition ${
-                    activeTab === "currency"
-                      ? "border-b-2 border-[color:var(--brand-green)] text-[color:var(--brand-green)]"
-                      : "text-slate-600 hover:text-slate-900"
+                    activeTab === 'currency'
+                      ? 'border-b-2 border-[color:var(--brand-green)] text-[color:var(--brand-green)]'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   Currency
                 </button>
@@ -664,7 +732,7 @@ export function Navbar({
             </div>
 
             <div className="max-h-[min(500px,calc(100vh-10rem))] overflow-y-auto p-4 lg:max-h-[500px]">
-              {activeTab === "language" ? (
+              {activeTab === 'language' ? (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {languages.map((lang) => (
                     <button
@@ -673,14 +741,24 @@ export function Navbar({
                       onClick={() => handleLanguageChange(lang.code)}
                       className={`flex items-center justify-between rounded-lg px-4 py-3 text-left text-sm transition ${
                         i18n.language === lang.code
-                          ? "bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold"
-                          : "text-slate-700 hover:bg-slate-50"
+                          ? 'bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold'
+                          : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <span>{lang.name}</span>
                       {i18n.language === lang.code && (
-                        <svg className="size-5 shrink-0 text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="size-5 shrink-0 text-[color:var(--brand-green)]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       )}
                     </button>
@@ -695,8 +773,8 @@ export function Navbar({
                       onClick={() => handleCurrencyChange(curr.code)}
                       className={`flex items-center justify-between rounded-lg px-4 py-3 text-left text-sm transition ${
                         currency === curr.code
-                          ? "bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold"
-                          : "text-slate-700 hover:bg-slate-50"
+                          ? 'bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold'
+                          : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <div>
@@ -704,8 +782,18 @@ export function Navbar({
                         <div className="text-xs text-slate-500">{curr.name}</div>
                       </div>
                       {currency === curr.code && (
-                        <svg className="size-5 shrink-0 text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="size-5 shrink-0 text-[color:var(--brand-green)]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       )}
                     </button>
@@ -735,12 +823,13 @@ export function Navbar({
               >
                 <Globe className="size-4 shrink-0" />
                 <span className="text-sm">
-                  {(languages.find((l) => l.code === i18n.language)?.name) ?? getCurrentLanguageLabel()}
-                  {" · "}
+                  {languages.find((l) => l.code === i18n.language)?.name ??
+                    getCurrentLanguageLabel()}
+                  {' · '}
                   {currency}
                   {availableCurrencies.find((c) => c.code === currency)?.symbol
                     ? ` (${availableCurrencies.find((c) => c.code === currency).symbol})`
-                    : ""}
+                    : ''}
                 </span>
               </button>
               <Link
@@ -751,30 +840,50 @@ export function Navbar({
                 <Heart className="size-4" />
                 <span className="text-sm">{t('nav.wishlist')}</span>
               </Link>
-              <Link to="/cart" onClick={closeMobileMenu} className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
+              <Link
+                to="/cart"
+                onClick={closeMobileMenu}
+                className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950"
+              >
                 <ShoppingCart className="size-4" />
                 <span className="text-sm">{t('nav.cart')}</span>
               </Link>
-              <Link to="/support" onClick={closeMobileMenu} className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
+              <Link
+                to="/support"
+                onClick={closeMobileMenu}
+                className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950"
+              >
                 <Headset className="size-4" />
                 <span className="text-sm">{t('nav.support')}</span>
               </Link>
+              <Link
+                to="/supplier/portal"
+                onClick={closeMobileMenu}
+                className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950"
+              >
+                <Store className="size-4" />
+                <span className="text-sm">{t('nav.listAnExperience', 'List an experience')}</span>
+              </Link>
               {!loading && user && (
                 <>
-                  <Link to="/settings" onClick={closeMobileMenu} className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950">
+                  <Link
+                    to="/settings"
+                    onClick={closeMobileMenu}
+                    className="inline-flex items-center gap-2 py-2 text-slate-700 transition hover:text-slate-950"
+                  >
                     <Settings className="size-4" />
                     <span className="text-sm">{t('nav.settings')}</span>
                   </Link>
                 </>
               )}
 
-              {!loading && (
-                user ? (
+              {!loading &&
+                (user ? (
                   <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <div className="flex items-center gap-3">
                       <div className="relative size-14">
                         <div
-                          className={`absolute inset-0 grid place-items-center rounded-full border-2 border-slate-300 bg-white transition-opacity duration-300 ${photoLoaded ? "opacity-0" : "opacity-100"}`}
+                          className={`absolute inset-0 grid place-items-center rounded-full border-2 border-slate-300 bg-white transition-opacity duration-300 ${photoLoaded ? 'opacity-0' : 'opacity-100'}`}
                         >
                           <UserCircle2 className="size-9 text-black" strokeWidth={1.5} />
                         </div>
@@ -783,7 +892,7 @@ export function Navbar({
                             src={user.photoURL}
                             alt={user.name}
                             onLoad={() => setPhotoLoaded(true)}
-                            className={`absolute inset-0 size-14 rounded-full border-2 border-[color:var(--brand-green)] object-cover transition-opacity duration-300 ${photoLoaded ? "opacity-100" : "opacity-0"}`}
+                            className={`absolute inset-0 size-14 rounded-full border-2 border-[color:var(--brand-green)] object-cover transition-opacity duration-300 ${photoLoaded ? 'opacity-100' : 'opacity-0'}`}
                           />
                         )}
                       </div>
@@ -802,12 +911,12 @@ export function Navbar({
                       {isSigningOut ? (
                         <>
                           <LoaderCircle className="size-4 shrink-0 animate-spin text-rose-600" />
-                          {t("nav.signingOut")}
+                          {t('nav.signingOut')}
                         </>
                       ) : (
                         <>
                           <X className="size-4 shrink-0" />
-                          {t("nav.signOut")}
+                          {t('nav.signOut')}
                         </>
                       )}
                     </Button>
@@ -818,7 +927,7 @@ export function Navbar({
                     onClick={handleAuthLinkClick}
                     aria-busy={isNavigatingToAuth}
                     className={`mt-2 inline-flex w-full items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:border-[color:var(--brand-green)] hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] ${
-                      isNavigatingToAuth ? "pointer-events-none cursor-wait opacity-80" : ""
+                      isNavigatingToAuth ? 'pointer-events-none cursor-wait opacity-80' : ''
                     }`}
                   >
                     {isNavigatingToAuth ? (
@@ -826,10 +935,9 @@ export function Navbar({
                     ) : (
                       <UserCircle2 className="size-4 shrink-0" />
                     )}
-                    {isNavigatingToAuth ? t("auth.loadingSignIn") : t("nav.signInSignUp")}
+                    {isNavigatingToAuth ? t('auth.loadingSignIn') : t('nav.signInSignUp')}
                   </Link>
-                )
-              )}
+                ))}
             </div>
           </div>
         </div>

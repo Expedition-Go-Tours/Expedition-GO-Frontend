@@ -3,11 +3,11 @@
  * @description Skeleton blocks for homepage tour carousel and destinations sections.
  *   Exports TourCarouselSkeleton and DestinationsSkeleton.
  */
-import { Skeleton } from "@/components/ui/skeleton";
-import { DestinationCardSkeleton } from "./CardSkeleton";
-import { CarouselCardsSkeleton } from "./CarouselCardsSkeleton";
-import { useRef } from "react";
-import { useCarouselLayout } from "@/hooks/useCarouselLayout";
+import { Skeleton } from '@/components/ui/skeleton';
+import { DestinationCardSkeleton } from './CardSkeleton';
+import { CarouselCardsSkeleton } from './CarouselCardsSkeleton';
+import { useRef } from 'react';
+import { useCarouselLayout } from '@/hooks/useCarouselLayout';
 
 export function TourCarouselSkeleton({ delay = 0 }) {
   return (
@@ -32,9 +32,15 @@ export function TourCarouselSkeleton({ delay = 0 }) {
   );
 }
 
-function DestinationCardsSkeleton({ delay = 0, cardWidth = 280, gap = 12, clipAt = "xl" }) {
+function DestinationCardsSkeleton({ delay = 0, cardWidth = 280, gap = 12, clipAt = 'xl' }) {
   const containerRef = useRef(null);
-  const { count, clipWidth } = useCarouselLayout(containerRef, { cardWidth, gap, minCards: 1, maxCards: 6, clipAt });
+  const { count, clipWidth } = useCarouselLayout(containerRef, {
+    cardWidth,
+    gap,
+    minCards: 1,
+    maxCards: 6,
+    clipAt,
+  });
   const displayCount = clipWidth == null ? Math.min(count + 1, 3) : count;
 
   return (

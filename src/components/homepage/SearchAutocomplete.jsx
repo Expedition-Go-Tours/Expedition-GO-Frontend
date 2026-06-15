@@ -4,11 +4,17 @@
  *
  * @see hooks/useSearchAutocomplete.js — fuzzy matching logic
  */
-import { MapPin, Clock, Star } from "lucide-react";
-import { useNavigationLoader } from "@/contexts/NavigationContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { MapPin, Clock, Star } from 'lucide-react';
+import { useNavigationLoader } from '@/contexts/NavigationContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
-export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery, className = "absolute top-full left-0 right-0 mt-1 max-h-[400px] overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg z-50" }) {
+export function SearchAutocomplete({
+  results,
+  onSelect,
+  isVisible,
+  searchQuery,
+  className = 'absolute top-full left-0 right-0 mt-1 min-w-[320px] max-h-[400px] overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg z-50',
+}) {
   const { navigateWithLoader } = useNavigationLoader();
   const { convertPrice } = useCurrency();
 
@@ -29,7 +35,7 @@ export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery, 
 
   const handleViewAllClick = () => {
     // Use the actual search query instead of a specific result
-    navigateWithLoader(`/tours?search=${encodeURIComponent(searchQuery || "")}`);
+    navigateWithLoader(`/tours?search=${encodeURIComponent(searchQuery || '')}`);
     onSelect();
   };
 
@@ -55,9 +61,7 @@ export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery, 
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-900 truncate">
-                  {destination.title}
-                </p>
+                <p className="text-sm font-semibold text-slate-900 truncate">{destination.title}</p>
                 <p className="text-xs text-slate-500">{destination.tours}</p>
               </div>
               <MapPin className="flex-shrink-0 size-4 text-slate-400" />
@@ -81,16 +85,10 @@ export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery, 
                 className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition text-left"
               >
                 <div className="flex-shrink-0 w-16 h-12 rounded overflow-hidden bg-slate-100">
-                  <img
-                    src={tour.image}
-                    alt={tour.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={tour.image} alt={tour.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">
-                    {tour.title}
-                  </p>
+                  <p className="text-sm font-medium text-slate-900 truncate">{tour.title}</p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <div className="flex items-center gap-1 text-xs text-slate-500">
                       <Clock className="size-3" />
@@ -104,9 +102,7 @@ export function SearchAutocomplete({ results, onSelect, isVisible, searchQuery, 
                 </div>
                 <div className="flex-shrink-0 text-right">
                   <p className="text-xs text-slate-500">from</p>
-                  <p className="text-sm font-bold text-slate-900">
-                    {convertedPrice.formatted}
-                  </p>
+                  <p className="text-sm font-bold text-slate-900">{convertedPrice.formatted}</p>
                 </div>
               </button>
             );

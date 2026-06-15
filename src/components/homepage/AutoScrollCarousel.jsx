@@ -2,9 +2,9 @@
  * @file AutoScrollCarousel.jsx
  * @description Infinite auto-scrolling tour carousel (framer-motion). Pauses on hover.
  */
-import { useRef, useEffect, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
-import { FeaturedExperiencesCard } from "./FeaturedExperiencesCard";
+import { useRef, useEffect, useState } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { FeaturedExperiencesCard } from './FeaturedExperiencesCard';
 
 export function AutoScrollCarousel({ items, title }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -25,9 +25,9 @@ export function AutoScrollCarousel({ items, title }) {
         transition: {
           x: {
             repeat: Infinity,
-            repeatType: "loop",
+            repeatType: 'loop',
             duration: items.length * 3, // Adjust speed based on number of items
-            ease: "linear",
+            ease: 'linear',
           },
         },
       });
@@ -66,7 +66,7 @@ export function AutoScrollCarousel({ items, title }) {
         <motion.div
           animate={controls}
           className="flex gap-3 px-4 sm:px-6"
-          style={{ width: "fit-content" }}
+          style={{ width: 'fit-content' }}
         >
           {infiniteItems.map((item, index) => (
             <motion.div

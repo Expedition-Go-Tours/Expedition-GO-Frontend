@@ -2,21 +2,21 @@
  * Vitest global setup. Runs after each test: cleanup DOM, reset mocks.
  * Loaded via vitest.config.js setupFiles.
  */
-import { afterEach, vi } from "vitest";
-import { cleanup } from "@testing-library/react";
-import "@testing-library/jest-dom/vitest";
+import { afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 
 afterEach(() => {
   cleanup();
 });
 
-vi.mock("react-router-dom", () => ({
-  ...vi.importActual("react-router-dom"),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => vi.fn(),
-  useLocation: () => ({ pathname: "/" }),
+  useLocation: () => ({ pathname: '/' }),
 }));
 
-vi.mock("@tanstack/react-query", () => ({
+vi.mock('@tanstack/react-query', () => ({
   useQuery: vi.fn(() => ({ data: null, isLoading: false, error: null })),
   useMutation: vi.fn(() => ({ mutate: vi.fn(), isLoading: false })),
   QueryClient: vi.fn(() => ({ setDefaultOptions: vi.fn() })),

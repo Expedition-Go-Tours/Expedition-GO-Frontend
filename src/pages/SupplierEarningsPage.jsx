@@ -5,8 +5,8 @@
  * App.jsx redirects /supplier/earnings → https://supplier.travioafrica.com
  * This page is kept for reference or future in-app earnings integration.
  */
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   LoaderCircle,
@@ -21,21 +21,21 @@ import {
   DollarSign,
   BadgeCheck,
   ArrowRight,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { getMyPayouts } from "@/api/payout";
-import { apiRequest } from "@/api/client";
-import companyLogo from "@/assets/images/new_logo.png";
+import { Button } from '@/components/ui/button';
+import { getMyPayouts } from '@/api/payout';
+import { apiRequest } from '@/api/client';
+import companyLogo from '@/assets/images/new_logo.png';
 
 function StatusBadge({ status }) {
   const styles = {
-    PENDING: "bg-amber-50 text-amber-700 border-amber-200",
-    APPROVED: "bg-sky-50 text-sky-700 border-sky-200",
-    PROCESSING: "bg-violet-50 text-violet-700 border-violet-200",
-    PAID: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    FAILED: "bg-rose-50 text-rose-700 border-rose-200",
-    CANCELLED: "bg-slate-50 text-slate-600 border-slate-200",
+    PENDING: 'bg-amber-50 text-amber-700 border-amber-200',
+    APPROVED: 'bg-sky-50 text-sky-700 border-sky-200',
+    PROCESSING: 'bg-violet-50 text-violet-700 border-violet-200',
+    PAID: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    FAILED: 'bg-rose-50 text-rose-700 border-rose-200',
+    CANCELLED: 'bg-slate-50 text-slate-600 border-slate-200',
   };
   const icons = {
     PENDING: Clock,
@@ -57,9 +57,9 @@ function StatusBadge({ status }) {
 }
 
 function PayoutMethodIcon({ type }) {
-  if (type === "BANK_TRANSFER") return <Landmark className="size-4 text-slate-500" />;
-  if (type === "MOBILE_MONEY") return <Smartphone className="size-4 text-slate-500" />;
-  if (type === "PAYPAL") return <Wallet className="size-4 text-slate-500" />;
+  if (type === 'BANK_TRANSFER') return <Landmark className="size-4 text-slate-500" />;
+  if (type === 'MOBILE_MONEY') return <Smartphone className="size-4 text-slate-500" />;
+  if (type === 'PAYPAL') return <Wallet className="size-4 text-slate-500" />;
   return <Wallet className="size-4 text-slate-500" />;
 }
 
@@ -68,7 +68,7 @@ export default function SupplierEarningsPage() {
   const [payouts, setPayouts] = useState([]);
   const [summary, setSummary] = useState({ totalEarned: 0, totalPayouts: 0 });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const [earningsLoading, setEarningsLoading] = useState(true);
   const [earningsSummary, setEarningsSummary] = useState({
@@ -90,7 +90,7 @@ export default function SupplierEarningsPage() {
       setPayouts(res.data?.payouts || []);
       setSummary(res.data?.summary || { totalEarned: 0, totalPayouts: 0 });
     } catch (err) {
-      setError(err?.message || "Failed to load payouts.");
+      setError(err?.message || 'Failed to load payouts.');
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ export default function SupplierEarningsPage() {
   async function loadEarnings() {
     setEarningsLoading(true);
     try {
-      const res = await apiRequest("/suppliers/earnings", { method: "GET", auth: true });
+      const res = await apiRequest('/suppliers/earnings', { method: 'GET', auth: true });
       const data = res.data || {};
       setEarningsSummary({
         totalEarnings: data.summary?.totalEarnings || 0,
@@ -115,11 +115,11 @@ export default function SupplierEarningsPage() {
   }
 
   const pendingTotal = payouts
-    .filter((p) => p.status === "PENDING" || p.status === "APPROVED")
+    .filter((p) => p.status === 'PENDING' || p.status === 'APPROVED')
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 
   const paidTotal = payouts
-    .filter((p) => p.status === "PAID")
+    .filter((p) => p.status === 'PAID')
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 
   return (
@@ -128,17 +128,13 @@ export default function SupplierEarningsPage() {
       <div className="border-b border-slate-100 bg-white px-4 py-4">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <button
-            onClick={() => navigate("/supplier/signin")}
+            onClick={() => navigate('/supplier/signin')}
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
           >
             <ArrowLeft className="size-4" />
             Back
           </button>
-          <img
-            src={companyLogo}
-            alt="TravioAfrica"
-            className="h-auto w-[140px] object-contain"
-          />
+          <img src={companyLogo} alt="TravioAfrica" className="h-auto w-[140px] object-contain" />
           <div className="w-16" />
         </div>
       </div>
@@ -146,15 +142,13 @@ export default function SupplierEarningsPage() {
       <div className="mx-auto w-full max-w-5xl px-4 py-10">
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-              Earnings & Payouts
-            </h1>
+            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Earnings & Payouts</h1>
             <p className="mt-1 text-sm text-slate-500">
               Track your bookings, commissions, and payout status.
             </p>
           </div>
           <Button
-            onClick={() => navigate("/supplier/payout")}
+            onClick={() => navigate('/supplier/payout')}
             variant="outline"
             className="h-10 gap-2 rounded-lg text-sm font-semibold"
           >
@@ -178,7 +172,11 @@ export default function SupplierEarningsPage() {
               Total Earnings
             </div>
             <p className="text-2xl font-extrabold text-slate-900">
-              ${Number(earningsSummary.totalEarnings || summary.totalEarned || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              $
+              {Number(earningsSummary.totalEarnings || summary.totalEarned || 0).toLocaleString(
+                undefined,
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+              )}
             </p>
           </div>
 
@@ -188,7 +186,11 @@ export default function SupplierEarningsPage() {
               Paid Out
             </div>
             <p className="text-2xl font-extrabold text-emerald-700">
-              ${Number(paidTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              $
+              {Number(paidTotal).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </p>
           </div>
 
@@ -198,7 +200,11 @@ export default function SupplierEarningsPage() {
               Pending
             </div>
             <p className="text-2xl font-extrabold text-amber-700">
-              ${Number(pendingTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              $
+              {Number(pendingTotal).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </p>
           </div>
 
@@ -253,14 +259,17 @@ export default function SupplierEarningsPage() {
                     <tr key={p.id} className="hover:bg-slate-50/50">
                       <td className="px-6 py-4">
                         <p className="font-semibold text-slate-900">
-                          {p.booking?.tour?.title || "Tour"}
+                          {p.booking?.tour?.title || 'Tour'}
                         </p>
                         <p className="text-xs text-slate-400">
                           {p.booking?.bookingNumber || p.id?.slice(0, 8)}
                         </p>
                       </td>
                       <td className="px-6 py-4 font-bold text-slate-900">
-                        ${Number(p.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        $
+                        {Number(p.amount || 0).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })}
                       </td>
                       <td className="px-6 py-4">
                         <StatusBadge status={p.status} />
@@ -269,10 +278,11 @@ export default function SupplierEarningsPage() {
                         <div className="flex items-center gap-2">
                           <PayoutMethodIcon type={p.payoutMethod?.type} />
                           <span className="text-slate-600">
-                            {p.payoutMethod?.type === "BANK_TRANSFER" && p.payoutMethod?.bankName}
-                            {p.payoutMethod?.type === "MOBILE_MONEY" && p.payoutMethod?.mobileProvider}
-                            {p.payoutMethod?.type === "PAYPAL" && "PayPal"}
-                            {!p.payoutMethod && "—"}
+                            {p.payoutMethod?.type === 'BANK_TRANSFER' && p.payoutMethod?.bankName}
+                            {p.payoutMethod?.type === 'MOBILE_MONEY' &&
+                              p.payoutMethod?.mobileProvider}
+                            {p.payoutMethod?.type === 'PAYPAL' && 'PayPal'}
+                            {!p.payoutMethod && '—'}
                           </span>
                         </div>
                       </td>
@@ -281,7 +291,7 @@ export default function SupplierEarningsPage() {
                           ? new Date(p.paidAt).toLocaleDateString()
                           : p.createdAt
                             ? new Date(p.createdAt).toLocaleDateString()
-                            : "—"}
+                            : '—'}
                       </td>
                     </tr>
                   ))}

@@ -3,11 +3,11 @@
  * @description User account settings (/settings). Profile, language, currency, notifications.
  *   Requires authentication — redirects to /signin if not logged in.
  */
-import { useState, useEffect } from "react";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
   User,
@@ -21,9 +21,9 @@ import {
   Shield,
   Check,
   ChevronRight,
-} from "lucide-react";
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
+} from 'lucide-react';
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
 
 /* ------------------------------------------------------------------ */
 /*  Shared animation presets                                           */
@@ -32,7 +32,7 @@ const fadeUp = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -8 },
-  transition: { duration: 0.28, ease: "easeOut" },
+  transition: { duration: 0.28, ease: 'easeOut' },
 };
 
 const staggerContainer = {
@@ -42,7 +42,7 @@ const staggerContainer = {
 const staggerItem = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.25, ease: "easeOut" },
+  transition: { duration: 0.25, ease: 'easeOut' },
 };
 
 /* ------------------------------------------------------------------ */
@@ -57,14 +57,12 @@ function ToggleSwitch({ checked, onChange, disabled = false }) {
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-green)]/30 ${
-        checked
-          ? "bg-[color:var(--brand-green)]"
-          : "bg-slate-300"
-      } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+        checked ? 'bg-[color:var(--brand-green)]' : 'bg-slate-300'
+      } ${disabled ? 'cursor-not-allowed opacity-60' : ''}`}
     >
       <span
         className={`inline-block size-4 rounded-full bg-white shadow transition-transform duration-200 ${
-          checked ? "translate-x-6" : "translate-x-1"
+          checked ? 'translate-x-6' : 'translate-x-1'
         }`}
       />
     </button>
@@ -86,7 +84,7 @@ function FormField({ label, children, hint }) {
   );
 }
 
-function TextInput({ value, onChange, name, placeholder, type = "text", disabled = false }) {
+function TextInput({ value, onChange, name, placeholder, type = 'text', disabled = false }) {
   return (
     <input
       type={type}
@@ -96,7 +94,7 @@ function TextInput({ value, onChange, name, placeholder, type = "text", disabled
       disabled={disabled}
       placeholder={placeholder}
       className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition-all placeholder:text-slate-400 hover:border-slate-300 focus:border-[color:var(--brand-green)] focus:outline-none focus:ring-2 focus:ring-[color:var(--brand-green)]/15 ${
-        disabled ? "cursor-not-allowed bg-slate-50 text-slate-400" : ""
+        disabled ? 'cursor-not-allowed bg-slate-50 text-slate-400' : ''
       }`}
     />
   );
@@ -135,20 +133,20 @@ export default function SettingsPage() {
   const navigate = useNavigate();
 
   const TABS = [
-    { id: "personal", label: t("settings.tabPersonal"), icon: User },
-    { id: "notifications", label: t("settings.tabNotifications"), icon: Bell },
-    { id: "payment", label: t("settings.tabPayment"), icon: CreditCard },
+    { id: 'personal', label: t('settings.tabPersonal'), icon: User },
+    { id: 'notifications', label: t('settings.tabNotifications'), icon: Bell },
+    { id: 'payment', label: t('settings.tabPayment'), icon: CreditCard },
   ];
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [activeTab, setActiveTab] = useState("personal");
+  const [activeTab, setActiveTab] = useState('personal');
   const [isMobile, setIsMobile] = useState(false);
 
   /* form state */
   const [formData, setFormData] = useState({
-    firstName: user?.name?.split(" ")[0] || "",
-    lastName: user?.name?.split(" ")[1] || "",
-    email: user?.email || "",
-    phone: "",
+    firstName: user?.name?.split(' ')[0] || '',
+    lastName: user?.name?.split(' ')[1] || '',
+    email: user?.email || '',
+    phone: '',
   });
   const [notifications, setNotifications] = useState({
     email: true,
@@ -164,14 +162,14 @@ export default function SettingsPage() {
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
     check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
   /* auth guard */
   useEffect(() => {
     if (loading) return;
-    if (!user) navigate("/signin", { replace: true });
+    if (!user) navigate('/signin', { replace: true });
     else setIsAuthorized(true);
   }, [user, loading, navigate]);
 
@@ -179,9 +177,9 @@ export default function SettingsPage() {
     if (user) {
       setFormData((prev) => ({
         ...prev,
-        firstName: user.name?.split(" ")[0] || "",
-        lastName: user.name?.split(" ")[1] || "",
-        email: user.email || "",
+        firstName: user.name?.split(' ')[0] || '',
+        lastName: user.name?.split(' ')[1] || '',
+        email: user.email || '',
       }));
     }
   }, [user]);
@@ -206,7 +204,7 @@ export default function SettingsPage() {
   const handleSave = () => setHasChanges(false);
   const handleNotificationSave = () => setNotificationChanges(false);
 
-  const userInitial = user?.name?.charAt(0).toUpperCase() || "U";
+  const userInitial = user?.name?.charAt(0).toUpperCase() || 'U';
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -225,10 +223,10 @@ export default function SettingsPage() {
               Back
             </button>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {t("settings.title")}
+              {t('settings.title')}
             </h1>
             <p className="mt-2 max-w-lg text-sm font-medium text-slate-500">
-              {t("settings.subtitle")}
+              {t('settings.subtitle')}
             </p>
           </div>
         </div>
@@ -248,7 +246,7 @@ export default function SettingsPage() {
                   <div className="relative mx-auto mb-4 size-28">
                     {/* Skeleton / fallback placeholder */}
                     <div
-                      className={`absolute inset-0 grid place-items-center rounded-full border-[6px] border-white bg-slate-200 shadow-lg transition-opacity duration-300 ${photoLoaded ? "opacity-0" : "opacity-100"}`}
+                      className={`absolute inset-0 grid place-items-center rounded-full border-[6px] border-white bg-slate-200 shadow-lg transition-opacity duration-300 ${photoLoaded ? 'opacity-0' : 'opacity-100'}`}
                     >
                       <User className="size-16 text-black" strokeWidth={1.5} />
                     </div>
@@ -258,7 +256,7 @@ export default function SettingsPage() {
                         src={user.photoURL}
                         alt={user.name}
                         onLoad={() => setPhotoLoaded(true)}
-                        className={`absolute inset-0 size-28 rounded-full border-[6px] border-white object-cover shadow-lg transition-opacity duration-300 ${photoLoaded ? "opacity-100" : "opacity-0"}`}
+                        className={`absolute inset-0 size-28 rounded-full border-[6px] border-white object-cover shadow-lg transition-opacity duration-300 ${photoLoaded ? 'opacity-100' : 'opacity-0'}`}
                       />
                     )}
 
@@ -268,10 +266,10 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
-                  <h2 className="text-lg font-bold text-slate-900">{user?.name || "User"}</h2>
+                  <h2 className="text-lg font-bold text-slate-900">{user?.name || 'User'}</h2>
                   <p className="mt-0.5 text-sm text-slate-500">{user?.email}</p>
                   <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                    {t("settings.verifiedAccount")}
+                    {t('settings.verifiedAccount')}
                   </div>
                 </div>
               </div>
@@ -287,18 +285,20 @@ export default function SettingsPage() {
                       onClick={() => setActiveTab(tab.id)}
                       className={`group relative flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition-all ${
                         isActive
-                          ? "bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? 'bg-[color:var(--brand-mist)] text-[color:var(--brand-green)]'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                     >
                       {isActive && (
                         <motion.div
                           layoutId="activeTab"
                           className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-[color:var(--brand-green)]"
-                          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                         />
                       )}
-                      <Icon className={`size-[18px] transition ${isActive ? "text-[color:var(--brand-green)]" : "text-slate-400 group-hover:text-slate-600"}`} />
+                      <Icon
+                        className={`size-[18px] transition ${isActive ? 'text-[color:var(--brand-green)]' : 'text-slate-400 group-hover:text-slate-600'}`}
+                      />
                       <span>{tab.label}</span>
                       {isActive && (
                         <ChevronRight className="ml-auto size-4 text-[color:var(--brand-green)]" />
@@ -312,12 +312,8 @@ export default function SettingsPage() {
             {/* ─── Main Content ─── */}
             <div className="min-w-0">
               <AnimatePresence mode="wait">
-                {activeTab === "personal" && (
-                  <motion.div
-                    key="personal"
-                    {...fadeUp}
-                    className="space-y-6"
-                  >
+                {activeTab === 'personal' && (
+                  <motion.div key="personal" {...fadeUp} className="space-y-6">
                     {/* Profile section */}
                     <section className="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm">
                       <div className="border-b border-slate-100 px-6 py-5 sm:px-8">
@@ -326,15 +322,19 @@ export default function SettingsPage() {
                             <User className="size-5" />
                           </div>
                           <div>
-                            <h2 className="text-lg font-bold text-slate-900">{t("settings.profileDetails")}</h2>
-                            <p className="text-sm text-slate-500">{t("settings.profileDetailsDesc")}</p>
+                            <h2 className="text-lg font-bold text-slate-900">
+                              {t('settings.profileDetails')}
+                            </h2>
+                            <p className="text-sm text-slate-500">
+                              {t('settings.profileDetailsDesc')}
+                            </p>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-6 p-6 sm:p-8">
                         <div className="grid gap-6 sm:grid-cols-2">
-                          <FormField label={t("settings.firstName")}>
+                          <FormField label={t('settings.firstName')}>
                             <TextInput
                               name="firstName"
                               value={formData.firstName}
@@ -342,7 +342,7 @@ export default function SettingsPage() {
                               placeholder="Enter your first name"
                             />
                           </FormField>
-                          <FormField label={t("settings.lastName")}>
+                          <FormField label={t('settings.lastName')}>
                             <TextInput
                               name="lastName"
                               value={formData.lastName}
@@ -353,7 +353,7 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="grid gap-6 sm:grid-cols-2">
-                          <FormField label={t("settings.email")} hint={t("settings.emailHint")}>
+                          <FormField label={t('settings.email')} hint={t('settings.emailHint')}>
                             <TextInput
                               name="email"
                               value={formData.email}
@@ -362,7 +362,7 @@ export default function SettingsPage() {
                               disabled
                             />
                           </FormField>
-                          <FormField label={t("settings.mobilePhone")}>
+                          <FormField label={t('settings.mobilePhone')}>
                             <TextInput
                               name="phone"
                               type="tel"
@@ -375,19 +375,19 @@ export default function SettingsPage() {
 
                         <div className="flex items-center justify-between border-t border-slate-100 pt-6">
                           <p className="text-sm text-slate-500">
-                            {hasChanges ? t("settings.unsavedChanges") : t("settings.allSaved")}
+                            {hasChanges ? t('settings.unsavedChanges') : t('settings.allSaved')}
                           </p>
                           <button
                             onClick={handleSave}
                             disabled={!hasChanges}
                             className={`inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all ${
                               hasChanges
-                                ? "bg-[color:var(--brand-green)] shadow-[color:var(--brand-green)]/20 hover:shadow-md hover:brightness-110 active:scale-[0.98]"
-                                : "cursor-not-allowed bg-slate-300"
+                                ? 'bg-[color:var(--brand-green)] shadow-[color:var(--brand-green)]/20 hover:shadow-md hover:brightness-110 active:scale-[0.98]'
+                                : 'cursor-not-allowed bg-slate-300'
                             }`}
                           >
                             <Check className="size-4" />
-                            {t("settings.saveChanges")}
+                            {t('settings.saveChanges')}
                           </button>
                         </div>
                       </div>
@@ -401,14 +401,19 @@ export default function SettingsPage() {
                             <Trash2 className="size-5" />
                           </div>
                           <div>
-                            <h2 className="text-lg font-bold text-slate-900">{t("settings.deleteAccount")}</h2>
-                            <p className="text-sm text-slate-500">{t("settings.deleteAccountDesc")}</p>
+                            <h2 className="text-lg font-bold text-slate-900">
+                              {t('settings.deleteAccount')}
+                            </h2>
+                            <p className="text-sm text-slate-500">
+                              {t('settings.deleteAccountDesc')}
+                            </p>
                           </div>
                         </div>
                       </div>
                       <div className="p-6 sm:p-8">
                         <p className="mb-5 text-sm leading-relaxed text-slate-600">
-                          Once you delete your account, there is no going back. All your bookings, wishlists, and personal data will be permanently removed.
+                          Once you delete your account, there is no going back. All your bookings,
+                          wishlists, and personal data will be permanently removed.
                         </p>
                         {!showDeleteConfirm ? (
                           <button
@@ -416,7 +421,7 @@ export default function SettingsPage() {
                             className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-white px-5 py-2.5 text-sm font-semibold text-rose-600 shadow-sm transition hover:bg-rose-50 hover:shadow active:scale-[0.98]"
                           >
                             <Trash2 className="size-4" />
-                            {t("settings.deleteAccountBtn")}
+                            {t('settings.deleteAccountBtn')}
                           </button>
                         ) : (
                           <motion.div
@@ -448,12 +453,8 @@ export default function SettingsPage() {
                   </motion.div>
                 )}
 
-                {activeTab === "notifications" && (
-                  <motion.div
-                    key="notifications"
-                    {...fadeUp}
-                    className="space-y-6"
-                  >
+                {activeTab === 'notifications' && (
+                  <motion.div key="notifications" {...fadeUp} className="space-y-6">
                     <section className="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm">
                       <div className="border-b border-slate-100 px-6 py-5 sm:px-8">
                         <div className="flex items-center gap-3">
@@ -461,8 +462,12 @@ export default function SettingsPage() {
                             <Bell className="size-5" />
                           </div>
                           <div>
-                            <h2 className="text-lg font-bold text-slate-900">{t("settings.notificationPrefs")}</h2>
-                            <p className="text-sm text-slate-500">{t("settings.notificationPrefsDesc")}</p>
+                            <h2 className="text-lg font-bold text-slate-900">
+                              {t('settings.notificationPrefs')}
+                            </h2>
+                            <p className="text-sm text-slate-500">
+                              {t('settings.notificationPrefsDesc')}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -484,12 +489,16 @@ export default function SettingsPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-4">
                               <div>
-                                <p className="font-semibold text-slate-900">{t("settings.emailNotifications")}</p>
-                                <p className="mt-0.5 text-sm text-slate-500">{t("settings.emailNotificationsDesc")}</p>
+                                <p className="font-semibold text-slate-900">
+                                  {t('settings.emailNotifications')}
+                                </p>
+                                <p className="mt-0.5 text-sm text-slate-500">
+                                  {t('settings.emailNotificationsDesc')}
+                                </p>
                               </div>
                               <ToggleSwitch
                                 checked={notifications.email}
-                                onChange={() => handleNotificationChange("email")}
+                                onChange={() => handleNotificationChange('email')}
                               />
                             </div>
                           </div>
@@ -506,12 +515,16 @@ export default function SettingsPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-4">
                               <div>
-                                <p className="font-semibold text-slate-900">{t("settings.smsAlerts")}</p>
-                                <p className="mt-0.5 text-sm text-slate-500">{t("settings.smsAlertsDesc")}</p>
+                                <p className="font-semibold text-slate-900">
+                                  {t('settings.smsAlerts')}
+                                </p>
+                                <p className="mt-0.5 text-sm text-slate-500">
+                                  {t('settings.smsAlertsDesc')}
+                                </p>
                               </div>
                               <ToggleSwitch
                                 checked={notifications.sms}
-                                onChange={() => handleNotificationChange("sms")}
+                                onChange={() => handleNotificationChange('sms')}
                               />
                             </div>
                           </div>
@@ -528,12 +541,16 @@ export default function SettingsPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-4">
                               <div>
-                                <p className="font-semibold text-slate-900">{t("settings.marketing")}</p>
-                                <p className="mt-0.5 text-sm text-slate-500">{t("settings.marketingDesc")}</p>
+                                <p className="font-semibold text-slate-900">
+                                  {t('settings.marketing')}
+                                </p>
+                                <p className="mt-0.5 text-sm text-slate-500">
+                                  {t('settings.marketingDesc')}
+                                </p>
                               </div>
                               <ToggleSwitch
                                 checked={notifications.marketing}
-                                onChange={() => handleNotificationChange("marketing")}
+                                onChange={() => handleNotificationChange('marketing')}
                               />
                             </div>
                           </div>
@@ -542,31 +559,29 @@ export default function SettingsPage() {
 
                       <div className="flex items-center justify-between border-t border-slate-100 px-6 py-5 sm:px-8">
                         <p className="text-sm text-slate-500">
-                          {notificationChanges ? t("settings.unsavedChanges") : t("settings.preferencesSaved")}
+                          {notificationChanges
+                            ? t('settings.unsavedChanges')
+                            : t('settings.preferencesSaved')}
                         </p>
                         <button
                           onClick={handleNotificationSave}
                           disabled={!notificationChanges}
                           className={`inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all ${
                             notificationChanges
-                              ? "bg-[color:var(--brand-green)] shadow-[color:var(--brand-green)]/20 hover:shadow-md hover:brightness-110 active:scale-[0.98]"
-                              : "cursor-not-allowed bg-slate-300"
+                              ? 'bg-[color:var(--brand-green)] shadow-[color:var(--brand-green)]/20 hover:shadow-md hover:brightness-110 active:scale-[0.98]'
+                              : 'cursor-not-allowed bg-slate-300'
                           }`}
                         >
                           <Check className="size-4" />
-                            {t("settings.savePreferences")}
+                          {t('settings.savePreferences')}
                         </button>
                       </div>
                     </section>
                   </motion.div>
                 )}
 
-                {activeTab === "payment" && (
-                  <motion.div
-                    key="payment"
-                    {...fadeUp}
-                    className="space-y-6"
-                  >
+                {activeTab === 'payment' && (
+                  <motion.div key="payment" {...fadeUp} className="space-y-6">
                     <section className="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm">
                       <div className="border-b border-slate-100 px-6 py-5 sm:px-8">
                         <div className="flex items-center gap-3">
@@ -574,8 +589,12 @@ export default function SettingsPage() {
                             <CreditCard className="size-5" />
                           </div>
                           <div>
-                            <h2 className="text-lg font-bold text-slate-900">{t("settings.paymentMethods")}</h2>
-                            <p className="text-sm text-slate-500">{t("settings.paymentMethodsDesc")}</p>
+                            <h2 className="text-lg font-bold text-slate-900">
+                              {t('settings.paymentMethods')}
+                            </h2>
+                            <p className="text-sm text-slate-500">
+                              {t('settings.paymentMethodsDesc')}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -593,8 +612,12 @@ export default function SettingsPage() {
                           <div className="relative">
                             <div className="flex items-start justify-between">
                               <div className="space-y-1">
-                                <p className="text-xs font-medium uppercase tracking-widest text-white/60">Debit Card</p>
-                                <p className="text-xl font-bold tracking-widest sm:text-2xl">**** **** **** 4242</p>
+                                <p className="text-xs font-medium uppercase tracking-widest text-white/60">
+                                  Debit Card
+                                </p>
+                                <p className="text-xl font-bold tracking-widest sm:text-2xl">
+                                  **** **** **** 4242
+                                </p>
                               </div>
                               <div className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white/90 backdrop-blur-sm">
                                 Visa
@@ -602,11 +625,17 @@ export default function SettingsPage() {
                             </div>
                             <div className="mt-8 flex items-end justify-between">
                               <div>
-                                <p className="text-[10px] uppercase tracking-widest text-white/50">Card Holder</p>
-                                <p className="mt-0.5 text-sm font-semibold">{user?.name || "User"}</p>
+                                <p className="text-[10px] uppercase tracking-widest text-white/50">
+                                  Card Holder
+                                </p>
+                                <p className="mt-0.5 text-sm font-semibold">
+                                  {user?.name || 'User'}
+                                </p>
                               </div>
                               <div>
-                                <p className="text-[10px] uppercase tracking-widest text-white/50">Expires</p>
+                                <p className="text-[10px] uppercase tracking-widest text-white/50">
+                                  Expires
+                                </p>
                                 <p className="mt-0.5 text-sm font-semibold">12 / 25</p>
                               </div>
                             </div>
@@ -615,7 +644,7 @@ export default function SettingsPage() {
 
                         <button className="group flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 py-5 text-sm font-semibold text-slate-600 transition hover:border-[color:var(--brand-green)]/40 hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] active:scale-[0.99]">
                           <Plus className="size-4 transition group-hover:scale-110" />
-                          {t("settings.addPaymentMethod")}
+                          {t('settings.addPaymentMethod')}
                         </button>
                       </div>
                     </section>

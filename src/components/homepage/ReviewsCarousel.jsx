@@ -3,91 +3,100 @@
  * @description Guest reviews carousel on homepage and AllToursPage.
  *   Review data is static (peopleReviews array) — replace with API when available.
  */
-import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const peopleReviews = [
   {
-    title: "Accra Guided City Tour Cultural and Historical Experience",
-    image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=400&q=80",
-    author: "Marcia_D, Apr 2026",
-    headline: "Enjoyable and Informative tour",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent varius, risus non feugiat accumsan, sem libero ultrices neque...",
+    title: 'Accra Guided City Tour Cultural and Historical Experience',
+    image:
+      'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=400&q=80',
+    author: 'Marcia_D, Apr 2026',
+    headline: 'Enjoyable and Informative tour',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent varius, risus non feugiat accumsan, sem libero ultrices neque...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta faucibus sem, vitae convallis magna luctus et. Integer suscipit augue ut neque luctus, quis commodo justo vulputate. Suspendisse potenti. Donec posuere nisl at velit feugiat, a suscipit nisi semper. Curabitur rutrum cursus turpis, ut laoreet sem efficitur vel.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta faucibus sem, vitae convallis magna luctus et. Integer suscipit augue ut neque luctus, quis commodo justo vulputate. Suspendisse potenti. Donec posuere nisl at velit feugiat, a suscipit nisi semper. Curabitur rutrum cursus turpis, ut laoreet sem efficitur vel.',
   },
   {
-    title: "Boti Waterfalls, Umbrella Rock, Aburi Gardens & Cocoa Farm",
-    image: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=400&q=80",
-    author: "Kayley_E, Mar 2026",
-    headline: "Unforgettable tour with Emmanuel",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vitae velit in quam posuere pellentesque et ut neque...",
+    title: 'Boti Waterfalls, Umbrella Rock, Aburi Gardens & Cocoa Farm',
+    image:
+      'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=400&q=80',
+    author: 'Kayley_E, Mar 2026',
+    headline: 'Unforgettable tour with Emmanuel',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vitae velit in quam posuere pellentesque et ut neque...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae justo sit amet mi condimentum faucibus. Morbi luctus bibendum erat, sed faucibus magna suscipit et. Aliquam erat volutpat. Nunc tincidunt, nisl id dictum bibendum, risus arcu fermentum sem, in facilisis sapien nibh eget lorem.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae justo sit amet mi condimentum faucibus. Morbi luctus bibendum erat, sed faucibus magna suscipit et. Aliquam erat volutpat. Nunc tincidunt, nisl id dictum bibendum, risus arcu fermentum sem, in facilisis sapien nibh eget lorem.',
   },
   {
-    title: "African Drum and Dance Lessons",
-    image: "https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?auto=format&fit=crop&w=400&q=80",
-    author: "Audrey_D, Mar 2026",
-    headline: "Exceptional!!",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ut mauris et risus porttitor tincidunt in sed nibh...",
+    title: 'African Drum and Dance Lessons',
+    image:
+      'https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?auto=format&fit=crop&w=400&q=80',
+    author: 'Audrey_D, Mar 2026',
+    headline: 'Exceptional!!',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ut mauris et risus porttitor tincidunt in sed nibh...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum blandit orci in justo convallis, eget mattis velit malesuada. Donec sit amet urna et lacus rhoncus congue. Fusce in sapien non enim posuere fermentum. Cras commodo, mauris in viverra ultricies, lectus mauris commodo nunc, in posuere est arcu eu elit.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum blandit orci in justo convallis, eget mattis velit malesuada. Donec sit amet urna et lacus rhoncus congue. Fusce in sapien non enim posuere fermentum. Cras commodo, mauris in viverra ultricies, lectus mauris commodo nunc, in posuere est arcu eu elit.',
   },
   {
-    title: "Makola Market Walking Tour",
-    image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?auto=format&fit=crop&w=400&q=80",
-    author: "ZsaZsa_S, Feb 2026",
-    headline: "Sunday shopping trip to Makola ...",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id leo eget augue tempus faucibus sed eu justo...",
+    title: 'Makola Market Walking Tour',
+    image:
+      'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?auto=format&fit=crop&w=400&q=80',
+    author: 'ZsaZsa_S, Feb 2026',
+    headline: 'Sunday shopping trip to Makola ...',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id leo eget augue tempus faucibus sed eu justo...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc molestie ultrices urna, in laoreet nulla varius nec. Nam in efficitur erat. In feugiat, tortor sed pretium bibendum, purus dui posuere sem, a feugiat sapien justo et augue. Aenean euismod vulputate ligula, eget posuere nibh varius id.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc molestie ultrices urna, in laoreet nulla varius nec. Nam in efficitur erat. In feugiat, tortor sed pretium bibendum, purus dui posuere sem, a feugiat sapien justo et augue. Aenean euismod vulputate ligula, eget posuere nibh varius id.',
   },
   {
-    title: "Cape Coast Castle Heritage Experience",
-    image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=400&q=80",
-    author: "Nora_B, Feb 2026",
-    headline: "History brought to life",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque varius justo non lectus fermentum, in ullamcorper risus dictum...",
+    title: 'Cape Coast Castle Heritage Experience',
+    image:
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=400&q=80',
+    author: 'Nora_B, Feb 2026',
+    headline: 'History brought to life',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque varius justo non lectus fermentum, in ullamcorper risus dictum...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras a malesuada lorem. Vestibulum ac purus sit amet risus sagittis pellentesque. Morbi mattis libero sed sem luctus, id feugiat justo dignissim. Sed in lorem egestas, imperdiet risus et, faucibus sapien.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras a malesuada lorem. Vestibulum ac purus sit amet risus sagittis pellentesque. Morbi mattis libero sed sem luctus, id feugiat justo dignissim. Sed in lorem egestas, imperdiet risus et, faucibus sapien.',
   },
   {
-    title: "Volta Region Nature Day Trip",
-    image: "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=400&q=80",
-    author: "Pius_T, Jan 2026",
-    headline: "Worth every minute",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In placerat, sem vel fermentum tristique, tortor tortor tincidunt urna...",
+    title: 'Volta Region Nature Day Trip',
+    image:
+      'https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=400&q=80',
+    author: 'Pius_T, Jan 2026',
+    headline: 'Worth every minute',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In placerat, sem vel fermentum tristique, tortor tortor tincidunt urna...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur luctus sed purus at aliquet. Integer gravida, est non malesuada vestibulum, lorem justo pretium augue, in egestas risus sem non purus. Etiam eget tellus et augue pretium pretium vel non orci.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur luctus sed purus at aliquet. Integer gravida, est non malesuada vestibulum, lorem justo pretium augue, in egestas risus sem non purus. Etiam eget tellus et augue pretium pretium vel non orci.',
   },
   {
-    title: "Kakum Canopy Walk and Forest Tour",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-    author: "Eddy_W, Jan 2026",
-    headline: "Fantastic and well organized",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ullamcorper, erat id faucibus tristique, erat nunc gravida enim...",
+    title: 'Kakum Canopy Walk and Forest Tour',
+    image:
+      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+    author: 'Eddy_W, Jan 2026',
+    headline: 'Fantastic and well organized',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ullamcorper, erat id faucibus tristique, erat nunc gravida enim...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum, erat ut pulvinar luctus, mi arcu faucibus nisl, eget suscipit nibh mi at enim. Sed non massa id lorem faucibus convallis. Integer id lectus in lorem consequat fringilla.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum, erat ut pulvinar luctus, mi arcu faucibus nisl, eget suscipit nibh mi at enim. Sed non massa id lorem faucibus convallis. Integer id lectus in lorem consequat fringilla.',
   },
   {
-    title: "Aburi Gardens Relaxation Tour",
-    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80",
-    author: "Clara_A, Dec 2025",
-    headline: "Peaceful and refreshing",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse condimentum tincidunt dolor, id ultrices ligula lacinia non...",
+    title: 'Aburi Gardens Relaxation Tour',
+    image:
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80',
+    author: 'Clara_A, Dec 2025',
+    headline: 'Peaceful and refreshing',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse condimentum tincidunt dolor, id ultrices ligula lacinia non...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu risus malesuada, pellentesque nisi at, vulputate velit. Sed eget urna in dui posuere iaculis at vitae odio. Vivamus pharetra ultrices egestas. Aliquam erat volutpat.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu risus malesuada, pellentesque nisi at, vulputate velit. Sed eget urna in dui posuere iaculis at vitae odio. Vivamus pharetra ultrices egestas. Aliquam erat volutpat.',
   },
   {
-    title: "Wli Waterfalls and Village Experience",
-    image: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=400&q=80",
-    author: "Jared_K, Dec 2025",
-    headline: "Refreshing and memorable",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Sed eu justo non augue tincidunt tristique...",
+    title: 'Wli Waterfalls and Village Experience',
+    image:
+      'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=400&q=80',
+    author: 'Jared_K, Dec 2025',
+    headline: 'Refreshing and memorable',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Sed eu justo non augue tincidunt tristique...',
     fullText:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum ante ut tincidunt sagittis. Mauris id diam at urna sollicitudin tristique. Sed consectetur, nunc vitae vehicula posuere, justo dolor bibendum justo, et vehicula ligula erat et arcu.",
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum ante ut tincidunt sagittis. Mauris id diam at urna sollicitudin tristique. Sed consectetur, nunc vitae vehicula posuere, justo dolor bibendum justo, et vehicula ligula erat et arcu.',
   },
 ];
 
@@ -110,7 +119,7 @@ export function ReviewsCarousel() {
     if (!el) return;
     const cardWidth = el.firstElementChild?.clientWidth || 320;
     const gap = 16;
-    el.scrollBy({ left: direction * (cardWidth + gap), behavior: "smooth" });
+    el.scrollBy({ left: direction * (cardWidth + gap), behavior: 'smooth' });
     setTimeout(checkScroll, 300);
   };
 
@@ -118,7 +127,7 @@ export function ReviewsCarousel() {
     <section className="relative bg-white py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
         <h5 className="mb-8 text-left text-xl font-semibold tracking-tight text-slate-900 sm:mb-10 sm:text-2xl">
-          {t("reviews.heading", "Stories from TravioAfrica Experiences")}
+          {t('reviews.heading', 'Stories from TravioAfrica Experiences')}
         </h5>
 
         {/* Desktop arrows */}
@@ -145,7 +154,7 @@ export function ReviewsCarousel() {
             ref={scrollRef}
             onScroll={checkScroll}
             className="flex gap-4 overflow-x-auto px-1 pb-4 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory sm:px-2 lg:gap-5 lg:overflow-hidden lg:px-0 lg:pb-0 lg:pt-0 lg:snap-none [&::-webkit-scrollbar]:hidden"
-            style={{ WebkitOverflowScrolling: "touch" }}
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {peopleReviews.map((review, idx) => (
               <article
@@ -165,12 +174,8 @@ export function ReviewsCarousel() {
                 </div>
                 <p className="mb-1 text-lg text-emerald-500">★★★★★</p>
                 <p className="mb-3 text-xs text-slate-500">{review.author}</p>
-                <p className="mb-1 text-sm font-semibold text-slate-800">
-                  {review.headline}
-                </p>
-                <p className="line-clamp-3 text-sm leading-relaxed text-slate-600">
-                  {review.body}
-                </p>
+                <p className="mb-1 text-sm font-semibold text-slate-800">{review.headline}</p>
+                <p className="line-clamp-3 text-sm leading-relaxed text-slate-600">{review.body}</p>
                 <button
                   type="button"
                   onClick={() => setActiveReview(review)}
@@ -213,9 +218,7 @@ export function ReviewsCarousel() {
               {activeReview.headline}
             </h5>
             <p className="mt-1 text-sm text-slate-500">{activeReview.author}</p>
-            <p className="mt-4 text-sm leading-relaxed text-slate-700">
-              {activeReview.fullText}
-            </p>
+            <p className="mt-4 text-sm leading-relaxed text-slate-700">{activeReview.fullText}</p>
           </div>
         </div>
       )}

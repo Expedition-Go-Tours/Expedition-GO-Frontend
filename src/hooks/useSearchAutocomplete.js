@@ -7,14 +7,14 @@
  *
  * @see components/homepage/SearchAutocomplete.jsx — UI consumer
  */
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from 'react';
 import {
   pickupTours,
   recommendedTours,
   topRatedTours,
   leisureTours,
   destinations,
-} from "@/components/homepage/data";
+} from '@/components/homepage/data';
 
 /**
  * Search autocomplete hook with fuzzy matching

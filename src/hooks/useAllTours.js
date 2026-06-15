@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchTours } from "@/api/tours";
-import { adaptTourCard } from "@/lib/tourAdapter";
+import { useQuery } from '@tanstack/react-query';
+import { fetchTours } from '@/api/tours';
+import { adaptTourCard } from '@/lib/tourAdapter';
 
 export function useAllTours(params = {}) {
   const {
@@ -13,14 +13,14 @@ export function useAllTours(params = {}) {
     maxPrice,
     search,
     sortBy,
-    sortOrder = "desc",
+    sortOrder = 'desc',
     freeCancellation,
     enabled = true,
   } = params;
 
   const queryParams = { page, limit };
 
-  if (category && category !== "all") queryParams.category = category;
+  if (category && category !== 'all') queryParams.category = category;
   if (subcategory) queryParams.subcategory = subcategory;
   if (minRating) queryParams.minRating = minRating;
   if (minPrice != null) queryParams.minPrice = minPrice;
@@ -31,7 +31,7 @@ export function useAllTours(params = {}) {
   if (freeCancellation) queryParams.freeCancellation = true;
 
   return useQuery({
-    queryKey: ["tours", "all", queryParams],
+    queryKey: ['tours', 'all', queryParams],
     queryFn: async () => {
       const response = await fetchTours(queryParams);
       const tours = (response?.tours || []).map(adaptTourCard);

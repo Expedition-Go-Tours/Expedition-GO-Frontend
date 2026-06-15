@@ -3,13 +3,13 @@
  * @description Hands off an authenticated ACTIVE supplier to the external dashboard
  *   with a Firebase token so the portal does not stall on "Verifying your session".
  */
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import BrandLoader from "@/components/ui/BrandLoader";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { waitForAuthToken } from "@/lib/auth";
+import BrandLoader from '@/components/ui/BrandLoader';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { waitForAuthToken } from '@/lib/auth';
 import {
   buildSupplierPortalHandoffUrl,
   fetchSupplierAccessSnapshot,
@@ -17,13 +17,13 @@ import {
   SUPPLIER_PAYOUT_PATH,
   SUPPLIER_PORTAL_LOGIN_URL,
   SUPPLIER_SIGNIN_PATH,
-} from "@/lib/supplierPortal";
+} from '@/lib/supplierPortal';
 
 export default function SupplierPortalRedirectPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (authLoading) return;
@@ -42,7 +42,7 @@ export default function SupplierPortalRedirectPage() {
         if (cancelled) return;
 
         if (!isSupplierPortalReady(snapshot.reviewStatus, snapshot.hasPayout)) {
-          if (snapshot.route === "payout") {
+          if (snapshot.route === 'payout') {
             navigate(SUPPLIER_PAYOUT_PATH, { replace: true });
             return;
           }
@@ -56,8 +56,8 @@ export default function SupplierPortalRedirectPage() {
         if (!token) {
           setError(
             t(
-              "supplierAuth.portalHandoffAuthError",
-              "We could not verify your session. Please sign in again."
+              'supplierAuth.portalHandoffAuthError',
+              'We could not verify your session. Please sign in again.'
             )
           );
           return;
@@ -69,8 +69,8 @@ export default function SupplierPortalRedirectPage() {
         setError(
           err?.message ||
             t(
-              "supplierAuth.portalHandoffError",
-              "Could not open your supplier dashboard. Please try again."
+              'supplierAuth.portalHandoffError',
+              'Could not open your supplier dashboard. Please try again.'
             )
         );
       }
@@ -91,7 +91,7 @@ export default function SupplierPortalRedirectPage() {
           href={SUPPLIER_PORTAL_LOGIN_URL}
           className="text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
         >
-          {t("supplierAuth.openPortalSignIn", "Open supplier portal sign-in")}
+          {t('supplierAuth.openPortalSignIn', 'Open supplier portal sign-in')}
         </a>
       </div>
     );
@@ -100,10 +100,7 @@ export default function SupplierPortalRedirectPage() {
   return (
     <BrandLoader
       fullScreen
-      label={t(
-        "supplierAuth.openingDashboard",
-        "Opening your supplier dashboard..."
-      )}
+      label={t('supplierAuth.openingDashboard', 'Opening your supplier dashboard...')}
     />
   );
 }

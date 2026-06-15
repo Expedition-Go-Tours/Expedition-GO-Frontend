@@ -1,10 +1,10 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { ChevronRight, ChevronLeft } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { useNavigationLoader } from "@/contexts/NavigationContext";
-import { ArticleCard } from "./ArticleCard";
-import { getLatestPosts } from "@/lib/blogLoader";
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useNavigationLoader } from '@/contexts/NavigationContext';
+import { ArticleCard } from './ArticleCard';
+import { getLatestPosts } from '@/lib/blogLoader';
 
 export function NewsArticlesSection() {
   const { t } = useTranslation();
@@ -27,14 +27,15 @@ export function NewsArticlesSection() {
     const el = scrollRef.current;
     if (!el) return;
     requestAnimationFrame(updateScrollButtons);
-    el.addEventListener("scroll", updateScrollButtons, { passive: true });
-    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(updateScrollButtons) : null;
+    el.addEventListener('scroll', updateScrollButtons, { passive: true });
+    const ro =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateScrollButtons) : null;
     ro?.observe(el);
-    window.addEventListener("resize", updateScrollButtons);
+    window.addEventListener('resize', updateScrollButtons);
     return () => {
-      el.removeEventListener("scroll", updateScrollButtons);
+      el.removeEventListener('scroll', updateScrollButtons);
       ro?.disconnect();
-      window.removeEventListener("resize", updateScrollButtons);
+      window.removeEventListener('resize', updateScrollButtons);
     };
   }, [updateScrollButtons]);
 
@@ -44,13 +45,13 @@ export function NewsArticlesSection() {
     const step = 320;
     const maxScroll = el.scrollWidth - el.clientWidth;
     const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step));
-    el.scrollTo({ left: target, behavior: "smooth" });
+    el.scrollTo({ left: target, behavior: 'smooth' });
   }, []);
 
   const handleViewAll = (e) => {
     e.preventDefault();
-    window.scrollTo({ top: 0, behavior: "auto" });
-    navigateWithLoader("/blog");
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    navigateWithLoader('/blog');
   };
 
   return (
@@ -73,7 +74,7 @@ export function NewsArticlesSection() {
             className="group relative inline-flex min-h-[44px] shrink-0 touch-manipulation items-center gap-1 whitespace-nowrap py-2 text-[13px] font-semibold text-slate-700 transition hover:text-slate-950 sm:min-h-0 sm:py-1.5 sm:text-[14px]"
           >
             <span className="relative">
-              {t("sections.viewAll")}
+              {t('sections.viewAll')}
               <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
             </span>
             <ChevronRight className="size-4 text-slate-500 transition group-hover:text-[color:var(--brand-green)]" />
@@ -107,7 +108,10 @@ export function NewsArticlesSection() {
         className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:gap-5"
       >
         {articles.map((article) => (
-          <div key={article.slug} className="w-[300px] shrink-0 snap-start sm:w-[300px] lg:w-[300px]">
+          <div
+            key={article.slug}
+            className="w-[300px] shrink-0 snap-start sm:w-[300px] lg:w-[300px]"
+          >
             <ArticleCard article={article} />
           </div>
         ))}

@@ -2,8 +2,8 @@
  * @file ArticleCard.jsx
  * @description Reusable article card component for blog posts. Used in NewsArticlesSection and BlogPage.
  */
-import { Link } from "react-router-dom";
-import { Calendar, Clock, ChevronRight } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { Calendar, Clock, ChevronRight } from 'lucide-react';
 
 export function ArticleCard({ article }) {
   return (

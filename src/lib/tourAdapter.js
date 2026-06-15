@@ -1,5 +1,5 @@
 export function formatDuration(minutes) {
-  if (!minutes && minutes !== 0) return "";
+  if (!minutes && minutes !== 0) return '';
   if (minutes < 60) return `${minutes}m`;
   const hours = minutes / 60;
   if (hours % 1 === 0) return `${hours}h`;
@@ -16,13 +16,13 @@ export function extractPrice(schedulesAndPricing) {
   if (!schedulesAndPricing) return null;
   try {
     const sp =
-      typeof schedulesAndPricing === "string"
+      typeof schedulesAndPricing === 'string'
         ? JSON.parse(schedulesAndPricing)
         : schedulesAndPricing;
     const schedule = sp?.pricingSchedules?.schedules?.[0];
     if (!schedule) return null;
     const adultPrice = schedule.prices?.find(
-      (p) => p.ageGroup === "Adult" || p.ageGroup?.toLowerCase() === "adult"
+      (p) => p.ageGroup === 'Adult' || p.ageGroup?.toLowerCase() === 'adult'
     );
     return adultPrice?.retailPrice ?? schedule.prices?.[0]?.retailPrice ?? null;
   } catch {
@@ -32,22 +32,22 @@ export function extractPrice(schedulesAndPricing) {
 
 export function adaptTourCard(tour) {
   const price = extractPrice(tour.schedulesAndPricing);
-  const image = tour.coverPhoto || tour.photos?.[0] || "";
+  const image = tour.coverPhoto || tour.photos?.[0] || '';
   const duration = formatDuration(tour.durationMinutes);
-  const city = tour.city || "";
-  const country = tour.country || "";
-  const location = [city, country].filter(Boolean).join(", ") || undefined;
+  const city = tour.city || '';
+  const country = tour.country || '';
+  const location = [city, country].filter(Boolean).join(', ') || undefined;
   return {
-    title: tour.title || "",
-    slug: tour.slug || "",
+    title: tour.title || '',
+    slug: tour.slug || '',
     duration,
     price: price != null ? price : null,
-    rating: tour.averageRating != null ? String(Number(tour.averageRating).toFixed(1)) : "0",
+    rating: tour.averageRating != null ? String(Number(tour.averageRating).toFixed(1)) : '0',
     reviews: tour.reviewCount ?? tour._count?.reviews ?? 0,
     image,
     location,
     discount: null,
-    category: tour.category || "",
+    category: tour.category || '',
     city,
     country,
   };
@@ -73,9 +73,14 @@ export function extractDestinations(tours) {
     const city = t.city || t.productContent?.location?.city;
     const country = t.country || t.productContent?.location?.country;
     if (!city && !country) continue;
-    const key = `${city || "Unknown"}, ${country || "Unknown"}`;
+    const key = `${city || 'Unknown'}, ${country || 'Unknown'}`;
     if (!map[key]) {
-      map[key] = { title: city || country, region: country || "", tours: 0, image: t.coverPhoto || t.photos?.[0] || "" };
+      map[key] = {
+        title: city || country,
+        region: country || '',
+        tours: 0,
+        image: t.coverPhoto || t.photos?.[0] || '',
+      };
     }
     map[key].tours += 1;
   }

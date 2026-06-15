@@ -18,7 +18,7 @@
 
 .loader::before,
 .loader::after {
-  content: "";
+  content: '';
   grid-area: 1/1;
   --c: no-repeat radial-gradient(farthest-side, #25b09b 92%, #0000);
   background:

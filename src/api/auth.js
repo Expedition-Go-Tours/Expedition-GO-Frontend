@@ -8,7 +8,7 @@
  *
  * @see lib/auth.js — calls verifyToken during sign-in
  */
-import { apiRequest, unwrap } from "@/api/client";
+import { apiRequest, unwrap } from '@/api/client';
 
 /**
  * Exchange a Firebase ID token for httpOnly session cookies and a backend user.
@@ -16,8 +16,8 @@ import { apiRequest, unwrap } from "@/api/client";
  * @returns {Promise<object>} Backend user record
  */
 export async function verifyToken(idToken) {
-  const payload = await apiRequest("/auth/verify-token", {
-    method: "POST",
+  const payload = await apiRequest('/auth/verify-token', {
+    method: 'POST',
     body: { token: idToken },
     auth: false,
   });
@@ -30,8 +30,8 @@ export async function verifyToken(idToken) {
  * Clear backend session cookies (best-effort).
  */
 export async function logoutFromBackend() {
-  return apiRequest("/auth/logout", {
-    method: "POST",
+  return apiRequest('/auth/logout', {
+    method: 'POST',
     auth: false,
   });
 }

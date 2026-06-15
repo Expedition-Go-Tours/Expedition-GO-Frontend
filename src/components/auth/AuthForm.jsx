@@ -6,13 +6,13 @@
  * Props: mode ('signin' | 'register'), onSubmit, redirectPath, showGoogle
  * @see lib/auth.js — underlying auth functions
  */
-import { useState } from "react";
-import { AlertCircle, LoaderCircle, Mail, Lock, UserRound, Building2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { signInWithGoogle } from "@/lib/auth";
+import { useState } from 'react';
+import { AlertCircle, LoaderCircle, Mail, Lock, UserRound, Building2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { signInWithGoogle } from '@/lib/auth';
 
 function GoogleIcon() {
   return (
@@ -63,19 +63,19 @@ export function AuthForm({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
   const [wantsToBeSupplier, setWantsToBeSupplier] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const isRegister = mode === "register" || mode === "supplierRegister";
-  const isSupplierRegister = mode === "supplierRegister";
+  const isRegister = mode === 'register' || mode === 'supplierRegister';
+  const isSupplierRegister = mode === 'supplierRegister';
 
   function updateField(key, value) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -83,8 +83,8 @@ export function AuthForm({
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
     if (!form.email || !form.password) {
       setError(t('auth.errorEmailPassword'));
@@ -97,7 +97,9 @@ export function AuthForm({
     }
 
     if (isSupplierRegister && !wantsToBeSupplier) {
-      setError(t('supplierAuth.errorConfirmSupplier', 'Please confirm that you want to become a supplier.'));
+      setError(
+        t('supplierAuth.errorConfirmSupplier', 'Please confirm that you want to become a supplier.')
+      );
       return;
     }
 
@@ -111,16 +113,12 @@ export function AuthForm({
       });
 
       // Simple success message without Firebase details
-      setSuccess(
-        isRegister
-          ? t('auth.successAccountCreated')
-          : t('auth.successWelcomeBack')
-      );
+      setSuccess(isRegister ? t('auth.successAccountCreated') : t('auth.successWelcomeBack'));
 
-      navigate("/", {
+      navigate('/', {
         state: {
           postAuthSplash: true,
-          splashKind: isRegister ? "register" : "signin",
+          splashKind: isRegister ? 'register' : 'signin',
           handoffId: Date.now(),
         },
       });
@@ -132,8 +130,8 @@ export function AuthForm({
   }
 
   async function handleGoogleSignIn() {
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
     setGoogleLoading(true);
 
     try {
@@ -141,7 +139,9 @@ export function AuthForm({
       // Simple success message without Firebase details
       setSuccess(t('auth.successGoogleSignIn'));
 
-      navigate("/", { state: { postAuthSplash: true, splashKind: "signin", handoffId: Date.now() } });
+      navigate('/', {
+        state: { postAuthSplash: true, splashKind: 'signin', handoffId: Date.now() },
+      });
     } catch (submissionError) {
       setError(submissionError.message || "We couldn't complete Google sign-in.");
     } finally {
@@ -156,7 +156,7 @@ export function AuthForm({
           autoComplete="name"
           icon={UserRound}
           label={t('auth.fullName')}
-          onChange={(event) => updateField("name", event.target.value)}
+          onChange={(event) => updateField('name', event.target.value)}
           placeholder="Ama Mensah"
           value={form.name}
         />
@@ -166,17 +166,17 @@ export function AuthForm({
         autoComplete="email"
         icon={Mail}
         label={t('auth.emailAddress')}
-        onChange={(event) => updateField("email", event.target.value)}
+        onChange={(event) => updateField('email', event.target.value)}
         placeholder="you@example.com"
         type="email"
         value={form.email}
       />
 
       <Field
-        autoComplete={isRegister ? "new-password" : "current-password"}
+        autoComplete={isRegister ? 'new-password' : 'current-password'}
         icon={Lock}
         label={t('auth.password')}
-        onChange={(event) => updateField("password", event.target.value)}
+        onChange={(event) => updateField('password', event.target.value)}
         placeholder="Enter your password"
         type="password"
         value={form.password}
@@ -187,7 +187,7 @@ export function AuthForm({
           autoComplete="new-password"
           icon={Lock}
           label={t('auth.confirmPassword')}
-          onChange={(event) => updateField("confirmPassword", event.target.value)}
+          onChange={(event) => updateField('confirmPassword', event.target.value)}
           placeholder="Confirm your password"
           type="password"
           value={form.confirmPassword}
@@ -207,7 +207,10 @@ export function AuthForm({
           <div className="flex items-start gap-2">
             <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
             <span className="text-sm font-semibold text-slate-700">
-              {t('supplierAuth.wantToBecomeSupplier', 'I want to become a supplier and list my tours/experiences')}
+              {t(
+                'supplierAuth.wantToBecomeSupplier',
+                'I want to become a supplier and list my tours/experiences'
+              )}
             </span>
           </div>
         </label>
@@ -257,7 +260,7 @@ export function AuthForm({
       </Button>
 
       <p className="text-center text-sm text-slate-600">
-        {alternateLabel}{" "}
+        {alternateLabel}{' '}
         <Link className="font-semibold text-primary hover:underline" to={alternateHref}>
           {alternateAction}
         </Link>

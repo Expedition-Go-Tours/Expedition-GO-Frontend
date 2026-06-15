@@ -11,7 +11,7 @@
  *
  * @see pages/SupplierPayoutPage.jsx
  */
-import { apiRequest, unwrap } from "@/api/client";
+import { apiRequest, unwrap } from '@/api/client';
 
 /** Extract created payout method from POST /payout-methods response. */
 export function parseCreatedPayoutMethod(response) {
@@ -25,8 +25,8 @@ export function parseCreatedPayoutMethod(response) {
  * Requires authentication.
  */
 export async function getMyPayoutMethods() {
-  return apiRequest("/payout-methods/me", {
-    method: "GET",
+  return apiRequest('/payout-methods/me', {
+    method: 'GET',
     auth: true,
   });
 }
@@ -36,15 +36,15 @@ export async function getMyPayoutMethods() {
  * Requires authentication.
  */
 export async function addPayoutMethod(payload) {
-  const response = await apiRequest("/payout-methods", {
-    method: "POST",
+  const response = await apiRequest('/payout-methods', {
+    method: 'POST',
     body: payload,
     auth: true,
   });
 
   const method = parseCreatedPayoutMethod(response);
   if (!method?.id) {
-    throw new Error("Server did not return a saved payout method. Please try again.");
+    throw new Error('Server did not return a saved payout method. Please try again.');
   }
 
   return { ...response, data: { ...(response?.data || {}), method } };
@@ -56,7 +56,7 @@ export async function addPayoutMethod(payload) {
  */
 export async function updatePayoutMethod(id, payload) {
   return apiRequest(`/payout-methods/${id}`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: payload,
     auth: true,
   });
@@ -68,7 +68,7 @@ export async function updatePayoutMethod(id, payload) {
  */
 export async function deletePayoutMethod(id) {
   return apiRequest(`/payout-methods/${id}`, {
-    method: "DELETE",
+    method: 'DELETE',
     auth: true,
   });
 }
@@ -86,8 +86,8 @@ export async function setDefaultPayoutMethod(id) {
  * Requires authentication.
  */
 export async function getMyPayouts(params = {}) {
-  return apiRequest("/payouts/me", {
-    method: "GET",
+  return apiRequest('/payouts/me', {
+    method: 'GET',
     params,
     auth: true,
   });

@@ -1,7 +1,7 @@
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { Skeleton } from "@/components/ui/skeleton";
-import { CarouselCardsSkeleton } from "@/components/homepage/skeletons/CarouselCardsSkeleton";
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CarouselCardsSkeleton } from '@/components/homepage/skeletons/CarouselCardsSkeleton';
 
 export function TourDetailSkeleton() {
   return (
@@ -25,7 +25,11 @@ export function TourDetailSkeleton() {
 
         <div className="mt-5 flex gap-2 overflow-hidden">
           {[0, 1, 2, 3, 4].map((item) => (
-            <Skeleton key={item} className="h-10 w-24 shrink-0 rounded-full" delay={120 + item * 15} />
+            <Skeleton
+              key={item}
+              className="h-10 w-24 shrink-0 rounded-full"
+              delay={120 + item * 15}
+            />
           ))}
         </div>
 

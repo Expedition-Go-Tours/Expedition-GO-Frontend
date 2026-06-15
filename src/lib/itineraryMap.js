@@ -10,7 +10,7 @@ export function stopHasLocation(stop) {
 }
 
 export function extractStopCoordinates(item) {
-  if (!item || typeof item !== "object") return null;
+  if (!item || typeof item !== 'object') return null;
 
   if (Array.isArray(item.coordinates) && item.coordinates.length >= 2) {
     const lng = Number(item.coordinates[0]);
@@ -48,22 +48,22 @@ export function getTourMapCenter(tour) {
   return DEFAULT_CENTER;
 }
 
-export function buildStopMarkerLabel(index, total) {
-  return index === total - 1 ? "End" : String(index + 1);
+export function buildStopMarkerLabel(index) {
+  return String(index + 1);
 }
 
 export function buildGeocodeQuery(stop, tour) {
-  const city = tour?.city || tour?.productContent?.location?.city || "";
-  const country = tour?.country || tour?.productContent?.location?.country || "";
+  const city = tour?.city || tour?.productContent?.location?.city || '';
+  const country = tour?.country || tour?.productContent?.location?.country || '';
   return [stop.title, stop.description, city, country]
     .filter((part) => part && String(part).trim())
-    .join(", ");
+    .join(', ');
 }
 
 export async function geocodeQuery(query, signal) {
   if (!query?.trim()) return null;
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
-  const res = await fetch(url, { signal, headers: { "Accept-Language": "en" } });
+  const res = await fetch(url, { signal, headers: { 'Accept-Language': 'en' } });
   if (!res.ok) return null;
   const data = await res.json();
   const hit = data?.[0];

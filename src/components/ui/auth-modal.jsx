@@ -5,13 +5,13 @@
  *
  * @see contexts/AuthModalContext.jsx
  */
-import { useEffect } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { X } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Button } from "./button";
+import { useEffect } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from './button';
 
-const backdropTransition = { duration: 0.28, ease: "easeOut" };
+const backdropTransition = { duration: 0.28, ease: 'easeOut' };
 const panelTransition = { duration: 0.38, ease: [0.22, 1, 0.36, 1] };
 
 const backdropVariants = {
@@ -42,24 +42,24 @@ export function AuthModal({ isOpen, onClose, title, description }) {
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
 
     const onKeyDown = (event) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === 'Escape') onClose();
     };
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener('keydown', onKeyDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener('keydown', onKeyDown);
     };
   }, [isOpen, onClose]);
 
-  const panelInitial = reduceMotion ? false : "hidden";
-  const panelAnimate = reduceMotion ? undefined : "visible";
-  const panelExit = reduceMotion ? undefined : "exit";
-  const contentInitial = reduceMotion ? false : "hidden";
-  const contentAnimate = reduceMotion ? undefined : "visible";
+  const panelInitial = reduceMotion ? false : 'hidden';
+  const panelAnimate = reduceMotion ? undefined : 'visible';
+  const panelExit = reduceMotion ? undefined : 'exit';
+  const contentInitial = reduceMotion ? false : 'hidden';
+  const contentAnimate = reduceMotion ? undefined : 'visible';
 
   return (
     <AnimatePresence mode="wait">
@@ -134,7 +134,7 @@ export function AuthModal({ isOpen, onClose, title, description }) {
                 animate={contentAnimate}
                 className="mt-4 text-xl font-bold text-slate-900 sm:text-2xl"
               >
-                {title || "Sign in to save favorites"}
+                {title || 'Sign in to save favorites'}
               </motion.h3>
 
               <motion.p
@@ -146,7 +146,7 @@ export function AuthModal({ isOpen, onClose, title, description }) {
                 className="mt-2 text-sm text-slate-600 sm:text-base"
               >
                 {description ||
-                  "Create an account or sign in to save your favorite tours and destinations for later."}
+                  'Create an account or sign in to save your favorite tours and destinations for later.'}
               </motion.p>
 
               <motion.div
@@ -154,14 +154,14 @@ export function AuthModal({ isOpen, onClose, title, description }) {
                 variants={reduceMotion ? undefined : contentVariants}
                 initial={contentInitial}
                 animate={contentAnimate}
-                className="mt-6 flex flex-col gap-3 sm:flex-row"
+                className="mt-6 flex flex-row items-center justify-center gap-3"
               >
-                <Button asChild variant="default" className="flex-1 !text-white">
+                <Button asChild variant="default" size="lg" className="min-w-[148px] !text-white">
                   <Link to="/signin" onClick={onClose}>
                     Sign In
                   </Link>
                 </Button>
-                <Button asChild variant="default" className="flex-1 !text-white">
+                <Button asChild variant="default" size="lg" className="min-w-[148px] !text-white">
                   <Link to="/register" onClick={onClose}>
                     Create Account
                   </Link>

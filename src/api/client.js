@@ -13,15 +13,15 @@
  * @see lib/auth.js for token lifecycle and session cookies
  * @see api/queryClient.js for retry/cache defaults
  */
-import { getApiBaseUrl, getStoredAuthUser, waitForAuthToken } from "@/lib/auth";
+import { getApiBaseUrl, getStoredAuthUser, waitForAuthToken } from '@/lib/auth';
 
 /**
  * Normalized API error for React Query/UI handling.
  */
 export class ApiError extends Error {
   constructor({ message, status = 0, data = null, url = null }) {
-    super(message || "Request failed");
-    this.name = "ApiError";
+    super(message || 'Request failed');
+    this.name = 'ApiError';
     this.status = status;
     this.data = data;
     this.url = url;
@@ -32,22 +32,22 @@ function joinUrl(base, path) {
   if (!path) return base;
   if (/^https?:\/\//i.test(path)) return path;
 
-  const cleanedBase = base.replace(/\/+$/, "");
-  const cleanedPath = path.startsWith("/") ? path : `/${path}`;
+  const cleanedBase = base.replace(/\/+$/, '');
+  const cleanedPath = path.startsWith('/') ? path : `/${path}`;
   return `${cleanedBase}${cleanedPath}`;
 }
 
 function buildQuery(params) {
-  if (!params) return "";
+  if (!params) return '';
 
   const search = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params)) {
-    if (value === undefined || value === null || value === "") continue;
+    if (value === undefined || value === null || value === '') continue;
 
     if (Array.isArray(value)) {
       for (const entry of value) {
-        if (entry === undefined || entry === null || entry === "") continue;
+        if (entry === undefined || entry === null || entry === '') continue;
         search.append(key, String(entry));
       }
       continue;
@@ -57,15 +57,15 @@ function buildQuery(params) {
   }
 
   const query = search.toString();
-  return query ? `?${query}` : "";
+  return query ? `?${query}` : '';
 }
 
 async function parseResponse(response) {
   if (response.status === 204) return null;
 
-  const contentType = response.headers.get("content-type") || "";
+  const contentType = response.headers.get('content-type') || '';
 
-  if (contentType.includes("application/json")) {
+  if (contentType.includes('application/json')) {
     try {
       return await response.json();
     } catch {
@@ -82,7 +82,7 @@ async function parseResponse(response) {
 
 function getErrorMessage(data, response) {
   return (
-    (data && typeof data === "object" && (data.message || data.error)) ||
+    (data && typeof data === 'object' && (data.message || data.error)) ||
     response.statusText ||
     `Request failed with status ${response.status}`
   );
@@ -92,19 +92,12 @@ function getErrorMessage(data, response) {
  * Lightweight fetch wrapper used by React Query hooks.
  */
 export async function apiRequest(path, options = {}) {
-  const {
-    method = "GET",
-    params,
-    body,
-    signal,
-    auth = true,
-    headers = {},
-  } = options;
+  const { method = 'GET', params, body, signal, auth = true, headers = {} } = options;
 
   const url = `${joinUrl(getApiBaseUrl(), path)}${buildQuery(params)}`;
 
   const finalHeaders = {
-    Accept: "application/json",
+    Accept: 'application/json',
     ...headers,
   };
 
@@ -114,9 +107,8 @@ export async function apiRequest(path, options = {}) {
     if (body instanceof FormData) {
       payload = body;
     } else {
-      finalHeaders["Content-Type"] =
-        finalHeaders["Content-Type"] || "application/json";
-      payload = typeof body === "string" ? body : JSON.stringify(body);
+      finalHeaders['Content-Type'] = finalHeaders['Content-Type'] || 'application/json';
+      payload = typeof body === 'string' ? body : JSON.stringify(body);
     }
   }
 
@@ -126,7 +118,7 @@ export async function apiRequest(path, options = {}) {
       finalHeaders.Authorization = `Bearer ${token}`;
     } else if (getStoredAuthUser()) {
       throw new ApiError({
-        message: "You are not logged in! Please log in to get access.",
+        message: 'You are not logged in! Please log in to get access.',
         status: 401,
         url,
       });
@@ -140,13 +132,13 @@ export async function apiRequest(path, options = {}) {
       headers: finalHeaders,
       body: payload,
       signal,
-      credentials: "include",
+      credentials: 'include',
     });
   } catch (error) {
-    if (error?.name === "AbortError") throw error;
+    if (error?.name === 'AbortError') throw error;
 
     throw new ApiError({
-      message: error?.message || "Network request failed",
+      message: error?.message || 'Network request failed',
       url,
     });
   }
@@ -169,7 +161,7 @@ export async function apiRequest(path, options = {}) {
  * Returns the inner `data` payload when the backend wraps responses.
  */
 export function unwrap(payload, key) {
-  if (!payload || typeof payload !== "object") return payload;
+  if (!payload || typeof payload !== 'object') return payload;
   if (key && payload?.data && payload.data[key] !== undefined) return payload.data[key];
   if (payload?.data !== undefined) return payload.data;
   return payload;

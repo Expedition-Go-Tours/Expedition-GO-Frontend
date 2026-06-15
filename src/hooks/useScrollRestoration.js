@@ -5,10 +5,10 @@
  * Homepage (/): restores scroll position from sessionStorage on return visits.
  * All other routes: scroll to top on navigation.
  */
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
-const HOMEPAGE_SCROLL_KEY = "homepage_scroll_position";
+const HOMEPAGE_SCROLL_KEY = 'homepage_scroll_position';
 
 /**
  * Custom scroll restoration hook
@@ -17,7 +17,7 @@ const HOMEPAGE_SCROLL_KEY = "homepage_scroll_position";
  */
 export function useScrollRestoration() {
   const location = useLocation();
-  const isHomePage = location.pathname === "/";
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     if (isHomePage) {
@@ -48,10 +48,10 @@ export function useScrollRestoration() {
       scrollTimeout = setTimeout(saveScrollPosition, 100);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener('scroll', handleScroll);
       clearTimeout(scrollTimeout);
       // Save one final time when leaving homepage
       saveScrollPosition();

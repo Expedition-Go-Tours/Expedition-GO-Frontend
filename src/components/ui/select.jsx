@@ -3,23 +3,26 @@
  * @description Radix Select primitive — dropdown with keyboard navigation.
  *   Used in settings, booking, and filter forms.
  */
-import * as React from "react";
-import * as SelectPrimitive from "@radix-ui/react-select";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import * as React from 'react';
+import * as SelectPrimitive from '@radix-ui/react-select';
+import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 const Select = SelectPrimitive.Root;
 const SelectGroup = SelectPrimitive.Group;
 const SelectValue = SelectPrimitive.Value;
 
-const SelectTrigger = React.forwardRef(function SelectTrigger({ className, children, ...props }, ref) {
+const SelectTrigger = React.forwardRef(function SelectTrigger(
+  { className, children, ...props },
+  ref
+) {
   return (
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex h-10 w-full items-center justify-between rounded-lg border border-[color:var(--admin-border)] bg-[color:var(--admin-panel)] px-3 py-2 text-sm text-[color:var(--admin-text)] outline-none transition-colors placeholder:text-[color:var(--admin-muted)] focus:border-[color:var(--admin-brand)] focus:ring-2 focus:ring-[color:var(--admin-ring)] disabled:cursor-not-allowed disabled:opacity-50",
-        className,
+        'flex h-10 w-full items-center justify-between rounded-lg border border-[color:var(--admin-border)] bg-[color:var(--admin-panel)] px-3 py-2 text-sm text-[color:var(--admin-text)] outline-none transition-colors placeholder:text-[color:var(--admin-muted)] focus:border-[color:var(--admin-brand)] focus:ring-2 focus:ring-[color:var(--admin-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+        className
       )}
       {...props}
     >
@@ -31,7 +34,10 @@ const SelectTrigger = React.forwardRef(function SelectTrigger({ className, child
   );
 });
 
-const SelectContent = React.forwardRef(function SelectContent({ className, children, position = "popper", ...props }, ref) {
+const SelectContent = React.forwardRef(function SelectContent(
+  { className, children, position = 'popper', ...props },
+  ref
+) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
@@ -39,9 +45,10 @@ const SelectContent = React.forwardRef(function SelectContent({ className, child
         position={position}
         avoidCollisions={false}
         className={cn(
-          "relative z-50 max-h-[300px] min-w-[8rem] overflow-hidden rounded-xl border border-[#dbe8f8] bg-white text-black shadow-[0_16px_40px_rgba(16,24,40,0.14)]",
-          position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
-          className,
+          'relative z-50 max-h-[300px] min-w-[8rem] overflow-hidden rounded-xl border border-[#dbe8f8] bg-white text-black shadow-[0_16px_40px_rgba(16,24,40,0.14)]',
+          position === 'popper' &&
+            'data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
+          className
         )}
         {...props}
       >
@@ -49,7 +56,10 @@ const SelectContent = React.forwardRef(function SelectContent({ className, child
           <ChevronUp className="size-4" />
         </SelectPrimitive.ScrollUpButton>
         <SelectPrimitive.Viewport
-          className={cn("max-h-[280px] overflow-y-auto p-1", position === "popper" && "w-full min-w-[var(--radix-select-trigger-width)]")}
+          className={cn(
+            'max-h-[280px] overflow-y-auto p-1',
+            position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]'
+          )}
         >
           {children}
         </SelectPrimitive.Viewport>
@@ -65,7 +75,10 @@ const SelectLabel = React.forwardRef(function SelectLabel({ className, ...props 
   return (
     <SelectPrimitive.Label
       ref={ref}
-      className={cn("px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500", className)}
+      className={cn(
+        'px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500',
+        className
+      )}
       {...props}
     />
   );
@@ -76,8 +89,8 @@ const SelectItem = React.forwardRef(function SelectItem({ className, children, .
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-3 text-sm outline-none focus:bg-[#f4f8ff] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        className,
+        'relative flex w-full cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-3 text-sm outline-none focus:bg-[#f4f8ff] data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        className
       )}
       {...props}
     >
@@ -95,7 +108,7 @@ const SelectSeparator = React.forwardRef(function SelectSeparator({ className, .
   return (
     <SelectPrimitive.Separator
       ref={ref}
-      className={cn("my-1 h-px bg-[#e7eef8]", className)}
+      className={cn('my-1 h-px bg-[#e7eef8]', className)}
       {...props}
     />
   );

@@ -7,7 +7,7 @@
  *
  * @see components/ui/auth-modal.jsx — modal UI
  */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from 'react';
 
 const AuthModalContext = createContext();
 
@@ -27,7 +27,7 @@ export function AuthModalProvider({ children }) {
 export function useAuthModal() {
   const context = useContext(AuthModalContext);
   if (!context) {
-    throw new Error("useAuthModal must be used within AuthModalProvider");
+    throw new Error('useAuthModal must be used within AuthModalProvider');
   }
   return context;
 }

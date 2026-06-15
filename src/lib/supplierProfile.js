@@ -4,10 +4,10 @@
  */
 
 function formatBusinessAddress(address) {
-  if (!address || typeof address !== "object") return null;
+  if (!address || typeof address !== 'object') return null;
   const formatted = [address.line1, address.line2, address.city, address.state, address.postalCode]
     .filter((part) => part && String(part).trim())
-    .join(", ");
+    .join(', ');
   return formatted || null;
 }
 
@@ -17,16 +17,16 @@ function buildSupplierDescription(businessInfo, operatingInfo) {
 
   if (name) segments.push(`${name} offers guided experiences`);
   if (operatingInfo?.destinations?.length) {
-    segments.push(`in ${operatingInfo.destinations.slice(0, 6).join(", ")}`);
+    segments.push(`in ${operatingInfo.destinations.slice(0, 6).join(', ')}`);
   }
   if (operatingInfo?.languages?.length) {
-    segments.push(`Languages: ${operatingInfo.languages.join(", ")}`);
+    segments.push(`Languages: ${operatingInfo.languages.join(', ')}`);
   }
   if (operatingInfo?.cancellationPolicy) {
     segments.push(operatingInfo.cancellationPolicy);
   }
 
-  return segments.length ? `${segments.join(". ")}.` : null;
+  return segments.length ? `${segments.join('. ')}.` : null;
 }
 
 /**
@@ -50,7 +50,7 @@ export function mapSupplierProfile({ tour, fallback } = {}) {
   return {
     supplierId: supplier?.id || tour?.supplierId || fallback?.supplierId || null,
     name,
-    logo: supplier?.photoURL || supplier?.logo || fallback?.logo || "",
+    logo: supplier?.photoURL || supplier?.logo || fallback?.logo || '',
     email: supplier?.email || representativeInfo.email || fallback?.email || null,
     phone:
       supplier?.phone ||
@@ -71,21 +71,13 @@ export function mapSupplierProfile({ tour, fallback } = {}) {
       fallback?.description ||
       null,
     rating:
-      supplier?.rating ??
-      profile?.averageRating ??
-      tour?.averageRating ??
-      fallback?.rating ??
-      null,
-    toursCount:
-      supplier?.toursCount ??
-      profile?.totalBookings ??
-      fallback?.toursCount ??
-      0,
+      supplier?.rating ?? profile?.averageRating ?? tour?.averageRating ?? fallback?.rating ?? null,
+    toursCount: supplier?.toursCount ?? profile?.totalBookings ?? fallback?.toursCount ?? 0,
   };
 }
 
 export function normalizeWebsiteUrl(website) {
-  if (!website || typeof website !== "string") return null;
+  if (!website || typeof website !== 'string') return null;
   const trimmed = website.trim();
   if (!trimmed) return null;
   if (/^https?:\/\//i.test(trimmed)) return trimmed;

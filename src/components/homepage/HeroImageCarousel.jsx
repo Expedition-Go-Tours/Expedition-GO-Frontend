@@ -4,18 +4,18 @@
  *   Touch swipe on mobile, clickable dots, crossfade transition.
  *   Autoplay with pause on interaction.
  */
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect } from 'react';
 
-import img1 from "@/assets/images/unsplash1.jpg";
-import img2 from "@/assets/images/unsplash2.jpg";
-import img3 from "@/assets/images/unsplash3.jpg";
-import heroPic from "@/assets/images/hero_pic.jpg";
+import img1 from '@/assets/images/unsplash1.jpg';
+import img2 from '@/assets/images/unsplash2.jpg';
+import img3 from '@/assets/images/unsplash3.jpg';
+import heroPic from '@/assets/images/hero_pic.jpg';
 
 const SLIDES = [
-  { src: img1, alt: "Hero 1" },
-  { src: img2, alt: "Hero 2" },
-  { src: img3, alt: "Hero 3" },
-  { src: heroPic, alt: "Hero background" },
+  { src: img1, alt: 'Hero 1' },
+  { src: img2, alt: 'Hero 2' },
+  { src: img3, alt: 'Hero 3' },
+  { src: heroPic, alt: 'Hero background' },
 ];
 
 const SWIPE_THRESHOLD = 50;
@@ -61,10 +61,13 @@ export function HeroImageCarousel() {
     else if (delta < -SWIPE_THRESHOLD) next();
   };
 
-  const handleDotClick = useCallback((index) => {
-    goTo(index);
-    pauseAutoplay();
-  }, [goTo, pauseAutoplay]);
+  const handleDotClick = useCallback(
+    (index) => {
+      goTo(index);
+      pauseAutoplay();
+    },
+    [goTo, pauseAutoplay]
+  );
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -84,15 +87,16 @@ export function HeroImageCarousel() {
       {/* Background images — crossfade */}
       <div className="absolute inset-0">
         {SLIDES.map((slide, i) => {
-          const pos = i === 1
-            ? "object-[center_25%]"
-            : "object-[center_bottom] lg:object-[center_80%] xl:object-center";
+          const pos =
+            i === 1
+              ? 'object-[center_25%]'
+              : 'object-[center_bottom] lg:object-[center_80%] xl:object-center';
           return (
             <img
               key={i}
               src={slide.src}
               alt={slide.alt}
-              className={`absolute inset-0 h-full w-full object-cover ${pos} transition-opacity duration-500 ${i === active ? "opacity-80" : "opacity-0"}`}
+              className={`absolute inset-0 h-full w-full object-cover ${pos} transition-opacity duration-500 ${i === active ? 'opacity-80' : 'opacity-0'}`}
               draggable={false}
             />
           );
@@ -117,9 +121,7 @@ export function HeroImageCarousel() {
             type="button"
             onClick={() => handleDotClick(i)}
             className={`rounded-full transition-all duration-200 ${
-              i === active
-                ? "w-5 h-2 bg-white"
-                : "w-2 h-2 bg-white/50 hover:bg-white/75"
+              i === active ? 'w-5 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/75'
             }`}
             aria-label={`Go to slide ${i + 1}`}
           />

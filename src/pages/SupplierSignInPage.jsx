@@ -3,10 +3,10 @@
  * @description Supplier portal sign-in (/supplier/signin). Separate from consumer auth.
  *   Approved/active suppliers are redirected to supplier.travioafrica.com/login.
  */
-import { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   Mail,
   Lock,
@@ -16,11 +16,11 @@ import {
   Clock,
   XCircle,
   UserCheck,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { signInWithEmail, signInWithGoogle } from "@/lib/auth";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { signInWithEmail, signInWithGoogle } from '@/lib/auth';
 import {
   buildFallbackSupplierStatus,
   fetchSupplierAccessSnapshot,
@@ -28,17 +28,29 @@ import {
   resolveSupplierSignInToast,
   SUPPLIER_PAYOUT_PATH,
   userHasSupplierApplication,
-} from "@/lib/supplierPortal";
-import { useAuth } from "@/components/auth/AuthProvider";
-import companyLogo from "@/assets/images/new_logo.png";
+} from '@/lib/supplierPortal';
+import { useAuth } from '@/components/auth/AuthProvider';
+import companyLogo from '@/assets/images/new_logo.png';
 
 function GoogleIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24">
-      <path d="M21.805 12.23c0-.79-.068-1.545-.214-2.27H12.2v4.292h5.37a4.6 4.6 0 0 1-1.99 3.02v2.51h3.223c1.886-1.738 3.002-4.306 3.002-7.552Z" fill="#4285F4" />
-      <path d="M12.2 22c2.687 0 4.945-.882 6.603-2.39l-3.223-2.51c-.895.61-2.04.967-3.38.967-2.6 0-4.804-1.752-5.59-4.11H3.285v2.59A9.959 9.959 0 0 0 12.2 22Z" fill="#34A853" />
-      <path d="M6.61 13.956A5.98 5.98 0 0 1 6.3 12c0-.68.117-1.34.31-1.956V7.454H3.285a9.966 9.966 0 0 0 0 9.092l3.325-2.59Z" fill="#FBBC05" />
-      <path d="M12.2 5.933c1.463 0 2.773.503 3.806 1.488l2.85-2.85C17.14 2.968 14.883 2 12.2 2a9.959 9.959 0 0 0-8.915 5.454l3.325 2.59c.786-2.358 2.99-4.11 5.59-4.11Z" fill="#EA4335" />
+      <path
+        d="M21.805 12.23c0-.79-.068-1.545-.214-2.27H12.2v4.292h5.37a4.6 4.6 0 0 1-1.99 3.02v2.51h3.223c1.886-1.738 3.002-4.306 3.002-7.552Z"
+        fill="#4285F4"
+      />
+      <path
+        d="M12.2 22c2.687 0 4.945-.882 6.603-2.39l-3.223-2.51c-.895.61-2.04.967-3.38.967-2.6 0-4.804-1.752-5.59-4.11H3.285v2.59A9.959 9.959 0 0 0 12.2 22Z"
+        fill="#34A853"
+      />
+      <path
+        d="M6.61 13.956A5.98 5.98 0 0 1 6.3 12c0-.68.117-1.34.31-1.956V7.454H3.285a9.966 9.966 0 0 0 0 9.092l3.325-2.59Z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M12.2 5.933c1.463 0 2.773.503 3.806 1.488l2.85-2.85C17.14 2.968 14.883 2 12.2 2a9.959 9.959 0 0 0-8.915 5.454l3.325 2.59c.786-2.358 2.99-4.11 5.59-4.11Z"
+        fill="#EA4335"
+      />
     </svg>
   );
 }
@@ -47,9 +59,9 @@ function SupplierStatusDashboard({ status, payoutComplete = false }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const profile = status?.data?.supplierProfile || status?.data || {};
-  const reviewStatus = profile.status || "PENDING";
-  const isRejected = reviewStatus === "REJECTED";
-  const isApproved = reviewStatus === "APPROVED";
+  const reviewStatus = profile.status || 'PENDING';
+  const isRejected = reviewStatus === 'REJECTED';
+  const isApproved = reviewStatus === 'APPROVED';
   const approvedAwaitingActivation = isApproved && payoutComplete;
   const adminNotes = profile.adminNotes;
   const businessInfo = profile.businessInfo;
@@ -79,24 +91,21 @@ function SupplierStatusDashboard({ status, payoutComplete = false }) {
             <p className="text-xl font-bold text-slate-900">{reviewStatus}</p>
             <p className="text-sm text-slate-500">
               {isRejected
-                ? t(
-                    "supplierAuth.statusRejectedDesc",
-                    "Your application was not approved."
-                  )
+                ? t('supplierAuth.statusRejectedDesc', 'Your application was not approved.')
                 : approvedAwaitingActivation
                   ? t(
-                      "supplierAuth.statusApprovedAwaitingActivation",
-                      "Your payout method is saved. We will activate your supplier dashboard after review."
+                      'supplierAuth.statusApprovedAwaitingActivation',
+                      'Your payout method is saved. We will activate your supplier dashboard after review.'
                     )
                   : isApproved
                     ? t(
-                        "supplierAuth.statusApprovedDesc",
-                        "Your application is approved. Add a payout method before you can access your supplier dashboard."
+                        'supplierAuth.statusApprovedDesc',
+                        'Your application is approved. Add a payout method before you can access your supplier dashboard.'
                       )
                     : t(
-                      "supplierAuth.statusPendingDesc",
-                      "Your application is under review. We'll email you when a decision is made."
-                    )}
+                        'supplierAuth.statusPendingDesc',
+                        "Your application is under review. We'll email you when a decision is made."
+                      )}
             </p>
           </div>
         </div>
@@ -106,7 +115,7 @@ function SupplierStatusDashboard({ status, payoutComplete = false }) {
             onClick={() => navigate(SUPPLIER_PAYOUT_PATH)}
             className="h-11 w-full rounded-lg text-sm font-semibold"
           >
-            {t("supplierAuth.setupPayout", "Set up payout method")}
+            {t('supplierAuth.setupPayout', 'Set up payout method')}
             <ArrowRight className="ml-2 size-4" />
           </Button>
         )}
@@ -114,7 +123,7 @@ function SupplierStatusDashboard({ status, payoutComplete = false }) {
         {reviewedAt && (
           <p className="mt-4 text-xs text-slate-400">
             Reviewed on {new Date(reviewedAt).toLocaleDateString()}
-            {reviewedBy ? ` by ${reviewedBy}` : ""}
+            {reviewedBy ? ` by ${reviewedBy}` : ''}
           </p>
         )}
       </div>
@@ -139,15 +148,19 @@ function SupplierStatusDashboard({ status, payoutComplete = false }) {
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
               <span className="text-slate-500">Legal Name</span>
-              <span className="font-semibold text-slate-900">{businessInfo.legalBusinessName || "—"}</span>
+              <span className="font-semibold text-slate-900">
+                {businessInfo.legalBusinessName || '—'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Display Name</span>
-              <span className="font-semibold text-slate-900">{businessInfo.displayName || "—"}</span>
+              <span className="font-semibold text-slate-900">
+                {businessInfo.displayName || '—'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Country</span>
-              <span className="font-semibold text-slate-900">{businessInfo.country || "—"}</span>
+              <span className="font-semibold text-slate-900">{businessInfo.country || '—'}</span>
             </div>
           </div>
         </div>
@@ -160,17 +173,17 @@ function SupplierSignInPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const [step, setStep] = useState("email"); // "email" | "password"
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [step, setStep] = useState('email'); // "email" | "password"
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const [supplierStatus, setSupplierStatus] = useState(null);
   const [payoutComplete, setPayoutComplete] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
-  const [statusError, setStatusError] = useState("");
+  const [statusError, setStatusError] = useState('');
   const signInToastShownRef = useRef(false);
 
   function showSupplierSignInToast(snapshot) {
@@ -180,9 +193,9 @@ function SupplierSignInPage() {
     if (!toastContent) return;
 
     const message = t(toastContent.key, toastContent.defaultMessage);
-    const options = { id: "supplier-signin-toast" };
+    const options = { id: 'supplier-signin-toast' };
 
-    if (toastContent.variant === "info") {
+    if (toastContent.variant === 'info') {
       toast.info(message, options);
     } else {
       toast.success(message, options);
@@ -195,7 +208,7 @@ function SupplierSignInPage() {
   useEffect(() => {
     if (user) {
       setStatusLoading(true);
-      setStatusError("");
+      setStatusError('');
       fetchSupplierAccessSnapshot()
         .then((snapshot) => {
           showSupplierSignInToast(snapshot);
@@ -204,78 +217,74 @@ function SupplierSignInPage() {
             const message =
               snapshot.statusError?.message ||
               t(
-                "supplierAuth.statusLoadError",
+                'supplierAuth.statusLoadError',
                 "We couldn't load your supplier status. Please try again."
               );
             setStatusError(message);
-            toast.error(message, { id: "supplier-status-error" });
+            toast.error(message, { id: 'supplier-status-error' });
             return;
           }
 
           if (!userHasSupplierApplication(user, snapshot)) {
-            navigate("/supplier/register", { replace: true });
+            navigate('/supplier/register', { replace: true });
             return;
           }
 
-          if (snapshot.route === "portal") {
+          if (snapshot.route === 'portal') {
             redirectToSupplierPortalLogin();
             return;
           }
 
-          if (snapshot.route === "payout") {
+          if (snapshot.route === 'payout') {
             navigate(SUPPLIER_PAYOUT_PATH, { replace: true });
             return;
           }
 
           if (!snapshot.parsed) {
-            const fallbackStatus = snapshot.hasPayout ? "APPROVED" : "PENDING";
+            const fallbackStatus = snapshot.hasPayout ? 'APPROVED' : 'PENDING';
             setSupplierStatus(buildFallbackSupplierStatus(fallbackStatus));
-            setPayoutComplete(
-              fallbackStatus === "APPROVED" && snapshot.hasPayout
-            );
+            setPayoutComplete(fallbackStatus === 'APPROVED' && snapshot.hasPayout);
             return;
           }
 
           setSupplierStatus(snapshot.statusData);
-          setPayoutComplete(
-            snapshot.reviewStatus === "APPROVED" && snapshot.hasPayout
-          );
+          setPayoutComplete(snapshot.reviewStatus === 'APPROVED' && snapshot.hasPayout);
         })
         .catch((err) => {
           const message =
             err?.message ||
             t(
-              "supplierAuth.statusLoadError",
+              'supplierAuth.statusLoadError',
               "We couldn't load your supplier status. Please try again."
             );
           setStatusError(message);
-          toast.error(message, { id: "supplier-status-error" });
+          toast.error(message, { id: 'supplier-status-error' });
         })
         .finally(() => {
           setStatusLoading(false);
         });
     } else {
       setSupplierStatus(null);
-      setStatusError("");
+      setStatusError('');
       signInToastShownRef.current = false;
     }
   }, [user?.uid, user?.email, navigate, t]);
 
   function handleEmailNext(e) {
     e.preventDefault();
-    setError("");
+    setError('');
     if (!email.trim()) {
-      setError("Please enter your email address.");
+      setError('Please enter your email address.');
       return;
     }
-    setStep("password");
+    setStep('password');
   }
 
   async function handlePasswordSubmit(e) {
     e.preventDefault();
-    setError("");
+    setError('');
     if (!password) {
-      setError("Please enter your password.");
+      setError('Please enter your password.');
       return;
     }
 
@@ -285,30 +294,30 @@ function SupplierSignInPage() {
     } catch (err) {
       const message = err?.message || "We couldn't complete that request.";
       setError(message);
-      toast.error(message, { id: "supplier-signin-error" });
+      toast.error(message, { id: 'supplier-signin-error' });
     } finally {
       setLoading(false);
     }
   }
 
   async function handleGoogleSignIn() {
-    setError("");
+    setError('');
     setGoogleLoading(true);
     try {
       await signInWithGoogle();
     } catch (err) {
       const message = err?.message || "We couldn't complete Google sign-in.";
       setError(message);
-      toast.error(message, { id: "supplier-google-signin-error" });
+      toast.error(message, { id: 'supplier-google-signin-error' });
     } finally {
       setGoogleLoading(false);
     }
   }
 
   function handleBackToEmail() {
-    setStep("email");
-    setPassword("");
-    setError("");
+    setStep('email');
+    setPassword('');
+    setError('');
   }
 
   // If user is authenticated, show supplier status or prompt to apply
@@ -363,11 +372,7 @@ function SupplierSignInPage() {
         {/* Logo */}
         <div className="mb-8 flex justify-center">
           <Link to="/" state={{ postAuthSplash: true }} className="inline-block">
-            <img
-              src={companyLogo}
-              alt="TravioAfrica"
-              className="h-auto w-[220px] object-contain"
-            />
+            <img src={companyLogo} alt="TravioAfrica" className="h-auto w-[220px] object-contain" />
           </Link>
         </div>
 
@@ -383,7 +388,7 @@ function SupplierSignInPage() {
           </div>
         )}
 
-        {step === "email" ? (
+        {step === 'email' ? (
           <form onSubmit={handleEmailNext} className="space-y-5">
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-slate-700">
@@ -421,7 +426,7 @@ function SupplierSignInPage() {
             <div className="flex items-center gap-3 py-1">
               <div className="h-px flex-1 bg-slate-200" />
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                {t("auth.orContinueWith", "Or continue with")}
+                {t('auth.orContinueWith', 'Or continue with')}
               </span>
               <div className="h-px flex-1 bg-slate-200" />
             </div>
@@ -439,7 +444,7 @@ function SupplierSignInPage() {
               ) : (
                 <>
                   <GoogleIcon />
-                  <span className="ml-2">{t("auth.google", "Google")}</span>
+                  <span className="ml-2">{t('auth.google', 'Google')}</span>
                 </>
               )}
             </Button>
@@ -456,9 +461,7 @@ function SupplierSignInPage() {
                   ← Back
                 </button>
               </div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-                Password
-              </label>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Password</label>
               <div className="flex items-center rounded-xl border border-slate-300 bg-white px-4 shadow-sm transition focus-within:border-[color:var(--brand-green)]/50 focus-within:ring-2 focus-within:ring-[color:var(--brand-green)]/10">
                 <Lock className="size-4 text-slate-400" />
                 <Input
@@ -501,7 +504,7 @@ function SupplierSignInPage() {
 
         {/* Footer */}
         <p className="mt-8 text-center text-sm text-slate-500">
-          Don&apos;t have a supplier account?{" "}
+          Don&apos;t have a supplier account?{' '}
           <Link
             to="/supplier/register"
             className="font-semibold text-[color:var(--brand-green)] hover:underline"
@@ -511,10 +514,15 @@ function SupplierSignInPage() {
         </p>
 
         <p className="mt-4 text-center text-xs text-slate-400">
-          By signing in, you agree to our{" "}
-          <Link to="/" className="underline hover:text-slate-600">Terms</Link>
-          {" "}and{" "}
-          <Link to="/" className="underline hover:text-slate-600">Privacy Policy</Link>.
+          By signing in, you agree to our{' '}
+          <Link to="/" className="underline hover:text-slate-600">
+            Terms
+          </Link>{' '}
+          and{' '}
+          <Link to="/" className="underline hover:text-slate-600">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </div>

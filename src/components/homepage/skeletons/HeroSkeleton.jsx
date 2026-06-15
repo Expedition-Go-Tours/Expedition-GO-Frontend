@@ -2,7 +2,7 @@
  * @file HeroSkeleton.jsx
  * @description Placeholder skeleton for HeroSection during homepage load.
  */
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function HeroSkeleton() {
   return (
@@ -11,7 +11,10 @@ export function HeroSkeleton() {
       className="relative min-h-[50vh] sm:min-h-[52vh] md:min-h-[50vh] lg:min-h-[52vh] xl:min-h-[60vh] flex items-start overflow-visible bg-[color:var(--brand-green)] pb-4 pt-[12vh] text-white"
     >
       <div className="absolute inset-0">
-        <div className="h-full w-full bg-gradient-to-br from-slate-400/35 via-slate-300/25 to-slate-400/35" aria-hidden />
+        <div
+          className="h-full w-full bg-gradient-to-br from-slate-400/35 via-slate-300/25 to-slate-400/35"
+          aria-hidden
+        />
         <div
           className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.18)_25%,rgba(122,69,11,0.14)_60%,rgba(0,0,0,0.2)),radial-gradient(circle_at_center,rgba(255,174,58,0.28),transparent_42%)]"
           aria-hidden
@@ -20,7 +23,10 @@ export function HeroSkeleton() {
 
       <div className="relative mx-auto w-full max-w-[1520px] overflow-visible px-2 py-10 sm:px-4 sm:py-14 md:py-16">
         <div className="mx-auto max-w-4xl text-center">
-          <Skeleton className="mx-auto mt-4 h-9 w-full max-w-[min(100%,36rem)] sm:h-11 md:h-12" delay={0} />
+          <Skeleton
+            className="mx-auto mt-4 h-9 w-full max-w-[min(100%,36rem)] sm:h-11 md:h-12"
+            delay={0}
+          />
 
           <Skeleton className="mx-auto mt-1 h-4 w-[min(100%,20rem)] max-w-full sm:h-5" delay={15} />
 
@@ -38,7 +44,10 @@ export function HeroSkeleton() {
                 </div>
               </div>
               <div className="p-1">
-                <Skeleton className="h-full min-h-7 w-[76px] rounded-lg sm:min-h-8 sm:w-[88px]" delay={60} />
+                <Skeleton
+                  className="h-full min-h-7 w-[76px] rounded-lg sm:min-h-8 sm:w-[88px]"
+                  delay={60}
+                />
               </div>
             </div>
           </div>
@@ -50,7 +59,10 @@ export function HeroSkeleton() {
                 className="space-y-2 rounded-lg border border-white/10 bg-black/20 px-2.5 py-2 backdrop-blur-sm"
               >
                 <Skeleton className="mx-auto h-8 w-20 bg-slate-200/90" delay={75 + extra} />
-                <Skeleton className="mx-auto h-3 w-24 max-w-full bg-slate-200/80" delay={85 + extra} />
+                <Skeleton
+                  className="mx-auto h-3 w-24 max-w-full bg-slate-200/80"
+                  delay={85 + extra}
+                />
               </div>
             ))}
           </div>

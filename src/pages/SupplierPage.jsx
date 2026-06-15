@@ -1,16 +1,26 @@
-import { useMemo, useState, useCallback } from "react";
-import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
-import { Star, Heart, Phone, Mail, Globe, MapPin, ArrowLeft, ChevronUp, ChevronDown } from "lucide-react";
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { useWishlist } from "@/contexts/WishlistContext";
-import { getTourByTitle, getAllTours } from "@/lib/tourData";
-import { fetchTourById, fetchTours } from "@/api/tours";
-import { adaptTourCard } from "@/lib/tourAdapter";
-import { mapSupplierProfile, normalizeWebsiteUrl } from "@/lib/supplierProfile";
+import { useMemo, useState, useCallback } from 'react';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Star,
+  Heart,
+  Phone,
+  Mail,
+  Globe,
+  MapPin,
+  ArrowLeft,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { useWishlist } from '@/contexts/WishlistContext';
+import { getTourByTitle, getAllTours } from '@/lib/tourData';
+import { fetchTourById, fetchTours } from '@/api/tours';
+import { adaptTourCard } from '@/lib/tourAdapter';
+import { mapSupplierProfile, normalizeWebsiteUrl } from '@/lib/supplierProfile';
 
 function SupplierContactRows({ supplierData }) {
   const websiteHref = normalizeWebsiteUrl(supplierData.website);
@@ -21,7 +31,7 @@ function SupplierContactRows({ supplierData }) {
         <div className="flex items-start gap-3 text-sm">
           <Phone className="mt-0.5 size-4 shrink-0 text-[color:var(--brand-green)]" />
           <a
-            href={`tel:${supplierData.phone.replace(/\s/g, "")}`}
+            href={`tel:${supplierData.phone.replace(/\s/g, '')}`}
             className="min-w-0 flex-1 break-words text-slate-700 hover:text-[color:var(--brand-green)]"
           >
             {supplierData.phone}
@@ -72,11 +82,10 @@ function SupplierPage() {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [supplierInfoOpen, setSupplierInfoOpen] = useState(true);
 
-  const tourLookupId =
-    location.state?.tourId || location.state?.tourSlug || decodedTitle;
+  const tourLookupId = location.state?.tourId || location.state?.tourSlug || decodedTitle;
 
   const { data: tour, isLoading: tourLoading } = useQuery({
-    queryKey: ["tour", "supplier-profile", tourLookupId],
+    queryKey: ['tour', 'supplier-profile', tourLookupId],
     queryFn: async () => {
       const data = await fetchTourById(tourLookupId);
       return data?.tour || data || null;
@@ -107,7 +116,7 @@ function SupplierPage() {
   }, [tour, location.state?.supplierData, decodedTitle]);
 
   const { data: apiResponse, isLoading: apiLoading } = useQuery({
-    queryKey: ["tours", "supplier", supplierData?.supplierId],
+    queryKey: ['tours', 'supplier', supplierData?.supplierId],
     queryFn: () => {
       const params = supplierData?.supplierId
         ? { supplierId: supplierData.supplierId, limit: 100 }
@@ -126,7 +135,9 @@ function SupplierPage() {
     if (!name) return [];
     return tours
       .filter((t) => {
-        const sn = (t.supplier?.name || t.supplier?.companyName || t.operator?.companyName || "").toLowerCase().trim();
+        const sn = (t.supplier?.name || t.supplier?.companyName || t.operator?.companyName || '')
+          .toLowerCase()
+          .trim();
         return sn === name;
       })
       .map(adaptTourCard);
@@ -165,7 +176,13 @@ function SupplierPage() {
         <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
         <div className="flex min-h-[calc(100vh-var(--navbar-offset))] flex-col items-center justify-center gap-4 px-4">
           <p className="text-sm text-slate-500">Supplier not found</p>
-          <Link to="/" state={{ postAuthSplash: true }} className="text-sm font-semibold text-[color:var(--brand-green)] hover:underline">Back to Home</Link>
+          <Link
+            to="/"
+            state={{ postAuthSplash: true }}
+            className="text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
+          >
+            Back to Home
+          </Link>
         </div>
       </div>
     );
@@ -180,16 +197,16 @@ function SupplierPage() {
           type="button"
           onClick={() => {
             const historyIdx = window.history.state?.idx;
-            if (typeof historyIdx === "number" && historyIdx > 0) {
+            if (typeof historyIdx === 'number' && historyIdx > 0) {
               navigate(-1);
             } else {
-              navigate("/");
+              navigate('/');
             }
           }}
           className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-900 transition hover:text-[color:var(--brand-green)]"
         >
           <ArrowLeft className="size-4" />
-          {t("common.back")}
+          {t('common.back')}
         </button>
 
         <div className="flex min-w-0 items-start gap-4 sm:items-center">
@@ -197,11 +214,18 @@ function SupplierPage() {
             {supplierData.logo ? (
               <img src={supplierData.logo} alt="" className="size-full rounded-full object-cover" />
             ) : (
-              (supplierData.name || "").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()
+              (supplierData.name || '')
+                .split(' ')
+                .map((w) => w[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase()
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="break-words text-xl font-black text-slate-900 sm:text-2xl">{supplierData.name}</h1>
+            <h1 className="break-words text-xl font-black text-slate-900 sm:text-2xl">
+              {supplierData.name}
+            </h1>
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
               {ratingDisplay && (
                 <>
@@ -218,16 +242,22 @@ function SupplierPage() {
         <div className="mt-6 border-b border-slate-200">
           <button
             type="button"
-            onClick={() => setSupplierInfoOpen(o => !o)}
+            onClick={() => setSupplierInfoOpen((o) => !o)}
             className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold text-[color:var(--brand-green)]"
           >
             About this supplier
-            {supplierInfoOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+            {supplierInfoOpen ? (
+              <ChevronUp className="size-4" />
+            ) : (
+              <ChevronDown className="size-4" />
+            )}
           </button>
           {supplierInfoOpen && (
             <div className="pb-5">
               {supplierData.description && (
-                <p className="break-words text-sm leading-7 text-slate-600">{supplierData.description}</p>
+                <p className="break-words text-sm leading-7 text-slate-600">
+                  {supplierData.description}
+                </p>
               )}
               <SupplierContactRows supplierData={supplierData} />
             </div>
@@ -243,7 +273,11 @@ function SupplierPage() {
             {supplierTours.map((tour) => {
               const detailTo = `/tour/${encodeURIComponent(tour.slug || tour.title)}`;
               const converted = convertPrice(tour.price);
-              const reviewsDisplay = tour.reviews ? (typeof tour.reviews === "number" ? String(tour.reviews) : String(tour.reviews).replace(/,/g, "")) : "0";
+              const reviewsDisplay = tour.reviews
+                ? typeof tour.reviews === 'number'
+                  ? String(tour.reviews)
+                  : String(tour.reviews).replace(/,/g, '')
+                : '0';
               const isFav = isInWishlist(tour.title);
               return (
                 <article key={tour.title} className="group">
@@ -278,10 +312,10 @@ function SupplierPage() {
                           })
                         }
                         className="absolute right-2 top-2 z-10 grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-slate-700 shadow-sm transition hover:scale-105"
-                        aria-label={t("nav.wishlist")}
+                        aria-label={t('nav.wishlist')}
                       >
                         <Heart
-                          className={`size-4 ${isFav ? "fill-[color:var(--brand-green)] text-[color:var(--brand-green)]" : "fill-none"}`}
+                          className={`size-4 ${isFav ? 'fill-[color:var(--brand-green)] text-[color:var(--brand-green)]' : 'fill-none'}`}
                           strokeWidth={2}
                         />
                       </button>
@@ -291,14 +325,16 @@ function SupplierPage() {
                       <Link
                         to={detailTo}
                         className="line-clamp-2 min-h-[2.5rem] font-bold leading-snug text-slate-900 hover:underline"
-                        style={{ fontSize: "clamp(0.8125rem, 0.6vw + 0.5rem, 0.9375rem)" }}
+                        style={{ fontSize: 'clamp(0.8125rem, 0.6vw + 0.5rem, 0.9375rem)' }}
                       >
                         {tour.title}
                       </Link>
 
                       <p className="mt-1.5 text-[12px] font-medium leading-snug text-slate-500 sm:text-[11px]">
                         Free cancellation
-                        <span className="mx-1 text-slate-400" aria-hidden>•</span>
+                        <span className="mx-1 text-slate-400" aria-hidden>
+                          •
+                        </span>
                         Pickup included
                       </p>
 
@@ -317,8 +353,12 @@ function SupplierPage() {
                           </span>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-[11px] font-medium leading-none text-slate-500">From</p>
-                          <p className="mt-0.5 text-sm font-bold tabular-nums text-slate-900">{converted.formatted}</p>
+                          <p className="text-[11px] font-medium leading-none text-slate-500">
+                            From
+                          </p>
+                          <p className="mt-0.5 text-sm font-bold tabular-nums text-slate-900">
+                            {converted.formatted}
+                          </p>
                         </div>
                       </div>
                     </div>

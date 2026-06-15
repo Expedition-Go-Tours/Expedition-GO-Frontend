@@ -3,13 +3,13 @@
  * @description Full-screen searchable destinations browser opened from DestinationsSection.
  *   Filters destinations client-side; navigates to /tours on selection.
  */
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { AnimatePresence, motion } from "framer-motion";
-import { X, Search } from "lucide-react";
-import { destinations } from "./data";
-import { PopularDestinationsCard } from "./PopularDestinationsCard";
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { AnimatePresence, motion } from 'framer-motion';
+import { X, Search } from 'lucide-react';
+import { destinations } from './data';
+import { PopularDestinationsCard } from './PopularDestinationsCard';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -18,7 +18,7 @@ const FOCUSABLE_SELECTOR = [
   'select:not([disabled])',
   'textarea:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
-].join(", ");
+].join(', ');
 
 function useFocusTrap(containerRef, isOpen) {
   useEffect(() => {
@@ -34,7 +34,7 @@ function useFocusTrap(containerRef, isOpen) {
     (searchInput || first)?.focus();
 
     const handleKeyDown = (e) => {
-      if (e.key !== "Tab") return;
+      if (e.key !== 'Tab') return;
 
       const active = document.activeElement;
       if (e.shiftKey) {
@@ -50,8 +50,8 @@ function useFocusTrap(containerRef, isOpen) {
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, containerRef]);
 }
 
@@ -81,7 +81,7 @@ function DestinationGrid({ items, onNavigate }) {
         <motion.div
           key={`${dest.title}-${index}`}
           variants={cardVariants}
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
           className="cursor-pointer"
           onClick={() => onNavigate(dest.title)}
         >
@@ -95,17 +95,17 @@ function DestinationGrid({ items, onNavigate }) {
 function ModalBody({ onClose }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("all");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('all');
 
   const regions = useMemo(() => {
     const set = new Set(destinations.map((d) => d.region));
-    return ["all", ...Array.from(set).sort()];
+    return ['all', ...Array.from(set).sort()];
   }, []);
 
   const filtered = useMemo(() => {
     let result = destinations;
-    if (selectedRegion !== "all") {
+    if (selectedRegion !== 'all') {
       result = result.filter((d) => d.region === selectedRegion);
     }
     if (searchQuery.trim()) {
@@ -135,7 +135,7 @@ function ModalBody({ onClose }) {
 
   // Group by region when "All Regions" is selected and no search
   const groupedByRegion = useMemo(() => {
-    if (selectedRegion !== "all" || searchQuery.trim()) return null;
+    if (selectedRegion !== 'all' || searchQuery.trim()) return null;
     const map = new Map();
     destinations.forEach((d) => {
       if (!map.has(d.region)) map.set(d.region, []);
@@ -157,7 +157,7 @@ function ModalBody({ onClose }) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t("modal.searchPlaceholder")}
+            placeholder={t('modal.searchPlaceholder')}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[color:var(--brand-green)] focus:bg-white focus:ring-2 focus:ring-[color:var(--brand-green)]/20"
           />
         </div>
@@ -174,11 +174,11 @@ function ModalBody({ onClose }) {
               }}
               className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium transition sm:text-sm ${
                 selectedRegion === region
-                  ? "bg-[color:var(--brand-green)] text-white"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  ? 'bg-[color:var(--brand-green)] text-white'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              {region === "all" ? t("modal.allRegions") : region}
+              {region === 'all' ? t('modal.allRegions') : region}
             </button>
           ))}
         </div>
@@ -190,15 +190,12 @@ function ModalBody({ onClose }) {
         <div className="mb-8">
           <h3 className="mb-4 text-sm font-medium text-slate-900 sm:text-base">
             {searchQuery.trim()
-              ? `${filtered.length} ${t("common.destinations")}`
-              : t("modal.popularDestinations")}
+              ? `${filtered.length} ${t('common.destinations')}`
+              : t('modal.popularDestinations')}
           </h3>
 
           {filtered.length > 0 ? (
-            <DestinationGrid
-              items={popularVisible}
-              onNavigate={handleNavigate}
-            />
+            <DestinationGrid items={popularVisible} onNavigate={handleNavigate} />
           ) : (
             <div className="py-12 text-center text-sm text-slate-500">
               No Ghanaian destinations match your search.
@@ -211,14 +208,12 @@ function ModalBody({ onClose }) {
           groupedByRegion.map(({ region, items }) => (
             <div key={region} className="mb-10">
               <div className="mb-4 flex items-center justify-between">
-                <h4 className="text-base font-semibold text-slate-900 sm:text-lg">
-                  {region}
-                </h4>
+                <h4 className="text-base font-semibold text-slate-900 sm:text-lg">{region}</h4>
                 <button
                   onClick={() => handleExploreRegion(region)}
                   className="text-sm font-medium text-[color:var(--brand-green)] hover:underline"
                 >
-                  {t("modal.explore")}
+                  {t('modal.explore')}
                 </button>
               </div>
               <DestinationGrid items={items} onNavigate={handleNavigate} />
@@ -247,7 +242,7 @@ function SlideOutPanel({ isOpen, onClose, children }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
           />
 
           {/* Panel */}
@@ -257,9 +252,9 @@ function SlideOutPanel({ isOpen, onClose, children }) {
             aria-modal="true"
             aria-labelledby="modal-title"
             className="fixed right-0 top-0 z-[80] flex h-screen w-full max-w-2xl flex-col bg-white shadow-2xl"
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            exit={{ x: '100%' }}
             transition={{
               duration: 0.34,
               ease: [0.22, 1, 0.36, 1],
@@ -269,10 +264,7 @@ function SlideOutPanel({ isOpen, onClose, children }) {
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
               <div>
-                <h2
-                  id="modal-title"
-                  className="text-lg font-bold text-slate-900 sm:text-2xl"
-                >
+                <h2 id="modal-title" className="text-lg font-bold text-slate-900 sm:text-2xl">
                   Explore Ghana
                 </h2>
                 <p className="mt-0.5 text-sm text-slate-500">
@@ -305,12 +297,12 @@ export function DestinationsModal({ isOpen, onClose, triggerRef }) {
   // Body scroll lock
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     }
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
@@ -318,10 +310,10 @@ export function DestinationsModal({ isOpen, onClose, triggerRef }) {
   useEffect(() => {
     if (!isOpen) return;
     const handleKey = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
   }, [isOpen, onClose]);
 
   // Do not return focus to trigger on close

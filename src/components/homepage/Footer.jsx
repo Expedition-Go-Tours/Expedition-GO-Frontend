@@ -3,26 +3,26 @@
  * @description Site footer with links, newsletter, payment icons, and language/currency.
  *   Rendered on all main pages below page content.
  */
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { openTawkChat } from "@/lib/tawk";
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { openTawkChat } from '@/lib/tawk';
 
 // Import payment method images
-import viiviPay from "@/assets/images/Viivi.svg";
-import mastercardPay from "@/assets/images/mastercard.svg";
-import amexPay from "@/assets/images/americanexpress_pay.svg";
-import googlePay from "@/assets/images/google_pay.svg";
-import applePay from "@/assets/images/apple_pay.svg";
-import paypalPay from "@/assets/images/paypal_pay.svg";
+import viiviPay from '@/assets/images/Viivi.svg';
+import mastercardPay from '@/assets/images/mastercard.svg';
+import amexPay from '@/assets/images/americanexpress_pay.svg';
+import googlePay from '@/assets/images/google_pay.svg';
+import applePay from '@/assets/images/apple_pay.svg';
+import paypalPay from '@/assets/images/paypal_pay.svg';
 
 // Import social media images
-import instagramImg from "@/assets/images/instagram.svg";
-import facebookImg from "@/assets/images/facebook.svg";
-import tiktokImg from "@/assets/images/tiktok.svg";
-import youtubeImg from "@/assets/images/utube.svg";
+import instagramImg from '@/assets/images/instagram.svg';
+import facebookImg from '@/assets/images/facebook.svg';
+import tiktokImg from '@/assets/images/tiktok.svg';
+import youtubeImg from '@/assets/images/utube.svg';
 
 // Google Play Icon Component
 function GooglePlayIcon() {
@@ -61,26 +61,26 @@ export function Footer() {
   };
 
   const languages = [
-    { code: "en", name: "English (US)" },
-    { code: "es", name: "Español (ES)" },
-    { code: "fr", name: "Français (FR)" },
-    { code: "de", name: "Deutsch (DE)" },
-    { code: "nl", name: "Nederlands (NL)" }
+    { code: 'en', name: 'English (US)' },
+    { code: 'es', name: 'Español (ES)' },
+    { code: 'fr', name: 'Français (FR)' },
+    { code: 'de', name: 'Deutsch (DE)' },
+    { code: 'nl', name: 'Nederlands (NL)' },
   ];
 
   const getCurrentLanguageName = () => {
-    const lang = languages.find(l => l.code === i18n.language);
-    return lang ? lang.name : "English (US)";
+    const lang = languages.find((l) => l.code === i18n.language);
+    return lang ? lang.name : 'English (US)';
   };
 
   const getCurrentCurrencyName = () => {
-    const curr = availableCurrencies.find(c => c.code === currency);
-    return curr ? `${curr.code} - ${curr.name} (${curr.symbol})` : "USD - US Dollar ($)";
+    const curr = availableCurrencies.find((c) => c.code === currency);
+    return curr ? `${curr.code} - ${curr.name} (${curr.symbol})` : 'USD - US Dollar ($)';
   };
 
   const footerAccordionSections = [
     {
-      key: "support",
+      key: 'support',
       title: t('footer.support'),
       links: [
         t('footer.helpCentre'),
@@ -92,7 +92,7 @@ export function Footer() {
       ],
     },
     {
-      key: "company",
+      key: 'company',
       title: t('footer.company'),
       links: [
         t('footer.aboutUs'),
@@ -106,7 +106,7 @@ export function Footer() {
       ],
     },
     {
-      key: "supplier",
+      key: 'supplier',
       title: t('footer.supplierZone'),
       links: [
         t('footer.listYourTours'),
@@ -117,7 +117,7 @@ export function Footer() {
       ],
     },
     {
-      key: "explore",
+      key: 'explore',
       title: t('footer.explore'),
       links: [
         t('footer.home'),
@@ -129,27 +129,31 @@ export function Footer() {
       ],
     },
   ];
-  
+
   return (
     <footer id="contact" className="bg-[color:var(--brand-green)] text-white">
       <div className="mx-auto grid max-w-[1520px] grid-cols-2 gap-[1.7rem] px-3 py-[1.7rem] sm:gap-8 sm:px-4 sm:py-8 lg:px-6 lg:py-10 xl:grid-cols-[180px_200px_200px_1fr_1fr_1fr_190px]">
         {/* Language & Currency Section */}
         <div className="col-span-2 space-y-[1.0625rem] xl:col-span-1 md:space-y-4">
           <div className="relative">
-            <p className="mb-2 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>Language</p>
+            <p
+              className="mb-2 font-semibold"
+              style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+            >
+              Language
+            </p>
             <button
               onClick={() => setIsLanguageOpen(!isLanguageOpen)}
               className="w-full rounded-md border border-white/15 bg-white px-1 py-2 text-left text-[10px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
             >
               <span>{getCurrentLanguageName()}</span>
-              <ChevronDown className={`size-4 text-slate-500 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`size-4 text-slate-500 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`}
+              />
             </button>
             {isLanguageOpen && (
               <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setIsLanguageOpen(false)}
-                />
+                <div className="fixed inset-0 z-40" onClick={() => setIsLanguageOpen(false)} />
                 <div className="absolute  bottom-full left-0 mb-2 z-50 w-full min-w-[200px] rounded-lg border border-slate-200 bg-white shadow-xl">
                   <div className="max-h-[300px] overflow-y-auto p-2">
                     {languages.map((lang) => (
@@ -158,14 +162,24 @@ export function Footer() {
                         onClick={() => handleLanguageChange(lang.code)}
                         className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition ${
                           i18n.language === lang.code
-                            ? "bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold"
-                            : "text-slate-700 hover:bg-slate-50"
+                            ? 'bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold'
+                            : 'text-slate-700 hover:bg-slate-50'
                         }`}
                       >
                         <span>{lang.name}</span>
                         {i18n.language === lang.code && (
-                          <svg className="size-4 text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          <svg
+                            className="size-4 text-[color:var(--brand-green)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                         )}
                       </button>
@@ -176,20 +190,24 @@ export function Footer() {
             )}
           </div>
           <div className="relative">
-            <p className="mb-2 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>Currency</p>
+            <p
+              className="mb-2 font-semibold"
+              style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+            >
+              Currency
+            </p>
             <button
               onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
               className="w-full rounded-md border border-white/15 bg-white px-3 py-2 text-left text-[13px] text-slate-900 transition hover:border-white/30 flex items-center justify-between"
             >
               <span>{getCurrentCurrencyName()}</span>
-              <ChevronDown className={`size-4 text-slate-500 transition-transform ${isCurrencyOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`size-4 text-slate-500 transition-transform ${isCurrencyOpen ? 'rotate-180' : ''}`}
+              />
             </button>
             {isCurrencyOpen && (
               <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setIsCurrencyOpen(false)}
-                />
+                <div className="fixed inset-0 z-40" onClick={() => setIsCurrencyOpen(false)} />
                 <div className="absolute bottom-full left-0 mb-2 z-50 w-full min-w-[250px] rounded-lg border border-slate-200 bg-white shadow-xl">
                   <div className="max-h-[300px] overflow-y-auto p-2">
                     {availableCurrencies.map((curr) => (
@@ -198,17 +216,29 @@ export function Footer() {
                         onClick={() => handleCurrencyChange(curr.code)}
                         className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition ${
                           currency === curr.code
-                            ? "bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold"
-                            : "text-slate-700 hover:bg-slate-50"
+                            ? 'bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] font-semibold'
+                            : 'text-slate-700 hover:bg-slate-50'
                         }`}
                       >
                         <div>
                           <div className="font-medium">{curr.code}</div>
-                          <div className="text-xs text-slate-500">{curr.name} ({curr.symbol})</div>
+                          <div className="text-xs text-slate-500">
+                            {curr.name} ({curr.symbol})
+                          </div>
                         </div>
                         {currency === curr.code && (
-                          <svg className="size-4 text-[color:var(--brand-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          <svg
+                            className="size-4 text-[color:var(--brand-green)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                         )}
                       </button>
@@ -222,51 +252,89 @@ export function Footer() {
 
         {/* Ways You Can Pay */}
         <div className="col-span-1 sm:col-span-1">
-          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.waysYouCanPay')}</p>
+          <p
+            className="mb-3 font-semibold"
+            style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+          >
+            {t('footer.waysYouCanPay')}
+          </p>
           <div className="grid w-full max-w-[170px] grid-cols-3 gap-1">
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
               <img src={viiviPay} alt="Viivi" className="h-full w-full scale-125 object-contain" />
             </div>
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
-              <img src={mastercardPay} alt="Mastercard" className="h-full w-full scale-125 object-contain" />
+              <img
+                src={mastercardPay}
+                alt="Mastercard"
+                className="h-full w-full scale-125 object-contain"
+              />
             </div>
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
-              <img src={amexPay} alt="American Express" className="h-full w-full scale-125 object-contain" />
+              <img
+                src={amexPay}
+                alt="American Express"
+                className="h-full w-full scale-125 object-contain"
+              />
             </div>
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
-              <img src={googlePay} alt="Google Pay" className="h-full w-full scale-125 object-contain" />
+              <img
+                src={googlePay}
+                alt="Google Pay"
+                className="h-full w-full scale-125 object-contain"
+              />
             </div>
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
-              <img src={applePay} alt="Apple Pay" className="h-full w-full scale-125 object-contain" />
+              <img
+                src={applePay}
+                alt="Apple Pay"
+                className="h-full w-full scale-125 object-contain"
+              />
             </div>
             <div className="flex h-8 w-14 items-center justify-center rounded-sm bg-white p-0">
-              <img src={paypalPay} alt="PayPal" className="h-full w-full scale-125 object-contain" />
+              <img
+                src={paypalPay}
+                alt="PayPal"
+                className="h-full w-full scale-125 object-contain"
+              />
             </div>
           </div>
         </div>
 
         {/* Mobile (Download App) */}
         <div className="col-span-1 sm:col-span-1">
-          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>Mobile</p>
+          <p
+            className="mb-3 font-semibold"
+            style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+          >
+            Mobile
+          </p>
           <div className="space-y-2">
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="flex items-center gap-2 rounded-lg border border-white/20 bg-black/30 px-3 py-2 transition hover:bg-black/50 hover:border-white/40"
             >
               <GooglePlayIcon />
               <div className="flex flex-col items-start">
-                <span className="text-[10px] text-white/70 sm:text-[9px]">{t('footer.getItOn')}</span>
-                <span className="text-[12px] font-semibold sm:text-[11px]">{t('footer.googlePlay')}</span>
+                <span className="text-[10px] text-white/70 sm:text-[9px]">
+                  {t('footer.getItOn')}
+                </span>
+                <span className="text-[12px] font-semibold sm:text-[11px]">
+                  {t('footer.googlePlay')}
+                </span>
               </div>
             </a>
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="flex items-center gap-2 rounded-lg border border-white/20 bg-black/30 px-3 py-2 transition hover:bg-black/50 hover:border-white/40"
             >
               <AppleIcon />
               <div className="flex flex-col items-start">
-                <span className="text-[10px] text-white/70 sm:text-[9px]">{t('footer.downloadOn')}</span>
-                <span className="text-[12px] font-semibold sm:text-[11px]">{t('footer.appStore')}</span>
+                <span className="text-[10px] text-white/70 sm:text-[9px]">
+                  {t('footer.downloadOn')}
+                </span>
+                <span className="text-[12px] font-semibold sm:text-[11px]">
+                  {t('footer.appStore')}
+                </span>
               </div>
             </a>
           </div>
@@ -274,54 +342,128 @@ export function Footer() {
 
         {/* Support */}
         <div className="hidden xl:block">
-          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.support')}</p>
+          <p
+            className="mb-3 font-semibold"
+            style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+          >
+            {t('footer.support')}
+          </p>
           <div className="space-y-2 text-xs text-white/80">
-            <a href="#" className="block transition hover:text-white">{t('footer.helpCentre')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.contactUs')}</a>
-            <button type="button" onClick={() => openTawkChat()} className="block transition hover:text-white">{t('footer.liveChat')}</button>
-            <a href="#" className="block transition hover:text-white">{t('footer.bookingSupport')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.refundPolicy')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.faq')}</a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.helpCentre')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.contactUs')}
+            </a>
+            <button
+              type="button"
+              onClick={() => openTawkChat()}
+              className="block transition hover:text-white"
+            >
+              {t('footer.liveChat')}
+            </button>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.bookingSupport')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.refundPolicy')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.faq')}
+            </a>
           </div>
         </div>
 
         {/* Company */}
         <div className="hidden xl:block">
-          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.company')}</p>
+          <p
+            className="mb-3 font-semibold"
+            style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+          >
+            {t('footer.company')}
+          </p>
           <div className="space-y-2 text-xs text-white/80">
-            <a href="#" className="block transition hover:text-white">{t('footer.aboutUs')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.careers')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.partners')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.affiliateProgram')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.termsConditions')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.privacyPolicy')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.travelLiability')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.cookiePolicy')}</a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.aboutUs')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.careers')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.partners')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.affiliateProgram')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.termsConditions')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.privacyPolicy')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.travelLiability')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.cookiePolicy')}
+            </a>
           </div>
         </div>
 
         {/* Supplier Zone */}
         <div className="hidden xl:block">
-          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.supplierZone')}</p>
+          <p
+            className="mb-3 font-semibold"
+            style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+          >
+            {t('footer.supplierZone')}
+          </p>
           <div className="space-y-2 text-xs text-white/80">
-            <a href="#" className="block transition hover:text-white">{t('footer.listYourTours')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.becomeOperator')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.supplierDashboard')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.apiAccess')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.agentAccounts')}</a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.listYourTours')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.becomeOperator')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.supplierDashboard')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.apiAccess')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.agentAccounts')}
+            </a>
           </div>
         </div>
 
         {/* Explore Section */}
         <div className="hidden xl:block">
-          <p className="mb-3 font-semibold" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>{t('footer.explore')}</p>
+          <p
+            className="mb-3 font-semibold"
+            style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+          >
+            {t('footer.explore')}
+          </p>
           <div className="space-y-2 text-xs text-white/80">
-            <a href="#" className="block transition hover:text-white">{t('footer.home')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.tours')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.destinations')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.deals')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.aboutUs')}</a>
-            <a href="#" className="block transition hover:text-white">{t('footer.contact')}</a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.home')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.tours')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.destinations')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.deals')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.aboutUs')}
+            </a>
+            <a href="#" className="block transition hover:text-white">
+              {t('footer.contact')}
+            </a>
           </div>
         </div>
       </div>
@@ -336,14 +478,25 @@ export function Footer() {
                   onClick={() => setOpenFooterSection(isOpen ? null : section.key)}
                   className="flex w-full items-center justify-between py-[1.1rem] text-left sm:py-4"
                 >
-                  <span className="font-semibold text-white" style={{ fontSize: 'clamp(1.0625rem, 1.2vw + 0.5rem, 1.25rem)' }}>{section.title}</span>
-                  <ChevronDown className={`size-5 text-white transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                  <span
+                    className="font-semibold text-white"
+                    style={{ fontSize: 'clamp(1.0625rem, 1.2vw + 0.5rem, 1.25rem)' }}
+                  >
+                    {section.title}
+                  </span>
+                  <ChevronDown
+                    className={`size-5 text-white transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  />
                 </button>
                 {isOpen && (
                   <div className="pb-[1.1rem] sm:pb-4">
                     <div className="space-y-2.5 text-[13px] leading-relaxed text-white/85 sm:text-xs">
                       {section.links.map((link) => (
-                        <a key={`${section.key}-${link}`} href="#" className="block transition hover:text-white">
+                        <a
+                          key={`${section.key}-${link}`}
+                          href="#"
+                          className="block transition hover:text-white"
+                        >
                           {link}
                         </a>
                       ))}
@@ -378,13 +531,21 @@ export function Footer() {
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] leading-4 sm:flex-nowrap sm:justify-start sm:gap-3 sm:text-xs">
-              <a href="#" className="transition hover:text-white">{t('footer.termsConditions')}</a>
+              <a href="#" className="transition hover:text-white">
+                {t('footer.termsConditions')}
+              </a>
               <span>|</span>
-              <a href="#" className="transition hover:text-white">{t('footer.privacyPolicy')}</a>
+              <a href="#" className="transition hover:text-white">
+                {t('footer.privacyPolicy')}
+              </a>
               <span>|</span>
-              <a href="#" className="transition hover:text-white">{t('footer.refundPolicy')}</a>
+              <a href="#" className="transition hover:text-white">
+                {t('footer.refundPolicy')}
+              </a>
               <span>|</span>
-              <a href="#" className="transition hover:text-white">{t('footer.cookiePolicy')}</a>
+              <a href="#" className="transition hover:text-white">
+                {t('footer.cookiePolicy')}
+              </a>
             </div>
           </div>
         </div>

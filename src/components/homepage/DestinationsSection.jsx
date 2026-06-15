@@ -5,14 +5,14 @@
  *
  * @see components/homepage/PopularDestinationsCard.jsx
  */
-import { useRef, useState, useEffect, useLayoutEffect, useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { destinations as staticDestinations } from "./data";
-import { PopularDestinationsCard } from "./PopularDestinationsCard";
-import { DestinationsModal } from "./DestinationsModal";
-import { CarouselClipTrack } from "@/components/ui/CarouselClipTrack";
+import { useRef, useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { destinations as staticDestinations } from './data';
+import { PopularDestinationsCard } from './PopularDestinationsCard';
+import { DestinationsModal } from './DestinationsModal';
+import { CarouselClipTrack } from '@/components/ui/CarouselClipTrack';
 
 function haversineDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -28,24 +28,24 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 }
 
 const destinationCoords = {
-  "Accra": { lat: 5.6037, lng: -0.1870 },
-  "Cape Coast": { lat: 5.1053, lng: -1.2466 },
-  "Kakum National Park": { lat: 5.3500, lng: -1.3833 },
-  "Kumasi": { lat: 6.6885, lng: -1.6244 },
-  "Elmina": { lat: 5.0833, lng: -1.3500 },
-  "Mole National Park": { lat: 9.2833, lng: -1.8500 },
-  "Wli Waterfalls": { lat: 7.0833, lng: 0.5833 },
-  "Aburi Botanical Gardens": { lat: 5.8500, lng: -0.1833 },
-  "Ada Foah": { lat: 5.7833, lng: 0.6333 },
-  "Boti Falls": { lat: 6.1500, lng: -0.2500 },
-  "Busua Beach": { lat: 4.8667, lng: -2.3000 },
-  "Larabanga Mosque": { lat: 9.1167, lng: -1.7833 },
-  "Nzulezu Stilt Village": { lat: 5.1667, lng: -2.6667 },
-  "Shai Hills Reserve": { lat: 5.8333, lng: -0.0667 },
-  "Paga Crocodile Pond": { lat: 10.9833, lng: -0.7167 },
-  "Akosombo": { lat: 6.2667, lng: 0.2500 },
-  "Tafi Atome Monkey Sanctuary": { lat: 7.1333, lng: 0.4833 },
-  "Biriwa Beach": { lat: 5.1333, lng: -1.1667 },
+  Accra: { lat: 5.6037, lng: -0.187 },
+  'Cape Coast': { lat: 5.1053, lng: -1.2466 },
+  'Kakum National Park': { lat: 5.35, lng: -1.3833 },
+  Kumasi: { lat: 6.6885, lng: -1.6244 },
+  Elmina: { lat: 5.0833, lng: -1.35 },
+  'Mole National Park': { lat: 9.2833, lng: -1.85 },
+  'Wli Waterfalls': { lat: 7.0833, lng: 0.5833 },
+  'Aburi Botanical Gardens': { lat: 5.85, lng: -0.1833 },
+  'Ada Foah': { lat: 5.7833, lng: 0.6333 },
+  'Boti Falls': { lat: 6.15, lng: -0.25 },
+  'Busua Beach': { lat: 4.8667, lng: -2.3 },
+  'Larabanga Mosque': { lat: 9.1167, lng: -1.7833 },
+  'Nzulezu Stilt Village': { lat: 5.1667, lng: -2.6667 },
+  'Shai Hills Reserve': { lat: 5.8333, lng: -0.0667 },
+  'Paga Crocodile Pond': { lat: 10.9833, lng: -0.7167 },
+  Akosombo: { lat: 6.2667, lng: 0.25 },
+  'Tafi Atome Monkey Sanctuary': { lat: 7.1333, lng: 0.4833 },
+  'Biriwa Beach': { lat: 5.1333, lng: -1.1667 },
 };
 
 const CAROUSEL_ARROW_SCROLL_MS = 260;
@@ -69,7 +69,7 @@ function smoothScrollTo(element, target, duration, generationRef, generation, on
   let startTime = null;
   const originalSnap = element.style.scrollSnapType;
 
-  element.style.scrollSnapType = "none";
+  element.style.scrollSnapType = 'none';
 
   const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -123,17 +123,26 @@ export function DestinationsSection({ apiDestinations = [] }) {
   }, []);
 
   const mergedDestinations = useMemo(() => {
-    const base = apiDestinations.length === 0 ? staticDestinations : (() => {
-      const seen = new Set();
-      const merged = [];
-      for (const d of apiDestinations) {
-        if (!seen.has(d.title)) { seen.add(d.title); merged.push(d); }
-      }
-      for (const d of staticDestinations) {
-        if (!seen.has(d.title)) { seen.add(d.title); merged.push(d); }
-      }
-      return merged;
-    })();
+    const base =
+      apiDestinations.length === 0
+        ? staticDestinations
+        : (() => {
+            const seen = new Set();
+            const merged = [];
+            for (const d of apiDestinations) {
+              if (!seen.has(d.title)) {
+                seen.add(d.title);
+                merged.push(d);
+              }
+            }
+            for (const d of staticDestinations) {
+              if (!seen.has(d.title)) {
+                seen.add(d.title);
+                merged.push(d);
+              }
+            }
+            return merged;
+          })();
 
     if (!userLocation) return base;
 
@@ -148,7 +157,11 @@ export function DestinationsSection({ apiDestinations = [] }) {
     return withDistance;
   }, [apiDestinations, userLocation]);
 
-  const infiniteDestinations = [...mergedDestinations, ...mergedDestinations, ...mergedDestinations];
+  const infiniteDestinations = [
+    ...mergedDestinations,
+    ...mergedDestinations,
+    ...mergedDestinations,
+  ];
   const cardWidth = 280;
   const gap = 12;
   const singleSetWidth = mergedDestinations.length * (cardWidth + gap);
@@ -167,7 +180,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
     if (scrollLeft <= threshold) {
       isScrollingRef.current = true;
       const originalSnap = container.style.scrollSnapType;
-      container.style.scrollSnapType = "none";
+      container.style.scrollSnapType = 'none';
       container.scrollLeft = scrollLeft + singleSetWidth;
       container.style.scrollSnapType = originalSnap;
       setTimeout(() => {
@@ -176,7 +189,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
     } else if (scrollLeft >= maxScroll - threshold) {
       isScrollingRef.current = true;
       const originalSnap = container.style.scrollSnapType;
-      container.style.scrollSnapType = "none";
+      container.style.scrollSnapType = 'none';
       container.scrollLeft = scrollLeft - singleSetWidth;
       container.style.scrollSnapType = originalSnap;
       setTimeout(() => {
@@ -197,11 +210,11 @@ export function DestinationsSection({ apiDestinations = [] }) {
 
     let newScrollPosition;
 
-    if (direction === "left") {
+    if (direction === 'left') {
       newScrollPosition = currentScroll - scrollAmount;
       if (newScrollPosition < scrollAmount) {
         const originalSnap = container.style.scrollSnapType;
-        container.style.scrollSnapType = "none";
+        container.style.scrollSnapType = 'none';
         container.scrollLeft = singleSetWidth + newScrollPosition;
         container.style.scrollSnapType = originalSnap;
         return;
@@ -210,7 +223,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
       newScrollPosition = currentScroll + scrollAmount;
       if (newScrollPosition > singleSetWidth * 2 - scrollAmount) {
         const originalSnap = container.style.scrollSnapType;
-        container.style.scrollSnapType = "none";
+        container.style.scrollSnapType = 'none';
         container.scrollLeft = singleSetWidth + (newScrollPosition - singleSetWidth * 2);
         container.style.scrollSnapType = originalSnap;
         return;
@@ -222,7 +235,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
       newScrollPosition,
       CAROUSEL_ARROW_SCROLL_MS,
       scrollGenerationRef,
-      gen,
+      gen
     );
   };
 
@@ -257,12 +270,12 @@ export function DestinationsSection({ apiDestinations = [] }) {
       });
     };
 
-    el.addEventListener("scroll", onScroll, { passive: true });
+    el.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
-      el.removeEventListener("scroll", onScroll);
+      el.removeEventListener('scroll', onScroll);
     };
   }, [nudgeMobileInfiniteLoop]);
 
@@ -271,9 +284,9 @@ export function DestinationsSection({ apiDestinations = [] }) {
       <div className="section-header-row mb-[0.6375rem] md:mb-2.5 xl:mb-3 flex items-center justify-between gap-3">
         <h2
           className="whitespace-nowrap font-bold leading-[1.15] tracking-tight text-slate-900"
-          style={{ fontSize: "clamp(1.2rem, 1.2vw + 0.5rem, 1.375rem)" }}
+          style={{ fontSize: 'clamp(1.2rem, 1.2vw + 0.5rem, 1.375rem)' }}
         >
-          {t("sections.destinations")}
+          {t('sections.destinations')}
         </h2>
 
         <div className="section-header-actions">
@@ -286,7 +299,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
             className="group inline-flex shrink-0 touch-manipulation items-center gap-1 whitespace-nowrap rounded-md py-2 pl-2 pr-1.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100/90 hover:text-slate-950 sm:text-[13px] lg:py-1.5 lg:px-2 lg:text-[14px]"
           >
             <span className="relative">
-              {t("sections.viewAll")}
+              {t('sections.viewAll')}
               <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
             </span>
             <ChevronRight className="size-4 text-slate-500 transition group-hover:text-[color:var(--brand-green)]" />
@@ -294,7 +307,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
           <div className="section-header-scroll-arrows">
             <button
               type="button"
-              onClick={() => scroll("left")}
+              onClick={() => scroll('left')}
               className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
               aria-label="Scroll left"
             >
@@ -302,7 +315,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
             </button>
             <button
               type="button"
-              onClick={() => scroll("right")}
+              onClick={() => scroll('right')}
               className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
               aria-label="Scroll right"
             >
@@ -320,13 +333,13 @@ export function DestinationsSection({ apiDestinations = [] }) {
         clipAt="xl"
         syncSectionClipWidth
         trackClassName="gap-3 overflow-x-auto overscroll-x-contain scrollbar-hide"
-        style={{ scrollSnapType: "x mandatory" }}
+        style={{ scrollSnapType: 'x mandatory' }}
       >
         {infiniteDestinations.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
             className="min-w-[280px] shrink-0"
-            style={{ scrollSnapAlign: "start" }}
+            style={{ scrollSnapAlign: 'start' }}
           >
             <PopularDestinationsCard {...item} />
           </div>
@@ -341,15 +354,15 @@ export function DestinationsSection({ apiDestinations = [] }) {
         clipAt={false}
         trackClassName="gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain scrollbar-hide"
         style={{
-          WebkitOverflowScrolling: "touch",
-          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: 'touch',
+          scrollSnapType: 'x mandatory',
         }}
       >
         {infiniteDestinations.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
             className="w-[280px] min-w-[280px] shrink-0"
-            style={{ scrollSnapAlign: "start" }}
+            style={{ scrollSnapAlign: 'start' }}
           >
             <PopularDestinationsCard {...item} />
           </div>

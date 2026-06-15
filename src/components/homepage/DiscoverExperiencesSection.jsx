@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ChevronRight, ThumbsUp, ThumbsDown } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigationLoader } from "@/contexts/NavigationContext";
-import { DiscoverExperiencesCard } from "./DiscoverExperiencesCard";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ChevronRight, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigationLoader } from '@/contexts/NavigationContext';
+import { DiscoverExperiencesCard } from './DiscoverExperiencesCard';
 import {
   pickupTours,
   recommendedTours,
   topRatedTours,
   leisureTours,
   lastMinuteDeals,
-} from "./data";
+} from './data';
 
 const TABS = [
-  { key: "more", label: "More Experiences" },
-  { key: "attractions", label: "Top Attractions" },
-  { key: "nearby", label: "Things to do nearby" },
-  { key: "best", label: "Best Experiences" },
-  { key: "trending", label: "Trending Destinations" },
+  { key: 'more', label: 'More Experiences' },
+  { key: 'attractions', label: 'Top Attractions' },
+  { key: 'nearby', label: 'Things to do nearby' },
+  { key: 'best', label: 'Best Experiences' },
+  { key: 'trending', label: 'Trending Destinations' },
 ];
 
 const TAB_DATA = {
@@ -32,14 +32,16 @@ const TAB_DATA = {
 export function DiscoverExperiencesSection() {
   const { t } = useTranslation();
   const { navigateWithLoader } = useNavigationLoader();
-  const [activeTab, setActiveTab] = useState("more");
+  const [activeTab, setActiveTab] = useState('more');
   const [feedback, setFeedback] = useState(null);
   const items = TAB_DATA[activeTab] || [];
 
   const handleViewAll = (e) => {
     e.preventDefault();
-    window.scrollTo({ top: 0, behavior: "auto" });
-    navigateWithLoader(`/tours?category=all&title=${encodeURIComponent("Discover experiences your way")}`);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    navigateWithLoader(
+      `/tours?category=all&title=${encodeURIComponent('Discover experiences your way')}`
+    );
   };
 
   return (
@@ -62,8 +64,8 @@ export function DiscoverExperiencesSection() {
                   onClick={() => setActiveTab(tab.key)}
                   className={`relative shrink-0 whitespace-nowrap px-2.5 py-2 text-[13px] font-medium transition sm:px-3 sm:py-2.5 sm:text-base ${
                     activeTab === tab.key
-                      ? "font-bold text-slate-900"
-                      : "text-slate-600 hover:text-slate-900"
+                      ? 'font-bold text-slate-900'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {tab.label}
@@ -71,7 +73,7 @@ export function DiscoverExperiencesSection() {
                     <motion.span
                       layoutId="discover-tab-indicator"
                       className="absolute bottom-0 left-0 right-0 h-[3px] rounded-t bg-[color:var(--brand-green)]"
-                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
                 </button>
@@ -79,12 +81,12 @@ export function DiscoverExperiencesSection() {
             </div>
           </div>
           <Link
-            to={`/tours?category=all&title=${encodeURIComponent("Discover experiences your way")}`}
+            to={`/tours?category=all&title=${encodeURIComponent('Discover experiences your way')}`}
             onClick={handleViewAll}
             className="group relative inline-flex min-h-[44px] shrink-0 touch-manipulation items-center gap-1 whitespace-nowrap py-2 text-[13px] font-semibold text-slate-700 transition hover:text-slate-950 sm:min-h-0 sm:py-1.5 sm:text-[14px]"
           >
             <span className="relative">
-              {t("sections.viewAll")}
+              {t('sections.viewAll')}
               <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[color:var(--brand-green)] transition-all duration-300 group-hover:w-full" />
             </span>
             <ChevronRight className="size-4 text-slate-500 transition group-hover:text-[color:var(--brand-green)]" />
@@ -92,22 +94,22 @@ export function DiscoverExperiencesSection() {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
           className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:gap-5"
         >
           {items.map((tour, i) => (
             <motion.div
               key={tour.title}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.06, ease: "easeOut" }}
-              className="w-[200px] shrink-0 snap-start sm:w-[240px] lg:w-[260px]"
+              transition={{ duration: 0.25, delay: i * 0.04, ease: 'easeOut' }}
+              className="w-[240px] shrink-0 snap-start lg:w-[260px]"
             >
               <DiscoverExperiencesCard {...tour} />
             </motion.div>
@@ -124,7 +126,7 @@ export function DiscoverExperiencesSection() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setFeedback("up")}
+                onClick={() => setFeedback('up')}
                 className="flex size-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)] active:scale-95 sm:size-12"
                 aria-label="Helpful"
               >
@@ -132,7 +134,7 @@ export function DiscoverExperiencesSection() {
               </button>
               <button
                 type="button"
-                onClick={() => setFeedback("down")}
+                onClick={() => setFeedback('down')}
                 className="flex size-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-red-400 hover:text-red-500 active:scale-95 sm:size-12"
                 aria-label="Not helpful"
               >
@@ -140,7 +142,7 @@ export function DiscoverExperiencesSection() {
               </button>
             </div>
           </>
-        ) : feedback === "up" ? (
+        ) : feedback === 'up' ? (
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="flex size-9 items-center justify-center rounded-full bg-[color:var(--brand-green)]/10 text-[color:var(--brand-green)] sm:size-10">
               <ThumbsUp className="size-4.5 sm:size-5" strokeWidth={2} />

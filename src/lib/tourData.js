@@ -16,7 +16,7 @@ import {
   leisureTours,
   lastMinuteDeals,
   sidebarTopRated,
-} from "@/components/homepage/data";
+} from '@/components/homepage/data';
 
 /** Homepage main + sidebar tour strips, in rough page order (for round-robin mixing). */
 const HOME_TOUR_SECTIONS = [
@@ -29,7 +29,7 @@ const HOME_TOUR_SECTIONS = [
 ];
 
 /** Matches HOME_TOUR_SECTIONS: top-left badge style on similar-experience cards. */
-const SECTION_SIMILAR_BADGE = ["duration", "duration", "duration", "duration", "deal", "new"];
+const SECTION_SIMILAR_BADGE = ['duration', 'duration', 'duration', 'duration', 'deal', 'new'];
 
 /**
  * Get all tours from all categories
@@ -48,7 +48,7 @@ export function getAllTours() {
  * Find a tour by title
  */
 export function getTourByTitle(title) {
-  const trimmed = String(title ?? "").trim();
+  const trimmed = String(title ?? '').trim();
   if (!trimmed) return undefined;
 
   const allTours = getAllTours();
@@ -76,8 +76,8 @@ function normalizeTourForSimilar(raw) {
   const merged = fromCat ? { ...fromCat, ...raw } : { ...raw };
   return {
     ...merged,
-    duration: merged.duration ?? "Flexible",
-    rating: merged.rating != null ? String(merged.rating) : "4.8",
+    duration: merged.duration ?? 'Flexible',
+    rating: merged.rating != null ? String(merged.rating) : '4.8',
     reviews: merged.reviews ?? 120,
   };
 }
@@ -87,9 +87,9 @@ function normalizeTourForSimilar(raw) {
  * (featured → recommended → top rated → leisure → last-minute → sidebar picks).
  */
 export function getMixedHomeSectionToursForSimilar({ excludeTitle, limit = 16 } = {}) {
-  const excludeNorm = String(excludeTitle ?? "").trim();
+  const excludeNorm = String(excludeTitle ?? '').trim();
   const sections = HOME_TOUR_SECTIONS.map((get) =>
-    get().filter((t) => t && t.title && t.title !== excludeNorm),
+    get().filter((t) => t && t.title && t.title !== excludeNorm)
   );
   const cursors = sections.map(() => 0);
   const used = new Set();
@@ -114,7 +114,7 @@ export function getMixedHomeSectionToursForSimilar({ excludeTitle, limit = 16 } 
       if (next) {
         out.push({
           ...normalizeTourForSimilar(next),
-          similarExperienceBadge: SECTION_SIMILAR_BADGE[si] ?? "duration",
+          similarExperienceBadge: SECTION_SIMILAR_BADGE[si] ?? 'duration',
         });
         progressed = true;
         if (out.length >= limit) break;

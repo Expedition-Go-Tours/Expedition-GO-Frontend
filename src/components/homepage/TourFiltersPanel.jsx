@@ -3,20 +3,13 @@
  * @description Desktop/mobile filter sidebar for AllToursPage.
  *   Uses API filter options when available, falls back to static data.
  */
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import {
-  SPECIALS_FILTERS,
-  SPECIALS_MORE_FILTERS,
-  GHANA_TOUR_CATEGORIES,
-} from "./tourFiltersData";
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { SPECIALS_FILTERS, SPECIALS_MORE_FILTERS, GHANA_TOUR_CATEGORIES } from './tourFiltersData';
 
 function FilterCheckbox({ id, label, checked, onChange }) {
   return (
-    <label
-      htmlFor={id}
-      className="flex cursor-pointer items-start gap-2.5 text-sm text-slate-900"
-    >
+    <label htmlFor={id} className="flex cursor-pointer items-start gap-2.5 text-sm text-slate-900">
       <input
         id={id}
         type="checkbox"
@@ -46,9 +39,7 @@ export function TourFiltersPanel({
 
   const toggleSpecial = (id, checked) => {
     onSelectedSpecialsChange(
-      checked
-        ? [...selectedSpecials, id]
-        : selectedSpecials.filter((value) => value !== id)
+      checked ? [...selectedSpecials, id] : selectedSpecials.filter((value) => value !== id)
     );
   };
 
@@ -63,21 +54,20 @@ export function TourFiltersPanel({
 
   const toggleCategoryExpanded = (categoryId) => {
     setExpandedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
+      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId]
     );
   };
 
   const apiCategories = filterOptions?.categories || [];
 
-  const dynamicCategories = apiCategories.length > 0
-    ? apiCategories.map((cat) => ({
-        id: cat.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-        label: cat,
-        subcategories: [],
-      }))
-    : GHANA_TOUR_CATEGORIES;
+  const dynamicCategories =
+    apiCategories.length > 0
+      ? apiCategories.map((cat) => ({
+          id: cat.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          label: cat,
+          subcategories: [],
+        }))
+      : GHANA_TOUR_CATEGORIES;
 
   return (
     <div
@@ -127,9 +117,9 @@ export function TourFiltersPanel({
                   aria-expanded={isExpanded}
                 >
                   <span>{category.label}</span>
-                  {(category.subcategories?.length > 0) && (
+                  {category.subcategories?.length > 0 && (
                     <ChevronDown
-                      className={`size-4 shrink-0 text-slate-500 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                      className={`size-4 shrink-0 text-slate-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                       aria-hidden
                     />
                   )}
@@ -142,7 +132,9 @@ export function TourFiltersPanel({
                         id={`category-${category.id}-${sub.id || sub}`}
                         label={sub.label || sub}
                         checked={selectedSubcategories.includes(`${category.id}:${sub.id || sub}`)}
-                        onChange={(checked) => toggleSubcategory(category.id, sub.id || sub, checked)}
+                        onChange={(checked) =>
+                          toggleSubcategory(category.id, sub.id || sub, checked)
+                        }
                       />
                     ))}
                   </div>

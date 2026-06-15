@@ -9,18 +9,18 @@
  *
  * @see contexts/WishlistContext.jsx — similar persistence pattern for saved tours
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
-import { devWarn } from "@/lib/logger";
+import { devWarn } from '@/lib/logger';
 
-const CART_STORAGE_KEY = "cart_items_v1";
+const CART_STORAGE_KEY = 'cart_items_v1';
 const CART_ITEM_TTL_MS = 25 * 60 * 1000;
 
 const CartContext = createContext();
 
 const getItemKey = (item) =>
-  `${item.title}__${item.selectedDate}${item.selectedDateEnd ? `__${item.selectedDateEnd}` : ""}`;
+  `${item.title}__${item.selectedDate}${item.selectedDateEnd ? `__${item.selectedDateEnd}` : ''}`;
 
 const removeExpiredItems = (items) => {
   const now = Date.now();
@@ -37,7 +37,7 @@ export function CartProvider({ children }) {
       if (!Array.isArray(parsed)) return [];
       return removeExpiredItems(parsed);
     } catch (error) {
-      devWarn("[cart] Failed to parse localStorage", error);
+      devWarn('[cart] Failed to parse localStorage', error);
       return [];
     }
   });
@@ -56,7 +56,7 @@ export function CartProvider({ children }) {
 
   const addToCart = useCallback((item) => {
     if (!item?.selectedDate) {
-      toast.error("Please select a date first.");
+      toast.error('Please select a date first.');
       return false;
     }
 
@@ -73,7 +73,7 @@ export function CartProvider({ children }) {
       return [...withoutDuplicate, nextItem];
     });
 
-    toast.success("Tour added to cart");
+    toast.success('Tour added to cart');
     return true;
   }, []);
 
@@ -102,7 +102,7 @@ export function CartProvider({ children }) {
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
+    throw new Error('useCart must be used within a CartProvider');
   }
   return context;
 }

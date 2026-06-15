@@ -4,15 +4,15 @@
  *
  * @see contexts/WishlistContext.jsx
  */
-import { Link, useNavigate } from "react-router-dom";
-import { Heart, ArrowLeft } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { FeaturedExperiencesCard } from "@/components/homepage/FeaturedExperiencesCard";
-import { useWishlist } from "@/contexts/WishlistContext";
-import { AuthModalProvider } from "@/contexts/AuthModalContext";
-import { RecentlyViewedProvider } from "@/contexts/RecentlyViewedContext";
+import { Link, useNavigate } from 'react-router-dom';
+import { Heart, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { FeaturedExperiencesCard } from '@/components/homepage/FeaturedExperiencesCard';
+import { useWishlist } from '@/contexts/WishlistContext';
+import { AuthModalProvider } from '@/contexts/AuthModalContext';
+import { RecentlyViewedProvider } from '@/contexts/RecentlyViewedContext';
 
 function WishlistPageContent() {
   const { t } = useTranslation();
@@ -22,7 +22,7 @@ function WishlistPageContent() {
   return (
     <div className="flex min-h-screen flex-col bg-[color:var(--page-bg)] text-slate-900">
       <Navbar />
-      
+
       <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
 
       <main className="mx-auto flex-1 w-full max-w-[1520px] px-3 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-8">
@@ -41,9 +41,18 @@ function WishlistPageContent() {
               <Heart className="size-5 fill-current sm:size-6" />
             </div>
             <div className="min-w-0">
-              <h1 className="leading-tight text-slate-900" style={{ fontSize: 'clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem)' }}>{t('wishlist.title')}</h1>
-              <p className="mt-1 text-slate-600" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}>
-                {wishlist.length} {wishlist.length === 1 ? t('wishlist.tourSaved') : t('wishlist.toursSaved')}
+              <h1
+                className="leading-tight text-slate-900"
+                style={{ fontSize: 'clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem)' }}
+              >
+                {t('wishlist.title')}
+              </h1>
+              <p
+                className="mt-1 text-slate-600"
+                style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1rem)' }}
+              >
+                {wishlist.length}{' '}
+                {wishlist.length === 1 ? t('wishlist.tourSaved') : t('wishlist.toursSaved')}
               </p>
             </div>
           </div>
@@ -55,8 +64,16 @@ function WishlistPageContent() {
             <div className="mb-5 grid size-20 place-items-center rounded-full bg-slate-100 text-slate-400 sm:mb-6 sm:size-24">
               <Heart className="size-10 sm:size-12" />
             </div>
-            <h2 className="mb-2 font-bold text-slate-900" style={{ fontSize: 'clamp(1.25rem, 1.8vw + 0.5rem, 1.75rem)' }}>{t('wishlist.empty')}</h2>
-            <p className="mb-6 max-w-md px-2 text-slate-600" style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1.0625rem)' }}>
+            <h2
+              className="mb-2 font-bold text-slate-900"
+              style={{ fontSize: 'clamp(1.25rem, 1.8vw + 0.5rem, 1.75rem)' }}
+            >
+              {t('wishlist.empty')}
+            </h2>
+            <p
+              className="mb-6 max-w-md px-2 text-slate-600"
+              style={{ fontSize: 'clamp(0.875rem, 0.8vw + 0.5rem, 1.0625rem)' }}
+            >
               {t('wishlist.emptyDesc')}
             </p>
             <Link

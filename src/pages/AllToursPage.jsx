@@ -3,34 +3,46 @@
  * @description Tour catalog with filters (/tours). Lists tours from backend API
  *   with desktop filter panel and mobile swipe-card UX.
  */
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState, useMemo } from "react";
-import { ArrowLeft, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, SlidersHorizontal, X, CircleCheck, Star, Heart } from "lucide-react";
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { FeaturedExperiencesCard } from "@/components/homepage/FeaturedExperiencesCard";
-import { PopularDestinationsCard } from "@/components/homepage/PopularDestinationsCard";
-import { Calendar } from "@/components/ui/calendar";
-import { AuthModalProvider } from "@/contexts/AuthModalContext";
-import { AuthModal } from "@/components/ui/auth-modal";
-import { useAuthModal } from "@/contexts/AuthModalContext";
-import { useWishlist } from "@/contexts/WishlistContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { ReviewsCarousel } from "@/components/homepage/ReviewsCarousel";
-import { TourFiltersPanel } from "@/components/homepage/TourFiltersPanel";
-import { useAllTours } from "@/hooks/useAllTours";
-import { useFilterOptions } from "@/hooks/useFilterOptions";
-import { getAllTours } from "@/lib/tourData";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import {
+  ArrowLeft,
+  CalendarDays,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  SlidersHorizontal,
+  X,
+  CircleCheck,
+  Star,
+  Heart,
+} from 'lucide-react';
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { FeaturedExperiencesCard } from '@/components/homepage/FeaturedExperiencesCard';
+import { PopularDestinationsCard } from '@/components/homepage/PopularDestinationsCard';
+import { Calendar } from '@/components/ui/calendar';
+import { AuthModalProvider } from '@/contexts/AuthModalContext';
+import { AuthModal } from '@/components/ui/auth-modal';
+import { useAuthModal } from '@/contexts/AuthModalContext';
+import { useWishlist } from '@/contexts/WishlistContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { ReviewsCarousel } from '@/components/homepage/ReviewsCarousel';
+import { TourFiltersPanel } from '@/components/homepage/TourFiltersPanel';
+import { useAllTours } from '@/hooks/useAllTours';
+import { useFilterOptions } from '@/hooks/useFilterOptions';
+import { getAllTours } from '@/lib/tourData';
 import {
   pickupTours,
   recommendedTours,
   topRatedTours,
   leisureTours,
   lastMinuteDeals,
-} from "@/components/homepage/data";
+} from '@/components/homepage/data';
 
-function MobileAllToursCard({ item, badge = "duration" }) {
+function MobileAllToursCard({ item, badge = 'duration' }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -79,13 +91,13 @@ function MobileAllToursCard({ item, badge = "duration" }) {
       onTouchEnd={handleTouchEnd}
     >
       <div
-        className={`flex w-[200%] transition-transform duration-300 ease-out ${showDescription ? "-translate-x-1/2" : "translate-x-0"}`}
+        className={`flex w-[200%] transition-transform duration-300 ease-out ${showDescription ? '-translate-x-1/2' : 'translate-x-0'}`}
       >
         <div className="relative w-1/2">
           <Link
             to={detailTo}
             onClick={handleDetailLinkClick}
-            aria-label={`${t("common.viewDetails", { defaultValue: "View details" })}: ${item.title}`}
+            aria-label={`${t('common.viewDetails', { defaultValue: 'View details' })}: ${item.title}`}
             className="absolute inset-0 z-[5] rounded-md outline-none ring-inset focus-visible:ring-2 focus-visible:ring-slate-400"
           />
           <div className="flex h-[188px]">
@@ -93,12 +105,12 @@ function MobileAllToursCard({ item, badge = "duration" }) {
               <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
               <span
                 className={
-                  badge === "new"
-                    ? "absolute left-2 top-2 rounded-md bg-white/95 px-2 py-1 text-[8px] font-bold text-slate-900 shadow-sm backdrop-blur-sm"
-                    : "absolute left-2 top-2 rounded-md bg-slate-900/80 px-2 py-1 text-[8px] font-bold text-white shadow-sm"
+                  badge === 'new'
+                    ? 'absolute left-2 top-2 rounded-md bg-white/95 px-2 py-1 text-[8px] font-bold text-slate-900 shadow-sm backdrop-blur-sm'
+                    : 'absolute left-2 top-2 rounded-md bg-slate-900/80 px-2 py-1 text-[8px] font-bold text-white shadow-sm'
                 }
               >
-                {badge === "new" ? t("sections.newBadge") : item.duration || "11 to 15 hours"}
+                {badge === 'new' ? t('sections.newBadge') : item.duration || '11 to 15 hours'}
               </span>
               <button
                 type="button"
@@ -117,7 +129,9 @@ function MobileAllToursCard({ item, badge = "duration" }) {
                 }}
                 className="absolute right-2 top-2 z-10 grid size-7 place-items-center rounded-full bg-white/92 text-slate-700 shadow"
               >
-                <Heart className={`size-4 ${isFavorited ? "fill-[color:var(--brand-green)] text-[color:var(--brand-green)]" : ""}`} />
+                <Heart
+                  className={`size-4 ${isFavorited ? 'fill-[color:var(--brand-green)] text-[color:var(--brand-green)]' : ''}`}
+                />
               </button>
             </div>
 
@@ -125,15 +139,20 @@ function MobileAllToursCard({ item, badge = "duration" }) {
               <span className="inline-flex rounded-full bg-[color:var(--brand-mint)] px-3 py-1 text-[10px] font-semibold text-[color:var(--brand-green)]">
                 Best Seller
               </span>
-              <h3 className="mt-2 line-clamp-3 font-semibold leading-4 text-slate-900" style={{ fontSize: 'clamp(0.8875rem, 0.7vw + 0.4rem, 0.8125rem)' }}>{item.title}</h3>
+              <h3
+                className="mt-2 line-clamp-3 font-semibold leading-4 text-slate-900"
+                style={{ fontSize: 'clamp(0.8875rem, 0.7vw + 0.4rem, 0.8125rem)' }}
+              >
+                {item.title}
+              </h3>
               <div className="mt-2.5 space-y-1.5 text-[10px] text-slate-900">
                 <p className="flex items-center gap-2">
                   <CircleCheck className="size-4" />
-                  {t("features.freeCancellation")}
+                  {t('features.freeCancellation')}
                 </p>
                 <p className="flex items-center gap-2">
                   <CircleCheck className="size-4" />
-                  {t("tourDetail.pickupIncluded")}
+                  {t('tourDetail.pickupIncluded')}
                 </p>
               </div>
               <div className="mt-auto mb-1 flex items-end justify-between">
@@ -144,7 +163,9 @@ function MobileAllToursCard({ item, badge = "duration" }) {
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] text-slate-600">from</p>
-                  <p className="text-[16px] font-bold leading-[0.95] text-slate-900">{convertedPrice.formatted}</p>
+                  <p className="text-[16px] font-bold leading-[0.95] text-slate-900">
+                    {convertedPrice.formatted}
+                  </p>
                 </div>
               </div>
             </div>
@@ -162,11 +183,17 @@ function MobileAllToursCard({ item, badge = "duration" }) {
               <X className="size-6" />
             </button>
           </div>
-          <p className="mt-3 line-clamp-5 text-[11px] leading-5 text-slate-700">{descriptionText}</p>
+          <p className="mt-3 line-clamp-5 text-[11px] leading-5 text-slate-700">
+            {descriptionText}
+          </p>
           {showReadMore && (
             <button
               type="button"
-              onClick={() => navigate(item.slug ? `/tour/${item.slug}` : `/tour/${encodeURIComponent(item.title)}`)}
+              onClick={() =>
+                navigate(
+                  item.slug ? `/tour/${item.slug}` : `/tour/${encodeURIComponent(item.title)}`
+                )
+              }
               className="mt-2 text-[11px] font-semibold text-slate-800 underline"
             >
               Read more
@@ -183,22 +210,22 @@ function AllToursPageContent() {
   const { t } = useTranslation();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const category = searchParams.get("category") || "all";
-  const urlSectionTitle = searchParams.get("title");
-  const urlFallbackKey = searchParams.get("fk");
-  const tourListBadge = category === "new-experiences" ? "new" : "duration";
-  const initialSearch = searchParams.get("search") || "";
+  const category = searchParams.get('category') || 'all';
+  const urlSectionTitle = searchParams.get('title');
+  const urlFallbackKey = searchParams.get('fk');
+  const tourListBadge = category === 'new-experiences' ? 'new' : 'duration';
+  const initialSearch = searchParams.get('search') || '';
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, [category]);
   const { isAuthModalOpen, closeAuthModal } = useAuthModal();
-  const [sortBy, setSortBy] = useState("featured");
+  const [sortBy, setSortBy] = useState('featured');
   const [searchQuery, setSearchQuery] = useState(initialSearch);
 
   // Sync search query state with URL changes (e.g., when navigating from navbar search)
   useEffect(() => {
-    const urlSearch = new URLSearchParams(location.search).get("search") || "";
+    const urlSearch = new URLSearchParams(location.search).get('search') || '';
     setSearchQuery(urlSearch);
   }, [location.search]);
 
@@ -215,7 +242,7 @@ function AllToursPageContent() {
   const [showDateCalendar, setShowDateCalendar] = useState(false);
 
   const [showTimeOfDayMenu, setShowTimeOfDayMenu] = useState(false);
-  const [selectedTimeOfDay, setSelectedTimeOfDay] = useState("");
+  const [selectedTimeOfDay, setSelectedTimeOfDay] = useState('');
 
   const [showPriceMenu, setShowPriceMenu] = useState(false);
   const [priceMin, setPriceMin] = useState(0);
@@ -223,7 +250,7 @@ function AllToursPageContent() {
 
   const [showRatingMenu, setShowRatingMenu] = useState(false);
   const [selectedRating, setSelectedRating] = useState(null);
-  const [selectedExperienceFilter, setSelectedExperienceFilter] = useState("All");
+  const [selectedExperienceFilter, setSelectedExperienceFilter] = useState('All');
   const [showFiltersMenu, setShowFiltersMenu] = useState(false);
   const [selectedSpecials, setSelectedSpecials] = useState([]);
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
@@ -259,24 +286,26 @@ function AllToursPageContent() {
   const [filtersMenuPosition, setFiltersMenuPosition] = useState({ top: 0, left: 0 });
 
   const sortMapping = {
-    featured: { sortBy: "popularity", sortOrder: "desc" },
-    "price-low": { sortBy: "price", sortOrder: "asc" },
-    "price-high": { sortBy: "price", sortOrder: "desc" },
-    rating: { sortBy: "rating", sortOrder: "desc" },
+    featured: { sortBy: 'popularity', sortOrder: 'desc' },
+    'price-low': { sortBy: 'price', sortOrder: 'asc' },
+    'price-high': { sortBy: 'price', sortOrder: 'desc' },
+    rating: { sortBy: 'rating', sortOrder: 'desc' },
   };
-  const { sortBy: apiSortBy, sortOrder: apiSortOrder } = sortMapping[sortBy] || sortMapping.featured;
+  const { sortBy: apiSortBy, sortOrder: apiSortOrder } =
+    sortMapping[sortBy] || sortMapping.featured;
 
   const FALLBACK_MAP = {
     tours: pickupTours,
     recommended: recommendedTours,
     deals: topRatedTours,
     leisure: leisureTours,
-    "last-minute-deals": lastMinuteDeals,
-    "new-experiences": getAllTours(),
+    'last-minute-deals': lastMinuteDeals,
+    'new-experiences': getAllTours(),
   };
 
-  const categoryInMap = category !== "destinations" && category in FALLBACK_MAP;
-  const effectiveFallbackKey = (urlFallbackKey && urlFallbackKey in FALLBACK_MAP) ? urlFallbackKey : null;
+  const categoryInMap = category !== 'destinations' && category in FALLBACK_MAP;
+  const effectiveFallbackKey =
+    urlFallbackKey && urlFallbackKey in FALLBACK_MAP ? urlFallbackKey : null;
   const isFallbackCategory = !!(effectiveFallbackKey || categoryInMap);
 
   const perPage = isFallbackCategory ? 8 : CARDS_PER_PAGE;
@@ -286,7 +315,14 @@ function AllToursPageContent() {
   const tourParams = {
     page: currentPage,
     limit: perPage,
-    category: !isFallbackCategory && category !== "all" && category !== "destinations" && category !== "last-minute-deals" && category !== "new-experiences" ? category : undefined,
+    category:
+      !isFallbackCategory &&
+      category !== 'all' &&
+      category !== 'destinations' &&
+      category !== 'last-minute-deals' &&
+      category !== 'new-experiences'
+        ? category
+        : undefined,
     minRating: selectedRating || undefined,
     minPrice: priceMin > 0 ? priceMin : undefined,
     maxPrice: priceMax < 500 ? priceMax : undefined,
@@ -300,26 +336,43 @@ function AllToursPageContent() {
 
   const experienceFilters = useMemo(() => {
     if (filterOptions?.experienceFilters?.length) return filterOptions.experienceFilters;
-    return ["All", "Adventure", "Cultural", "Nature", "Beach", "Wildlife", "City Tours", "Food & Drink", "Wellness"];
+    return [
+      'All',
+      'Adventure',
+      'Cultural',
+      'Nature',
+      'Beach',
+      'Wildlife',
+      'City Tours',
+      'Food & Drink',
+      'Wellness',
+    ];
   }, [filterOptions]);
 
   const isLoading = isFallbackCategory ? false : apiLoading;
   const allTours = fallbackData || tourData?.tours || [];
-  const tours = isFallbackCategory ? allTours.slice((currentPage - 1) * perPage, currentPage * perPage) : allTours;
-  const totalCount = isFallbackCategory ? allTours.length : (tourData?.pagination?.totalCount || 0);
-  const totalPages = isFallbackCategory ? Math.max(1, Math.ceil(allTours.length / perPage)) : (tourData?.pagination?.totalPages || 1);
+  const tours = isFallbackCategory
+    ? allTours.slice((currentPage - 1) * perPage, currentPage * perPage)
+    : allTours;
+  const totalCount = isFallbackCategory ? allTours.length : tourData?.pagination?.totalCount || 0;
+  const totalPages = isFallbackCategory
+    ? Math.max(1, Math.ceil(allTours.length / perPage))
+    : tourData?.pagination?.totalPages || 1;
 
   const categoryLabels = {
-    tours: t("sections.featuredTitle"),
-    recommended: t("sections.recommendedTitle"),
-    deals: t("sections.topRatedTitle"),
-    leisure: t("sections.likelyToSellOut"),
-    "last-minute-deals": t("sections.lastMinuteDeals"),
-    "new-experiences": t("sections.newExperiences"),
-    destinations: t("sections.destinations"),
+    tours: t('sections.featuredTitle'),
+    recommended: t('sections.recommendedTitle'),
+    deals: t('sections.topRatedTitle'),
+    leisure: t('sections.likelyToSellOut'),
+    'last-minute-deals': t('sections.lastMinuteDeals'),
+    'new-experiences': t('sections.newExperiences'),
+    destinations: t('sections.destinations'),
   };
-  const title = urlSectionTitle || categoryLabels[category] || t("sections.allToursTitle", { defaultValue: "All Tours" });
-  const type = category === "destinations" ? "destinations" : "tours";
+  const title =
+    urlSectionTitle ||
+    categoryLabels[category] ||
+    t('sections.allToursTitle', { defaultValue: 'All Tours' });
+  const type = category === 'destinations' ? 'destinations' : 'tours';
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -338,7 +391,8 @@ function AllToursPageContent() {
       const clickedFiltersTrigger = filtersTriggerRef.current?.contains(event.target);
       const clickedFiltersMenu = filtersMenuRef.current?.contains(event.target);
 
-      if (!clickedDesktopDateTrigger && !clickedMobileDateTrigger && !clickedDateCalendar) setShowDateCalendar(false);
+      if (!clickedDesktopDateTrigger && !clickedMobileDateTrigger && !clickedDateCalendar)
+        setShowDateCalendar(false);
       if (!clickedAdultsTrigger && !clickedTravelersPanel) setShowTravelers(false);
       if (!clickedTimeTrigger && !clickedTimeMenu) setShowTimeOfDayMenu(false);
       if (!clickedPriceTrigger && !clickedPriceMenu) setShowPriceMenu(false);
@@ -346,28 +400,43 @@ function AllToursPageContent() {
       if (!clickedFiltersTrigger && !clickedFiltersMenu) setShowFiltersMenu(false);
     };
 
-    if (showDateCalendar || showTravelers || showTimeOfDayMenu || showPriceMenu || showRatingMenu || showFiltersMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
+    if (
+      showDateCalendar ||
+      showTravelers ||
+      showTimeOfDayMenu ||
+      showPriceMenu ||
+      showRatingMenu ||
+      showFiltersMenu
+    ) {
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showDateCalendar, showTravelers, showTimeOfDayMenu, showPriceMenu, showRatingMenu, showFiltersMenu]);
+  }, [
+    showDateCalendar,
+    showTravelers,
+    showTimeOfDayMenu,
+    showPriceMenu,
+    showRatingMenu,
+    showFiltersMenu,
+  ]);
 
   const formatDate = (date) => {
-    if (!date) return "";
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (!date) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   const dateLabel = selectedDates?.from
     ? selectedDates?.to
       ? `${formatDate(selectedDates.from)} - ${formatDate(selectedDates.to)}`
       : `${formatDate(selectedDates.from)}`
-    : "";
+    : '';
 
   const toggleDateCalendar = () => {
-    const activeDateTrigger = window.innerWidth >= 768 ? desktopDateTriggerRef.current : mobileDateTriggerRef.current;
+    const activeDateTrigger =
+      window.innerWidth >= 768 ? desktopDateTriggerRef.current : mobileDateTriggerRef.current;
     if (!showDateCalendar && activeDateTrigger) {
       const rect = activeDateTrigger.getBoundingClientRect();
       setCalendarPosition({ top: rect.bottom + 8, left: rect.left });
@@ -381,7 +450,9 @@ function AllToursPageContent() {
       setTravelersPanelPosition({ top: rect.bottom + 8, left: rect.left });
       setAdults(appliedAdults);
       setChildren(appliedChildren);
-      setChildAges(Array.from({ length: appliedChildren }, (_, index) => appliedChildAges[index] ?? 7));
+      setChildAges(
+        Array.from({ length: appliedChildren }, (_, index) => appliedChildAges[index] ?? 7)
+      );
     }
     setShowTravelers((value) => !value);
   };
@@ -427,8 +498,8 @@ function AllToursPageContent() {
   const canAddTraveler = totalTravelers < 15;
   const travelerLabel =
     appliedChildren > 0
-      ? `${appliedAdults} Adult${appliedAdults === 1 ? "" : "s"}, ${appliedChildren} Child${appliedChildren === 1 ? "" : "ren"}`
-      : `${appliedAdults} Adult${appliedAdults === 1 ? "" : "s"}`;
+      ? `${appliedAdults} Adult${appliedAdults === 1 ? '' : 's'}, ${appliedChildren} Child${appliedChildren === 1 ? '' : 'ren'}`
+      : `${appliedAdults} Adult${appliedAdults === 1 ? '' : 's'}`;
 
   const setChildrenCount = (nextChildren) => {
     const safeChildren = Math.max(0, nextChildren);
@@ -439,9 +510,12 @@ function AllToursPageContent() {
     });
   };
 
-  const timeOfDayLabel = selectedTimeOfDay || "Time of Day";
-  const priceLabel = priceMin === 0 && priceMax === 500 ? "Price" : `$${priceMin} - $${priceMax}${priceMax === 500 ? "+" : ""}`;
-  const ratingLabel = selectedRating ? `${selectedRating}+ Stars` : "Rating";
+  const timeOfDayLabel = selectedTimeOfDay || 'Time of Day';
+  const priceLabel =
+    priceMin === 0 && priceMax === 500
+      ? 'Price'
+      : `$${priceMin} - $${priceMax}${priceMax === 500 ? '+' : ''}`;
+  const ratingLabel = selectedRating ? `${selectedRating}+ Stars` : 'Rating';
 
   const handleMinPriceChange = (value) => {
     const nextMin = Math.min(value, priceMax - 10);
@@ -476,8 +550,8 @@ function AllToursPageContent() {
     if (!container) return;
     const amount = 220;
     container.scrollBy({
-      left: direction === "left" ? -amount : amount,
-      behavior: "smooth",
+      left: direction === 'left' ? -amount : amount,
+      behavior: 'smooth',
     });
     requestAnimationFrame(updateFilterArrows);
     setTimeout(updateFilterArrows, 220);
@@ -487,20 +561,20 @@ function AllToursPageContent() {
     if (!container) return;
 
     updateFilterArrows();
-    container.addEventListener("scroll", updateFilterArrows, { passive: true });
-    window.addEventListener("resize", updateFilterArrows);
+    container.addEventListener('scroll', updateFilterArrows, { passive: true });
+    window.addEventListener('resize', updateFilterArrows);
 
     return () => {
-      container.removeEventListener("scroll", updateFilterArrows);
-      window.removeEventListener("resize", updateFilterArrows);
+      container.removeEventListener('scroll', updateFilterArrows);
+      window.removeEventListener('resize', updateFilterArrows);
     };
   }, [experienceFilters.length, category]);
 
   useEffect(() => {
     const container = experienceFiltersRef.current;
     if (!container) return;
-    if (selectedExperienceFilter === "All") {
-      container.scrollTo({ left: 0, behavior: "smooth" });
+    if (selectedExperienceFilter === 'All') {
+      container.scrollTo({ left: 0, behavior: 'smooth' });
     }
     const frameId = requestAnimationFrame(updateFilterArrows);
 
@@ -513,10 +587,10 @@ function AllToursPageContent() {
     };
 
     toggleBackToTop();
-    window.addEventListener("scroll", toggleBackToTop, { passive: true });
+    window.addEventListener('scroll', toggleBackToTop, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", toggleBackToTop);
+      window.removeEventListener('scroll', toggleBackToTop);
     };
   }, []);
 
@@ -530,14 +604,21 @@ function AllToursPageContent() {
       if (showFiltersMenu) setShowFiltersMenu(false);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, [showDateCalendar, showTravelers, showTimeOfDayMenu, showPriceMenu, showRatingMenu, showFiltersMenu]);
+  }, [
+    showDateCalendar,
+    showTravelers,
+    showTimeOfDayMenu,
+    showPriceMenu,
+    showRatingMenu,
+    showFiltersMenu,
+  ]);
 
   const handleBackToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -561,7 +642,7 @@ function AllToursPageContent() {
             onExternalSearchChange={setSearchQuery}
           />
         </div>
-        
+
         <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
 
         <main className="mx-auto flex-1 w-full max-w-[1520px] overflow-x-hidden bg-white px-4 pt-2 pb-6 sm:px-6 lg:px-8 lg:py-6">
@@ -574,11 +655,16 @@ function AllToursPageContent() {
               <ArrowLeft className="size-4" />
               Back To Home
             </Link>
-            <h1 className="font-bold tracking-tight text-slate-900" style={{ fontSize: 'clamp(1.75rem, 3vw + 0.5rem, 2.75rem)' }}>{title}</h1>
+            <h1
+              className="font-bold tracking-tight text-slate-900"
+              style={{ fontSize: 'clamp(1.75rem, 3vw + 0.5rem, 2.75rem)' }}
+            >
+              {title}
+            </h1>
           </div>
 
           <div className="w-full">
-            {category !== "destinations" && (
+            {category !== 'destinations' && (
               <div className="mb-6 overflow-y-visible pb-1">
                 <div className="flex w-full items-center gap-2 overflow-x-auto pb-1 scrollbar-hide overscroll-x-contain lg:min-w-0 lg:overflow-visible lg:pb-0">
                   <button
@@ -586,9 +672,11 @@ function AllToursPageContent() {
                     type="button"
                     onClick={toggleFiltersMenu}
                     className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                      showFiltersMenu || selectedSpecials.length > 0 || selectedSubcategories.length > 0
-                        ? "bg-slate-900 text-white hover:bg-slate-800"
-                        : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                      showFiltersMenu ||
+                      selectedSpecials.length > 0 ||
+                      selectedSubcategories.length > 0
+                        ? 'bg-slate-900 text-white hover:bg-slate-800'
+                        : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
                     }`}
                     aria-expanded={showFiltersMenu}
                     aria-haspopup="dialog"
@@ -604,7 +692,7 @@ function AllToursPageContent() {
                       className="hidden items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200 lg:inline-flex"
                     >
                       <CalendarDays className="size-4" />
-                      <span>{dateLabel ? `Date ${dateLabel}` : "Date"}</span>
+                      <span>{dateLabel ? `Date ${dateLabel}` : 'Date'}</span>
                     </button>
                   </div>
 
@@ -648,7 +736,7 @@ function AllToursPageContent() {
 
                   <button
                     type="button"
-                    onClick={() => scrollExperienceFilters("left")}
+                    onClick={() => scrollExperienceFilters('left')}
                     disabled={!canScrollFiltersLeft}
                     className="hidden lg:grid size-9 shrink-0 place-items-center rounded-full border border-slate-300 bg-slate-50 text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Scroll filters left"
@@ -672,8 +760,8 @@ function AllToursPageContent() {
                           }}
                           className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
                             isActive
-                              ? "bg-slate-900 text-white"
-                              : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                              ? 'bg-slate-900 text-white'
+                              : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
                           }`}
                         >
                           {filterLabel}
@@ -684,14 +772,13 @@ function AllToursPageContent() {
 
                   <button
                     type="button"
-                    onClick={() => scrollExperienceFilters("right")}
+                    onClick={() => scrollExperienceFilters('right')}
                     disabled={!canScrollFiltersRight}
                     className="hidden lg:grid size-9 shrink-0 place-items-center rounded-full border border-slate-300 bg-slate-50 text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Scroll filters right"
                   >
                     <ChevronRight className="size-4" />
                   </button>
-
                 </div>
               </div>
             )}
@@ -699,7 +786,8 @@ function AllToursPageContent() {
             <>
               <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4">
                 <p className="text-sm font-medium text-slate-600">
-                  {isLoading ? "..." : totalCount} {type === "destinations" ? t("common.destinations") : t("common.tours")} available
+                  {isLoading ? '...' : totalCount}{' '}
+                  {type === 'destinations' ? t('common.destinations') : t('common.tours')} available
                 </p>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-slate-600">Sort by:</span>
@@ -718,9 +806,13 @@ function AllToursPageContent() {
 
               <div className="grid grid-cols-1 gap-3 pb-2 sm:pb-0 sm:gap-x-1.5 sm:gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {isLoading ? (
-                  <div className="col-span-full py-20 text-center text-sm text-slate-500">Loading tours...</div>
+                  <div className="col-span-full py-20 text-center text-sm text-slate-500">
+                    Loading tours...
+                  </div>
                 ) : tours.length === 0 ? (
-                  <div className="col-span-full py-20 text-center text-sm text-slate-500">No tours found matching your criteria.</div>
+                  <div className="col-span-full py-20 text-center text-sm text-slate-500">
+                    No tours found matching your criteria.
+                  </div>
                 ) : (
                   tours.map((item, index) => (
                     <div key={`${item.slug || item.title}-${index}`} className="w-full">
@@ -728,7 +820,11 @@ function AllToursPageContent() {
                         <MobileAllToursCard item={item} badge={tourListBadge} />
                       </div>
                       <div className="hidden sm:block">
-                        <FeaturedExperiencesCard {...item} variant="allTours" badge={tourListBadge} />
+                        <FeaturedExperiencesCard
+                          {...item}
+                          variant="allTours"
+                          badge={tourListBadge}
+                        />
                       </div>
                     </div>
                   ))
@@ -803,7 +899,7 @@ function AllToursPageContent() {
           className="fixed z-[250] w-[210px] rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
           style={{ top: `${timeMenuPosition.top}px`, left: `${timeMenuPosition.left}px` }}
         >
-          {["Morning", "Afternoon", "Evening"].map((option) => (
+          {['Morning', 'Afternoon', 'Evening'].map((option) => (
             <button
               key={option}
               onClick={() => {
@@ -827,13 +923,19 @@ function AllToursPageContent() {
           <p className="text-2xl font-semibold text-slate-900">Price</p>
           <div className="mt-4 flex items-center justify-between text-3xl font-medium text-slate-900">
             <span>${priceMin}</span>
-            <span>${priceMax}{priceMax === 500 ? "+" : ""}</span>
+            <span>
+              ${priceMax}
+              {priceMax === 500 ? '+' : ''}
+            </span>
           </div>
           <div className="relative mt-4 h-10">
             <div className="absolute top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-slate-200" />
             <div
               className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-900"
-              style={{ left: `${(priceMin / 500) * 100}%`, right: `${100 - (priceMax / 500) * 100}%` }}
+              style={{
+                left: `${(priceMin / 500) * 100}%`,
+                right: `${100 - (priceMax / 500) * 100}%`,
+              }}
             />
             <input
               type="range"
@@ -872,7 +974,7 @@ function AllToursPageContent() {
                   setShowRatingMenu(false);
                 }}
                 className={`flex items-center gap-3 rounded-lg p-2 text-left transition hover:bg-slate-50 ${
-                  selectedRating === rating ? "bg-slate-50" : ""
+                  selectedRating === rating ? 'bg-slate-50' : ''
                 }`}
               >
                 <span className="text-2xl leading-none tracking-wide">{renderStars(rating)}</span>
@@ -886,7 +988,10 @@ function AllToursPageContent() {
         <div
           ref={travelersPanelRef}
           className="fixed z-[250] w-[340px] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
-          style={{ top: `${travelersPanelPosition.top}px`, left: `${travelersPanelPosition.left}px` }}
+          style={{
+            top: `${travelersPanelPosition.top}px`,
+            left: `${travelersPanelPosition.left}px`,
+          }}
         >
           <p className="text-sm text-slate-700">You can select up to 15 travelers in total.</p>
 
@@ -901,7 +1006,9 @@ function AllToursPageContent() {
                 >
                   <span className="text-xl leading-none">-</span>
                 </button>
-                <span className="w-6 text-center text-xl font-semibold text-slate-900">{adults}</span>
+                <span className="w-6 text-center text-xl font-semibold text-slate-900">
+                  {adults}
+                </span>
                 <button
                   onClick={() => canAddTraveler && setAdults((value) => value + 1)}
                   className="grid size-8 place-items-center rounded-lg text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
@@ -925,7 +1032,9 @@ function AllToursPageContent() {
                   >
                     <span className="text-xl leading-none">-</span>
                   </button>
-                  <span className="w-6 text-center text-xl font-semibold text-slate-900">{children}</span>
+                  <span className="w-6 text-center text-xl font-semibold text-slate-900">
+                    {children}
+                  </span>
                   <button
                     onClick={() => canAddTraveler && setChildrenCount(children + 1)}
                     className="grid size-8 place-items-center rounded-lg text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"

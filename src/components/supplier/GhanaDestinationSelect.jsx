@@ -2,8 +2,8 @@
  * @file GhanaDestinationSelect.jsx
  * @description Multi-select dropdown of Ghana tourist sites by region.
  */
-import { useState, useCallback } from "react";
-import { MapPin, X, CheckCircle2 } from "lucide-react";
+import { useState, useCallback } from 'react';
+import { MapPin, X, CheckCircle2 } from 'lucide-react';
 
 import {
   Select,
@@ -13,8 +13,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { GHANA_TOURIST_SITES_BY_REGION } from "@/lib/ghanaTouristSites";
+} from '@/components/ui/select';
+import { GHANA_TOURIST_SITES_BY_REGION } from '@/lib/ghanaTouristSites';
 
 function FieldLabel({ children, required }) {
   return (
@@ -48,7 +48,8 @@ export default function GhanaDestinationSelect({ selected = [], onChange, requir
     <div>
       <FieldLabel required={required}>Destinations You Operate In</FieldLabel>
       <p className="mb-2 text-xs text-slate-500">
-        Select tourist sites across Ghana. Each choice is added to your list — you can pick as many as you operate in.
+        Select tourist sites across Ghana. Each choice is added to your list — you can pick as many
+        as you operate in.
       </p>
 
       {selected.length > 0 && (
@@ -89,10 +90,10 @@ export default function GhanaDestinationSelect({ selected = [], onChange, requir
                   key={`${region}-${site}`}
                   value={site}
                   disabled={selected.includes(site)}
-                  className={selected.includes(site) ? "opacity-50" : ""}
+                  className={selected.includes(site) ? 'opacity-50' : ''}
                 >
                   {site}
-                  {selected.includes(site) ? " (added)" : ""}
+                  {selected.includes(site) ? ' (added)' : ''}
                 </SelectItem>
               ))}
             </SelectGroup>

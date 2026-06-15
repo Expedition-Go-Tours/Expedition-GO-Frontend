@@ -7,16 +7,9 @@
  *
  * @see pages/TourDetailPage.jsx — calls addToRecentlyViewed on mount
  */
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { devWarn } from "@/lib/logger";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { devWarn } from '@/lib/logger';
 
 const RecentlyViewedContext = createContext({
   recentlyViewed: [],
@@ -38,7 +31,7 @@ export function RecentlyViewedProvider({ children }) {
         // Migration: discard old entries without a slug so carousel links are valid
         return Array.isArray(parsed) ? parsed.filter((item) => item.slug) : [];
       } catch (error) {
-        devWarn("[recentlyViewed] Failed to parse localStorage", error);
+        devWarn('[recentlyViewed] Failed to parse localStorage', error);
         return [];
       }
     }
@@ -79,11 +72,7 @@ export function RecentlyViewedProvider({ children }) {
     [recentlyViewed, addToRecentlyViewed, clearRecentlyViewed]
   );
 
-  return (
-    <RecentlyViewedContext.Provider value={value}>
-      {children}
-    </RecentlyViewedContext.Provider>
-  );
+  return <RecentlyViewedContext.Provider value={value}>{children}</RecentlyViewedContext.Provider>;
 }
 
 export function useRecentlyViewed() {

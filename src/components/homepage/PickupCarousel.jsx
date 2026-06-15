@@ -3,9 +3,9 @@
  * @description Draggable "Pickup where you left off" carousel in HeroSection.
  *   Uses framer-motion drag with snap-to-card behavior.
  */
-import { useRef, useState, useEffect } from "react";
-import { motion, useMotionValue, useAnimation } from "framer-motion";
-import { FeaturedExperiencesCard } from "./FeaturedExperiencesCard";
+import { useRef, useState, useEffect } from 'react';
+import { motion, useMotionValue, useAnimation } from 'framer-motion';
+import { FeaturedExperiencesCard } from './FeaturedExperiencesCard';
 
 export function PickupCarousel({ items }) {
   const containerRef = useRef(null);
@@ -40,7 +40,7 @@ export function PickupCarousel({ items }) {
 
   const handleDragEnd = (event, info) => {
     setIsDragging(false);
-    
+
     const offset = info.offset.x;
     const velocity = info.velocity.x;
     const currentX = x.get();
@@ -62,10 +62,10 @@ export function PickupCarousel({ items }) {
     controls.start({
       x: targetX,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
         damping: 30,
-      }
+      },
     });
   };
 

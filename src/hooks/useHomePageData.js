@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchPopularByCategory, fetchFilterOptions } from "@/api/tours";
-import { adaptTourCard, extractDestinations } from "@/lib/tourAdapter";
+import { useQuery } from '@tanstack/react-query';
+import { fetchPopularByCategory, fetchFilterOptions } from '@/api/tours';
+import { adaptTourCard, extractDestinations } from '@/lib/tourAdapter';
 
 const DEFAULT_INITIAL_DELAY_MS = 250;
 const POST_AUTH_INITIAL_DELAY_MS = 150;
@@ -18,16 +18,23 @@ export function useHomePageData({
       : DEFAULT_INITIAL_DELAY_MS;
 
   const nonceKey =
-    typeof handoffNonce === "number" && Number.isFinite(handoffNonce) ? String(handoffNonce) : "stable";
+    typeof handoffNonce === 'number' && Number.isFinite(handoffNonce)
+      ? String(handoffNonce)
+      : 'stable';
 
-  const delayModeKey = delayMs === 0 ? "skipDelay" : delayMs === POST_AUTH_INITIAL_DELAY_MS ? "postAuthDelay" : "defaultDelay";
+  const delayModeKey =
+    delayMs === 0
+      ? 'skipDelay'
+      : delayMs === POST_AUTH_INITIAL_DELAY_MS
+        ? 'postAuthDelay'
+        : 'defaultDelay';
 
   return useQuery({
     queryKey: [
-      "homePage",
-      "initialLoad",
+      'homePage',
+      'initialLoad',
       delayModeKey,
-      postAuthHandoff ? "postAuth" : "default",
+      postAuthHandoff ? 'postAuth' : 'default',
       nonceKey,
     ],
     queryFn: async () => {
@@ -41,22 +48,22 @@ export function useHomePageData({
       ]);
 
       const categories = {};
-      if (popularData.status === "fulfilled" && popularData.value?.categories) {
+      if (popularData.status === 'fulfilled' && popularData.value?.categories) {
         for (const [cat, tours] of Object.entries(popularData.value.categories)) {
           categories[cat] = (tours || []).map(adaptTourCard);
         }
       }
 
       let destinations = [];
-      if (filterData.status === "fulfilled" && filterData.value?.filterOptions?.locations) {
+      if (filterData.status === 'fulfilled' && filterData.value?.filterOptions?.locations) {
         const locs = filterData.value.filterOptions.locations;
         const cities = locs.cities || [];
         const countries = locs.countries || [];
         destinations = cities.map((city, i) => ({
           title: city,
-          region: countries[i % countries.length] || "",
-          tours: "",
-          image: "",
+          region: countries[i % countries.length] || '',
+          tours: '',
+          image: '',
         }));
       }
 
@@ -70,7 +77,7 @@ export function useHomePageData({
         timestamp: Date.now(),
         categories,
         destinations,
-        filterOptions: filterData.status === "fulfilled" ? filterData.value?.filterOptions : null,
+        filterOptions: filterData.status === 'fulfilled' ? filterData.value?.filterOptions : null,
       };
     },
     staleTime: 1000 * 60 * 2,

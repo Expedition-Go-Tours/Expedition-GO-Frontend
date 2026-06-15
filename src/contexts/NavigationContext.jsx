@@ -1,20 +1,20 @@
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Loader from "@/components/ui/Loader";
-import { TourDetailSkeleton } from "@/components/tour-detail/TourDetailSkeleton";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Loader from '@/components/ui/Loader';
+import { TourDetailSkeleton } from '@/components/tour-detail/TourDetailSkeleton';
 
 function resolveNavigationPath(to) {
-  if (typeof to === "number") return null;
-  if (typeof to === "string") {
-    const path = to.split("?")[0].split("#")[0];
-    return path.startsWith("/") ? path : null;
+  if (typeof to === 'number') return null;
+  if (typeof to === 'string') {
+    const path = to.split('?')[0].split('#')[0];
+    return path.startsWith('/') ? path : null;
   }
   if (to?.pathname) return to.pathname;
   return null;
 }
 
 function isTourDetailPath(path) {
-  return typeof path === "string" && path.startsWith("/tour/");
+  return typeof path === 'string' && path.startsWith('/tour/');
 }
 
 const NavigationContext = createContext(null);
@@ -28,8 +28,7 @@ export function NavigationProvider({ children }) {
   const location = useLocation();
   const safetyRef = useRef(null);
   const showTourDetailSkeleton =
-    isNavigating &&
-    (isTourDetailPath(navigationTarget) || isTourDetailPath(location.pathname));
+    isNavigating && (isTourDetailPath(navigationTarget) || isTourDetailPath(location.pathname));
 
   useEffect(() => {
     return () => {
@@ -39,7 +38,7 @@ export function NavigationProvider({ children }) {
 
   useEffect(() => {
     if (!isNavigating) return;
-    if (location.pathname === "/signin" || location.pathname === "/register") {
+    if (location.pathname === '/signin' || location.pathname === '/register') {
       if (safetyRef.current) clearTimeout(safetyRef.current);
       setIsNavigating(false);
       setNavigationTarget(null);
@@ -81,10 +80,18 @@ export function NavigationProvider({ children }) {
 export function useNavigationLoader() {
   const ctx = useContext(NavigationContext);
   if (!ctx) {
-    if (typeof window !== "undefined") {
-      console.warn("[Navigation] useNavigationLoader used outside NavigationProvider — using no-op fallback");
+    if (typeof window !== 'undefined') {
+      console.warn(
+        '[Navigation] useNavigationLoader used outside NavigationProvider — using no-op fallback'
+      );
     }
-    return { navigateWithLoader: (to) => { window.location.href = to; }, hideLoader: () => {}, isNavigating: false };
+    return {
+      navigateWithLoader: (to) => {
+        window.location.href = to;
+      },
+      hideLoader: () => {},
+      isNavigating: false,
+    };
   }
   return ctx;
 }

@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchFilterOptions } from "@/api/tours";
+import { useQuery } from '@tanstack/react-query';
+import { fetchFilterOptions } from '@/api/tours';
 
 export function useFilterOptions() {
   return useQuery({
-    queryKey: ["tours", "filterOptions"],
+    queryKey: ['tours', 'filterOptions'],
     queryFn: async () => {
       const data = await fetchFilterOptions();
       return data?.filterOptions || null;

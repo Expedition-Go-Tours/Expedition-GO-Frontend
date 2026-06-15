@@ -2,14 +2,14 @@
  * @file supplierAccessQuery.js
  * @description Shared React Query cache for supplier nav state (dedupes navbar + section).
  */
-import { waitForAuthToken } from "@/lib/auth";
+import { waitForAuthToken } from '@/lib/auth';
 import {
   fetchSupplierAccessSnapshot,
   getSupplierAccessUserId,
   readCachedSupplierSnapshot,
-} from "@/lib/supplierPortal";
+} from '@/lib/supplierPortal';
 
-export const SUPPLIER_ACCESS_QUERY_KEY = "supplier-access";
+export const SUPPLIER_ACCESS_QUERY_KEY = 'supplier-access';
 
 export function supplierAccessQueryKey(user) {
   const userId = getSupplierAccessUserId(user);
@@ -20,8 +20,8 @@ export function supplierAccessQueryKey(user) {
 export async function fetchSupplierAccessForNav() {
   const token = await waitForAuthToken();
   if (!token) {
-    const error = new Error("Authentication is not ready yet.");
-    error.code = "AUTH_NOT_READY";
+    const error = new Error('Authentication is not ready yet.');
+    error.code = 'AUTH_NOT_READY';
     throw error;
   }
   return fetchSupplierAccessSnapshot();

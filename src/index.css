@@ -14,45 +14,47 @@
  *   --brand-sand — warm off-white sections
  *   --navbar-offset — sticky navbar height (responsive)
  */
-@import "tailwindcss";
-@import "mapbox-gl/dist/mapbox-gl.css";
+@import 'tailwindcss';
+@import 'mapbox-gl/dist/mapbox-gl.css';
 
 @font-face {
-  font-family: "Plus Jakarta Sans";
-  src: url("./assets/font/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf") format("truetype");
+  font-family: 'Plus Jakarta Sans';
+  src: url('./assets/font/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf')
+    format('truetype');
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Plus Jakarta Sans";
-  src: url("./assets/font/Plus_Jakarta_Sans/PlusJakartaSans-Italic-VariableFont_wght.ttf") format("truetype");
+  font-family: 'Plus Jakarta Sans';
+  src: url('./assets/font/Plus_Jakarta_Sans/PlusJakartaSans-Italic-VariableFont_wght.ttf')
+    format('truetype');
   font-weight: 200 800;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Plus Jakarta Sans Heading";
-  src: url("./assets/font/Plus_Jakarta_Sans/static/PlusJakartaSans-Bold.ttf") format("truetype");
+  font-family: 'Plus Jakarta Sans Heading';
+  src: url('./assets/font/Plus_Jakarta_Sans/static/PlusJakartaSans-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "GT Eesti Pro Display";
-  src: url("./assets/font/GT Eesti Pro Display/gteestiprodisplay_bold.otf") format("opentype");
+  font-family: 'GT Eesti Pro Display';
+  src: url('./assets/font/GT Eesti Pro Display/gteestiprodisplay_bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", sans-serif;
-  --font-display: "Plus Jakarta Sans Heading", "Plus Jakarta Sans", sans-serif;
-  --font-hero: "GT Eesti Pro Display", "Plus Jakarta Sans Heading", sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Plus Jakarta Sans Heading', 'Plus Jakarta Sans', sans-serif;
+  --font-hero: 'GT Eesti Pro Display', 'Plus Jakarta Sans Heading', sans-serif;
 }
 
 :root {
@@ -144,29 +146,29 @@ input {
 /* Pointer on interactive controls; disabled / aria-disabled show not-allowed */
 a[href],
 button:not(:disabled),
-[type="button"]:not(:disabled),
-[type="submit"]:not(:disabled),
-[type="reset"]:not(:disabled),
-[role="button"]:not([aria-disabled="true"]),
-[role="tab"]:not([aria-disabled="true"]),
-[role="menuitem"]:not([aria-disabled="true"]),
-[role="link"][href],
-[role="switch"]:not([aria-disabled="true"]),
+[type='button']:not(:disabled),
+[type='submit']:not(:disabled),
+[type='reset']:not(:disabled),
+[role='button']:not([aria-disabled='true']),
+[role='tab']:not([aria-disabled='true']),
+[role='menuitem']:not([aria-disabled='true']),
+[role='link'][href],
+[role='switch']:not([aria-disabled='true']),
 label[for],
 select:not(:disabled),
 summary,
-input[type="checkbox"]:not(:disabled),
-input[type="radio"]:not(:disabled),
-input[type="file"]:not(:disabled),
-input[type="image"]:not(:disabled) {
+input[type='checkbox']:not(:disabled),
+input[type='radio']:not(:disabled),
+input[type='file']:not(:disabled),
+input[type='image']:not(:disabled) {
   cursor: pointer;
 }
 
 button:disabled,
-[type="button"]:disabled,
-[type="submit"]:disabled,
-[type="reset"]:disabled,
-[aria-disabled="true"] {
+[type='button']:disabled,
+[type='submit']:disabled,
+[type='reset']:disabled,
+[aria-disabled='true'] {
   cursor: not-allowed;
 }
 
@@ -297,7 +299,9 @@ button:disabled,
   position: relative;
   overflow: hidden;
   box-sizing: content-box;
-  animation: brandLoaderWipe 2.8s ease-in-out infinite, brandLoaderFade 2.8s ease-in-out infinite;
+  animation:
+    brandLoaderWipe 2.8s ease-in-out infinite,
+    brandLoaderFade 2.8s ease-in-out infinite;
   white-space: nowrap;
 }
 
@@ -312,7 +316,7 @@ button:disabled,
 }
 
 .brand-loader__fill::after {
-  content: "";
+  content: '';
   display: inline-block;
   width: 1ch;
 }
@@ -323,15 +327,6 @@ button:disabled,
 
 .brand-loader__africa {
   color: #079847;
-}
-
-.brand-loader__byline {
-  display: block;
-  color: #000;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  margin-top: 0.15em;
 }
 
 @keyframes brandLoaderWipe {
@@ -508,68 +503,70 @@ button:disabled,
   line-height: 1;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.22);
   border: 2px solid #fff;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .itinerary-map-marker--active {
   transform: scale(1.12);
   background: #0f2d1f;
-  box-shadow: 0 0 0 3px rgba(26, 69, 48, 0.35), 0 2px 8px rgba(15, 23, 42, 0.28);
+  box-shadow:
+    0 0 0 3px rgba(26, 69, 48, 0.35),
+    0 2px 8px rgba(15, 23, 42, 0.28);
 }
 
 /* ============================================
-   Search Bar Transition — CSS-only scroll-driven
-   Snappy easing: cubic-bezier(0.22, 1, 0.36, 1)
+   Search Bar Morph-on-Scroll — IntersectionObserver-driven
+   Two-element coordinated crossfade (GetYourGuide-style)
+   Easing: cubic-bezier(0.22, 1, 0.36, 1)
    ============================================ */
 
 /* ── Navbar inner container ── */
 .navbar-inner {
-  transition: padding 50ms ease-out;
 }
 
 @media (max-width: 1023px) {
   body.hero--search-sticky .navbar-inner {
+    justify-content: center;
     padding-left: 0.25rem;
     padding-right: 0.25rem;
+    gap: 0;
   }
 }
 
-.navbar-search-form {
-  transition: padding 50ms ease-out;
-}
-
-@media (max-width: 1023px) {
-  body.hero--search-sticky .navbar-search-form {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-}
-
-/* ── Navbar compact search ── */
+/* ── Navbar compact search — always in DOM, hidden via opacity/transform ── */
 .navbar-compact-search {
-  display: none;
+  display: flex;
   opacity: 0;
-  transition: opacity 150ms ease-out;
+  transform: translateY(-6px) scale(0.96);
   pointer-events: none;
+  transition:
+    opacity 50ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 50ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 
 body.hero--search-sticky .navbar-compact-search {
-  display: flex;
   opacity: 1;
+  transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
 .navbar-compact-search--forced {
-  display: flex;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  pointer-events: auto !important;
+  transition: none;
 }
 
-/* ── Navbar logo (brand button) ── */
+/* ── Navbar logo (brand) — shrinks on mobile when sticky ── */
 .navbar-brand {
   max-width: 400px;
-  transition: opacity 50ms ease-out, transform 50ms ease-out;
+  transition:
+    opacity 50ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 50ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (max-width: 1023px) {
@@ -578,15 +575,16 @@ body.hero--search-sticky .navbar-compact-search {
     transform: translateY(-4px);
     pointer-events: none;
     max-width: 0;
-    margin: 0;
-    padding: 0;
+    overflow: hidden;
   }
 }
 
-/* ── Navbar hamburger ── */
+/* ── Navbar hamburger — hides on mobile when sticky ── */
 .navbar-hamburger {
   max-width: 3rem;
-  transition: opacity 50ms ease-out, transform 50ms ease-out;
+  transition:
+    opacity 50ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 50ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (max-width: 1023px) {
@@ -595,51 +593,27 @@ body.hero--search-sticky .navbar-compact-search {
     transform: translateY(-4px);
     pointer-events: none;
     max-width: 0;
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-    border-width: 0;
+    overflow: hidden;
   }
 }
 
-/* ── Hero content blocks ── */
-@media (max-width: 1023px) {
-  body.hero--search-sticky .hero-content-wrap,
-  body.hero--search-sticky .hero-stats-wrap {
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
-/* ── Hero search wrap — CSS-only fade transition ── */
+/* ── Hero search wrap — crossfades out as navbar search fades in ── */
 .hero-search-wrap {
+  transition:
+    opacity 50ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 50ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@media (max-width: 1023px) {
-  .hero-search-wrap {
-    transition: opacity 150ms ease-out;
-  }
-
-  body.hero--search-sticky .hero-search-wrap {
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
-@media (min-width: 1024px) {
-  .hero-search-wrap {
-    transition: opacity 150ms ease-out;
-  }
-
-  body.hero--search-sticky .hero-search-wrap {
-    opacity: 0;
-    pointer-events: none;
-  }
+body.hero--search-sticky .hero-search-wrap {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.96);
+  pointer-events: none;
 }
 
 /* Countdown timer pulse glow for deal cards — uses opacity (works on all devices) */
 @keyframes countdownGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.35;
   }
   50% {
@@ -653,11 +627,11 @@ body.hero--search-sticky .navbar-compact-search {
 }
 
 .deal-timer-glow::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: -2px;
   border-radius: 9999px;
-  background: linear-gradient(135deg, rgba(249,115,22,0.5), rgba(239,68,68,0.35));
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.5), rgba(239, 68, 68, 0.35));
   animation: countdownGlow 1.5s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
@@ -667,4 +641,3 @@ body.hero--search-sticky .navbar-compact-search {
   position: relative;
   z-index: 1;
 }
-

@@ -2,12 +2,12 @@
  * @file ArticleDetailPage.jsx
  * @description Individual blog article page (/blog/:slug). Renders markdown body via react-markdown.
  */
-import { useParams, Link } from "react-router-dom";
-import { Calendar, Clock, ArrowLeft } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import { Navbar } from "@/components/homepage/Navbar";
-import { Footer } from "@/components/homepage/Footer";
-import { getPostBySlug } from "@/lib/blogLoader";
+import { useParams, Link } from 'react-router-dom';
+import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { Navbar } from '@/components/homepage/Navbar';
+import { Footer } from '@/components/homepage/Footer';
+import { getPostBySlug } from '@/lib/blogLoader';
 
 export function ArticleDetailPage() {
   const { slug } = useParams();

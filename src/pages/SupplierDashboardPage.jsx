@@ -5,8 +5,8 @@
  * App.jsx redirects /supplier/dashboard → https://supplier.travioafrica.com
  * This page is kept for reference or future in-app dashboard integration.
  */
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   LoaderCircle,
@@ -26,26 +26,26 @@ import {
   ChevronRight,
   LayoutDashboard,
   Bell,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { getSupplierApplicationStatus } from "@/api/supplier";
-import { getMyPayoutMethods } from "@/api/payout";
-import { apiRequest } from "@/api/client";
-import companyLogo from "@/assets/images/new_logo.png";
+import { Button } from '@/components/ui/button';
+import { getSupplierApplicationStatus } from '@/api/supplier';
+import { getMyPayoutMethods } from '@/api/payout';
+import { apiRequest } from '@/api/client';
+import companyLogo from '@/assets/images/new_logo.png';
 
-function StatCard({ icon: Icon, label, value, tone = "slate" }) {
+function StatCard({ icon: Icon, label, value, tone = 'slate' }) {
   const toneStyles = {
-    slate: "bg-white border-slate-200 text-slate-900",
-    emerald: "bg-emerald-50/60 border-emerald-200 text-emerald-900",
-    amber: "bg-amber-50/60 border-amber-200 text-amber-900",
-    sky: "bg-sky-50/60 border-sky-200 text-sky-900",
+    slate: 'bg-white border-slate-200 text-slate-900',
+    emerald: 'bg-emerald-50/60 border-emerald-200 text-emerald-900',
+    amber: 'bg-amber-50/60 border-amber-200 text-amber-900',
+    sky: 'bg-sky-50/60 border-sky-200 text-sky-900',
   };
   const iconStyles = {
-    slate: "text-slate-500 bg-slate-100",
-    emerald: "text-emerald-600 bg-emerald-100",
-    amber: "text-amber-600 bg-amber-100",
-    sky: "text-sky-600 bg-sky-100",
+    slate: 'text-slate-500 bg-slate-100',
+    emerald: 'text-emerald-600 bg-emerald-100',
+    amber: 'text-amber-600 bg-amber-100',
+    sky: 'text-sky-600 bg-sky-100',
   };
   return (
     <div className={`rounded-2xl border p-5 shadow-sm ${toneStyles[tone]}`}>
@@ -60,13 +60,13 @@ function StatCard({ icon: Icon, label, value, tone = "slate" }) {
   );
 }
 
-function QuickActionCard({ icon: Icon, title, description, href, tone = "slate" }) {
+function QuickActionCard({ icon: Icon, title, description, href, tone = 'slate' }) {
   const navigate = useNavigate();
   const toneMap = {
-    slate: "hover:border-slate-300 hover:bg-slate-50/50",
-    emerald: "hover:border-emerald-200 hover:bg-emerald-50/40",
-    sky: "hover:border-sky-200 hover:bg-sky-50/40",
-    amber: "hover:border-amber-200 hover:bg-amber-50/40",
+    slate: 'hover:border-slate-300 hover:bg-slate-50/50',
+    emerald: 'hover:border-emerald-200 hover:bg-emerald-50/40',
+    sky: 'hover:border-sky-200 hover:bg-sky-50/40',
+    amber: 'hover:border-amber-200 hover:bg-amber-50/40',
   };
   return (
     <button
@@ -96,7 +96,7 @@ export default function SupplierDashboardPage() {
     totalBookings: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadDashboard();
@@ -104,28 +104,30 @@ export default function SupplierDashboardPage() {
 
   async function loadDashboard() {
     setLoading(true);
-    setError("");
+    setError('');
     try {
       const [statusRes, methodsRes, earningsRes] = await Promise.allSettled([
         getSupplierApplicationStatus(),
         getMyPayoutMethods().catch(() => ({ data: { methods: [] } })),
-        apiRequest("/suppliers/earnings", { method: "GET", auth: true }).catch(() => ({ data: {} })),
+        apiRequest('/suppliers/earnings', { method: 'GET', auth: true }).catch(() => ({
+          data: {},
+        })),
       ]);
 
-      if (statusRes.status === "fulfilled") {
+      if (statusRes.status === 'fulfilled') {
         const data = statusRes.value.data || {};
         setProfile(data.supplierProfile || data);
       } else {
-        setError("Failed to load supplier profile.");
+        setError('Failed to load supplier profile.');
         setLoading(false);
         return;
       }
 
-      if (methodsRes.status === "fulfilled") {
+      if (methodsRes.status === 'fulfilled') {
         setMethods(methodsRes.value.data?.methods || []);
       }
 
-      if (earningsRes.status === "fulfilled") {
+      if (earningsRes.status === 'fulfilled') {
         const summary = earningsRes.value.data?.summary || {};
         setEarnings({
           totalEarnings: summary.totalEarnings || 0,
@@ -135,17 +137,17 @@ export default function SupplierDashboardPage() {
         });
       }
     } catch (err) {
-      setError(err?.message || "Failed to load dashboard.");
+      setError(err?.message || 'Failed to load dashboard.');
     } finally {
       setLoading(false);
     }
   }
 
   const businessInfo = profile?.businessInfo || {};
-  const reviewStatus = profile?.status || profile?.reviewStatus || "PENDING";
-  const isApproved = reviewStatus === "APPROVED" || reviewStatus === "ACTIVE";
-  const isActive = reviewStatus === "ACTIVE";
-  const displayName = businessInfo.displayName || businessInfo.legalBusinessName || "Supplier";
+  const reviewStatus = profile?.status || profile?.reviewStatus || 'PENDING';
+  const isApproved = reviewStatus === 'APPROVED' || reviewStatus === 'ACTIVE';
+  const isActive = reviewStatus === 'ACTIVE';
+  const displayName = businessInfo.displayName || businessInfo.legalBusinessName || 'Supplier';
   const hasPayoutMethod = methods.length > 0;
 
   return (
@@ -155,28 +157,24 @@ export default function SupplierDashboardPage() {
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/", { state: { postAuthSplash: true } })}
+              onClick={() => navigate('/', { state: { postAuthSplash: true } })}
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
             >
               <LayoutDashboard className="size-4" />
               Home
             </button>
           </div>
-          <img
-            src={companyLogo}
-            alt="TravioAfrica"
-            className="h-auto w-[140px] object-contain"
-          />
+          <img src={companyLogo} alt="TravioAfrica" className="h-auto w-[140px] object-contain" />
           <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate("/supplier/payout")}
+              onClick={() => navigate('/supplier/payout')}
               className="rounded-lg p-2 text-slate-500 hover:bg-slate-50"
               title="Payout Settings"
             >
               <Settings className="size-5" />
             </button>
             <div className="flex size-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
-              {displayName?.charAt(0)?.toUpperCase() || "S"}
+              {displayName?.charAt(0)?.toUpperCase() || 'S'}
             </div>
           </div>
         </div>
@@ -226,7 +224,7 @@ export default function SupplierDashboardPage() {
                 </div>
                 {!hasPayoutMethod && isApproved && (
                   <Button
-                    onClick={() => navigate("/supplier/payout")}
+                    onClick={() => navigate('/supplier/payout')}
                     className="h-11 shrink-0 gap-2 rounded-lg text-sm font-semibold"
                   >
                     <Wallet className="size-4" />
@@ -266,7 +264,7 @@ export default function SupplierDashboardPage() {
                 icon={Wallet}
                 label="Payout Methods"
                 value={methods.length}
-                tone={methods.length > 0 ? "emerald" : "amber"}
+                tone={methods.length > 0 ? 'emerald' : 'amber'}
               />
             </div>
 
@@ -320,14 +318,14 @@ export default function SupplierDashboardPage() {
                           </div>
                           <div>
                             <p className="text-sm font-bold text-slate-900">
-                              {m.type === "BANK_TRANSFER" && m.bankName}
-                              {m.type === "MOBILE_MONEY" && m.mobileProvider}
-                              {m.type === "PAYPAL" && "PayPal"}
+                              {m.type === 'BANK_TRANSFER' && m.bankName}
+                              {m.type === 'MOBILE_MONEY' && m.mobileProvider}
+                              {m.type === 'PAYPAL' && 'PayPal'}
                             </p>
                             <p className="text-xs text-slate-500">
-                              {m.type === "BANK_TRANSFER" && m.accountName}
-                              {m.type === "MOBILE_MONEY" && m.mobileNumber}
-                              {m.type === "PAYPAL" && m.paypalEmail}
+                              {m.type === 'BANK_TRANSFER' && m.accountName}
+                              {m.type === 'MOBILE_MONEY' && m.mobileNumber}
+                              {m.type === 'PAYPAL' && m.paypalEmail}
                             </p>
                           </div>
                         </div>
@@ -353,19 +351,27 @@ export default function SupplierDashboardPage() {
                 <div className="grid gap-3 text-sm sm:grid-cols-2">
                   <div className="flex justify-between rounded-xl bg-slate-50/60 px-4 py-3">
                     <span className="text-slate-500">Legal Name</span>
-                    <span className="font-semibold text-slate-900">{businessInfo.legalBusinessName}</span>
+                    <span className="font-semibold text-slate-900">
+                      {businessInfo.legalBusinessName}
+                    </span>
                   </div>
                   <div className="flex justify-between rounded-xl bg-slate-50/60 px-4 py-3">
                     <span className="text-slate-500">Display Name</span>
-                    <span className="font-semibold text-slate-900">{businessInfo.displayName || "—"}</span>
+                    <span className="font-semibold text-slate-900">
+                      {businessInfo.displayName || '—'}
+                    </span>
                   </div>
                   <div className="flex justify-between rounded-xl bg-slate-50/60 px-4 py-3">
                     <span className="text-slate-500">Country</span>
-                    <span className="font-semibold text-slate-900">{businessInfo.country || "—"}</span>
+                    <span className="font-semibold text-slate-900">
+                      {businessInfo.country || '—'}
+                    </span>
                   </div>
                   <div className="flex justify-between rounded-xl bg-slate-50/60 px-4 py-3">
                     <span className="text-slate-500">Business Type</span>
-                    <span className="font-semibold text-slate-900 capitalize">{businessInfo.businessType || "—"}</span>
+                    <span className="font-semibold text-slate-900 capitalize">
+                      {businessInfo.businessType || '—'}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -3,19 +3,19 @@
  * @description Country-aware "Explore more" attractions accordion on homepage.
  *   Uses useVisitorCountry + lib/topAttractionsByCountry for localized content.
  */
-import { useEffect, useId, useMemo, useState, useSyncExternalStore } from "react";
-import { useTranslation } from "react-i18next";
-import { ChevronDown } from "lucide-react";
+import { useEffect, useId, useMemo, useState, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ChevronDown } from 'lucide-react';
 
-import { useVisitorCountry } from "@/hooks/useVisitorCountry";
-import { getAttractionsForCountry, hasAttractionPack } from "@/lib/topAttractionsByCountry";
+import { useVisitorCountry } from '@/hooks/useVisitorCountry';
+import { getAttractionsForCountry, hasAttractionPack } from '@/lib/topAttractionsByCountry';
 
-const LG_QUERY = "(min-width: 1024px)";
+const LG_QUERY = '(min-width: 1024px)';
 
 function subscribeToMinWidthLg(callback) {
   const mq = window.matchMedia(LG_QUERY);
-  mq.addEventListener("change", callback);
-  return () => mq.removeEventListener("change", callback);
+  mq.addEventListener('change', callback);
+  return () => mq.removeEventListener('change', callback);
 }
 
 function getMinWidthLgSnapshot() {
@@ -30,7 +30,7 @@ function useIsMinLg() {
   return useSyncExternalStore(
     subscribeToMinWidthLg,
     getMinWidthLgSnapshot,
-    getMinWidthLgServerSnapshot,
+    getMinWidthLgServerSnapshot
   );
 }
 
@@ -43,7 +43,7 @@ export function ExploreMoreSection() {
 
   const { attractions, displayCountry } = useMemo(() => {
     const pack = getAttractionsForCountry(countryCode);
-    const name = typeof countryName === "string" ? countryName.trim() : "";
+    const name = typeof countryName === 'string' ? countryName.trim() : '';
     const displayCountry =
       hasAttractionPack(countryCode) && name.length > 1 ? name : pack.countryName;
     return { attractions: pack.attractions, displayCountry };
@@ -57,14 +57,14 @@ export function ExploreMoreSection() {
 
   const headerInteractiveProps = !isLg
     ? {
-        role: "button",
+        role: 'button',
         tabIndex: 0,
-        "aria-expanded": mobileOpen,
-        "aria-controls": listId,
-        "aria-labelledby": "explore-more-heading explore-more-subtitle",
+        'aria-expanded': mobileOpen,
+        'aria-controls': listId,
+        'aria-labelledby': 'explore-more-heading explore-more-subtitle',
         onClick: toggleList,
         onKeyDown: (e) => {
-          if (e.key === "Enter" || e.key === " ") {
+          if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             toggleList();
           }
@@ -79,27 +79,27 @@ export function ExploreMoreSection() {
     >
       <div className="mx-auto max-w-[1520px] px-4 sm:px-6">
         <div
-          className={`flex w-full items-start justify-between gap-3 sm:gap-4 ${!isLg ? "max-lg:min-h-[44px] max-lg:cursor-pointer max-lg:touch-manipulation max-lg:rounded-lg max-lg:py-1 max-lg:pl-1 max-lg:pr-1 max-lg:-mx-1 max-lg:active:bg-slate-50/90" : ""}`}
+          className={`flex w-full items-start justify-between gap-3 sm:gap-4 ${!isLg ? 'max-lg:min-h-[44px] max-lg:cursor-pointer max-lg:touch-manipulation max-lg:rounded-lg max-lg:py-1 max-lg:pl-1 max-lg:pr-1 max-lg:-mx-1 max-lg:active:bg-slate-50/90' : ''}`}
           {...headerInteractiveProps}
         >
           <div className="min-w-0 flex-1">
             <h2
               id="explore-more-heading"
               className="font-bold tracking-tight text-slate-900"
-              style={{ fontSize: "clamp(1.25rem, 2vw + 0.5rem, 1.75rem)" }}
+              style={{ fontSize: 'clamp(1.25rem, 2vw + 0.5rem, 1.75rem)' }}
             >
-              {t("exploreMore.title")}
+              {t('exploreMore.title')}
             </h2>
             <p
               id="explore-more-subtitle"
               className="mt-2 font-bold text-slate-900"
-              style={{ fontSize: "clamp(0.9375rem, 1.1vw + 0.45rem, 1.125rem)" }}
+              style={{ fontSize: 'clamp(0.9375rem, 1.1vw + 0.45rem, 1.125rem)' }}
             >
-              {t("exploreMore.topAttractions", { country: displayCountry })}
+              {t('exploreMore.topAttractions', { country: displayCountry })}
             </p>
           </div>
           <ChevronDown
-            className={`mt-0.5 size-6 shrink-0 text-slate-700 transition-transform duration-200 lg:hidden ${mobileOpen ? "rotate-180" : ""}`}
+            className={`mt-0.5 size-6 shrink-0 text-slate-700 transition-transform duration-200 lg:hidden ${mobileOpen ? 'rotate-180' : ''}`}
             aria-hidden
             strokeWidth={2}
           />
@@ -107,7 +107,7 @@ export function ExploreMoreSection() {
 
         <ul
           id={listId}
-          className={`mt-4 flex list-none flex-row flex-wrap gap-2.5 sm:mt-5 sm:gap-3 md:gap-3.5 lg:mt-6 lg:gap-3.5 ${mobileOpen ? "" : "max-lg:hidden"}`}
+          className={`mt-4 flex list-none flex-row flex-wrap gap-2.5 sm:mt-5 sm:gap-3 md:gap-3.5 lg:mt-6 lg:gap-3.5 ${mobileOpen ? '' : 'max-lg:hidden'}`}
           role="list"
         >
           {attractions.map((name, index) => (

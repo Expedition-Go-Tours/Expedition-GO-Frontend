@@ -8,17 +8,17 @@
  *
  * @see lib/auth.js for sign-in/sign-out implementations
  */
-import { createContext, useContext, useEffect, useState } from "react";
-import { sharedQueryClient } from "@/api/queryClient";
-import { prefetchSupplierAccess } from "@/api/supplierAccessQuery";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { sharedQueryClient } from '@/api/queryClient';
+import { prefetchSupplierAccess } from '@/api/supplierAccessQuery';
 import {
   getAuthProvider,
   getStoredAuthUser,
   signOutUser,
   subscribeToAuthState,
   waitForAuthToken,
-} from "@/lib/auth";
-import { clearSupplierNavCache } from "@/lib/supplierPortal";
+} from '@/lib/auth';
+import { clearSupplierNavCache } from '@/lib/supplierPortal';
 
 const AuthContext = createContext({
   loading: true,
@@ -40,7 +40,9 @@ export function AuthProvider({ children }) {
       const elapsed = Date.now() - splashStart;
       const remaining = Math.max(0, MIN_SPLASH_MS - elapsed);
       if (remaining > 0) {
-        setTimeout(() => { if (mounted) setLoading(false); }, remaining);
+        setTimeout(() => {
+          if (mounted) setLoading(false);
+        }, remaining);
       } else {
         if (mounted) setLoading(false);
       }
@@ -58,7 +60,7 @@ export function AuthProvider({ children }) {
         return;
       }
 
-      if (getAuthProvider() === "firebase") {
+      if (getAuthProvider() === 'firebase') {
         await waitForAuthToken(8000);
       }
 

@@ -2,22 +2,22 @@
  * @file date-picker.jsx
  * @description Polished single-date picker (react-day-picker) with dd-MM-yyyy display.
  */
-import { useMemo, useState } from "react";
-import { endOfDay, format, isAfter, isBefore, isValid, parse, startOfDay } from "date-fns";
-import { CalendarDays, ChevronDown } from "lucide-react";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/style.css";
-import "./date-picker.css";
+import { useMemo, useState } from 'react';
+import { endOfDay, format, isAfter, isBefore, isValid, parse, startOfDay } from 'date-fns';
+import { CalendarDays, ChevronDown } from 'lucide-react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/style.css';
+import './date-picker.css';
 
-import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 /** Radix select replacement for react-day-picker native year/month dropdowns. */
 function CalendarDropdown({ options = [], value, onChange, disabled, className }) {
@@ -34,7 +34,7 @@ function CalendarDropdown({ options = [], value, onChange, disabled, className }
     >
       <SelectTrigger
         className={cn(
-          "h-9 min-w-[5.5rem] rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 shadow-sm",
+          'h-9 min-w-[5.5rem] rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 shadow-sm',
           className
         )}
       >
@@ -61,8 +61,8 @@ function CalendarDropdown({ options = [], value, onChange, disabled, className }
   );
 }
 
-export const DISPLAY_DATE_FORMAT = "dd-MM-yyyy";
-export const STORAGE_DATE_FORMAT = "yyyy-MM-dd";
+export const DISPLAY_DATE_FORMAT = 'dd-MM-yyyy';
+export const STORAGE_DATE_FORMAT = 'yyyy-MM-dd';
 
 export function parseStoredDate(value) {
   if (!value) return undefined;
@@ -71,13 +71,13 @@ export function parseStoredDate(value) {
 }
 
 export function formatDateForStorage(date) {
-  if (!date || !isValid(date)) return "";
+  if (!date || !isValid(date)) return '';
   return format(date, STORAGE_DATE_FORMAT);
 }
 
 export function formatDateForDisplay(value) {
   const date = parseStoredDate(value);
-  return date ? format(date, DISPLAY_DATE_FORMAT) : "";
+  return date ? format(date, DISPLAY_DATE_FORMAT) : '';
 }
 
 /**
@@ -92,9 +92,9 @@ export function formatDateForDisplay(value) {
  * @param {string} [props.id]
  */
 export function DatePicker({
-  value = "",
+  value = '',
   onChange,
-  placeholder = "dd-mm-yyyy",
+  placeholder = 'dd-mm-yyyy',
   disabled = false,
   maxDate = new Date(),
   minDate = new Date(1920, 0, 1),
@@ -124,18 +124,16 @@ export function DatePicker({
           id={id}
           disabled={disabled}
           className={cn(
-            "flex h-12 w-full items-center justify-between rounded-[1.4rem] border border-slate-300 bg-white px-4 text-sm shadow-sm transition",
-            "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[color:var(--brand-green)]/10 focus-visible:border-[color:var(--brand-green)]/35",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            value ? "text-slate-900" : "text-slate-400",
+            'flex h-12 w-full items-center justify-between rounded-[1.4rem] border border-slate-300 bg-white px-4 text-sm shadow-sm transition',
+            'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[color:var(--brand-green)]/10 focus-visible:border-[color:var(--brand-green)]/35',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+            value ? 'text-slate-900' : 'text-slate-400',
             className
           )}
         >
           <span className="flex min-w-0 items-center gap-2">
             <CalendarDays className="size-4 shrink-0 text-slate-400" />
-            <span className="truncate">
-              {value ? formatDateForDisplay(value) : placeholder}
-            </span>
+            <span className="truncate">{value ? formatDateForDisplay(value) : placeholder}</span>
           </span>
           <ChevronDown className="size-4 shrink-0 text-slate-400" />
         </button>
@@ -158,12 +156,12 @@ export function DatePicker({
             disabled={{ after: endOfDay(maxDate), before: startOfDay(minDate) }}
             modifiers={dayModifiers}
             modifiersClassNames={{
-              passed: "rdp-passed",
-              upcoming: "rdp-upcoming",
+              passed: 'rdp-passed',
+              upcoming: 'rdp-upcoming',
             }}
             modifiersStyles={{
-              passed: { color: "#94a3b8" },
-              upcoming: { color: "#0f172a", opacity: 1 },
+              passed: { color: '#94a3b8' },
+              upcoming: { color: '#0f172a', opacity: 1 },
             }}
             captionLayout="dropdown"
             fromYear={fromYear}

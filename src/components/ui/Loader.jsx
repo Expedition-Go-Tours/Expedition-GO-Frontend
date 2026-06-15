@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import "./loader.css";
+import { useEffect, useState } from 'react';
+import './loader.css';
 
 export default function Loader() {
   const [visible, setVisible] = useState(true);

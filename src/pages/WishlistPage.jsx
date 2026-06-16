@@ -25,22 +25,19 @@ function WishlistPageContent() {
 
       <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
 
-      <main className="mx-auto flex-1 w-full max-w-[1520px] px-3 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-8">
+      <main className="mx-auto flex-1 w-full max-w-[1360px] px-5 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-8">
         {/* Header */}
-        <div className="mb-5 sm:mb-7">
+        <div className="mb-5 flex items-start justify-between gap-3 sm:mb-7 sm:items-center">
           <button
             onClick={() => navigate(-1)}
-            className="group mb-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-base font-semibold text-slate-600 shadow-sm transition hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] hover:shadow-md sm:text-sm"
+            className="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-base font-semibold text-slate-600 shadow-sm transition hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] hover:shadow-md sm:text-sm"
           >
             <ArrowLeft className="size-4 text-[color:var(--brand-green)] transition group-hover:-translate-x-0.5" />
             Back
           </button>
 
-          <div className="flex items-start gap-2.5 sm:items-center sm:gap-3">
-            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] sm:size-12">
-              <Heart className="size-5 fill-current sm:size-6" />
-            </div>
-            <div className="min-w-0">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="min-w-0 text-right">
               <h1
                 className="leading-tight text-slate-900"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem)' }}
@@ -54,6 +51,9 @@ function WishlistPageContent() {
                 {wishlist.length}{' '}
                 {wishlist.length === 1 ? t('wishlist.tourSaved') : t('wishlist.toursSaved')}
               </p>
+            </div>
+            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[color:var(--brand-mist)] text-[color:var(--brand-green)] sm:size-12">
+              <Heart className="size-5 fill-current sm:size-6" />
             </div>
           </div>
         </div>

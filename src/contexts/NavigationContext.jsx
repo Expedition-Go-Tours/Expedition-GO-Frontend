@@ -53,12 +53,15 @@ export function NavigationProvider({ children }) {
 
   const navigateWithLoader = useCallback(
     (to) => {
+      const path = resolveNavigationPath(to);
       setIsNavigating(true);
+      setNavigationTarget(path);
       navigate(to);
 
       if (safetyRef.current) clearTimeout(safetyRef.current);
       safetyRef.current = setTimeout(() => {
         setIsNavigating(false);
+        setNavigationTarget(null);
       }, AUTO_HIDE_MS);
     },
     [navigate]

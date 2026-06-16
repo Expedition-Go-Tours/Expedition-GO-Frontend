@@ -3,17 +3,15 @@
  * @description Homepage hero with search bar, destination carousel, and stats.
  *   Search navigates to /tours with query params. Uses heroStats from data.js.
  */
-import { MapPin, Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { Search } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigationLoader } from '@/contexts/NavigationContext';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { HeroTourCard } from './HeroTourCard';
 import { heroStats } from './data';
-import { useRecentlyViewed } from '@/contexts/RecentlyViewedContext';
 import { useSearchAutocomplete } from '@/hooks/useSearchAutocomplete';
 import { SearchAutocomplete } from './SearchAutocomplete';
 import { HeroImageCarousel } from './HeroImageCarousel';
@@ -26,70 +24,16 @@ export function HeroSection({
 }) {
   const { t } = useTranslation();
   const { navigateWithLoader } = useNavigationLoader();
-  const [_currentIndex, _setCurrentIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAutocomplete, setShowAutocomplete] = useState(false);
-  const scrollContainerRef = useRef(null);
-  const desktopScrollRef = useRef(null);
   const searchInputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
-  const { recentlyViewed } = useRecentlyViewed();
   const isExternalSearchMode = typeof onExternalSearchChange === 'function';
   const activeSearchQuery = isExternalSearchMode ? (externalSearchQuery ?? '') : searchQuery;
 
   // Get search results
   const searchResults = useSearchAutocomplete(activeSearchQuery);
-
-  // Carousel setup - Simple finite scroll
-  const carouselItems = recentlyViewed.length > 0 ? recentlyViewed : [];
-
-  const _cardWidth = 280; // Horizontal card width
-  const _gap = 12;
-  const [isOverflowing, setIsOverflowing] = useState(false);
-
-  const checkOverflow = useCallback(() => {
-    const container = desktopScrollRef.current;
-    if (container) {
-      setIsOverflowing(container.scrollWidth > container.clientWidth + 2);
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    checkOverflow();
-  }, [carouselItems.length, checkOverflow]);
-
-  useLayoutEffect(() => {
-    const container = desktopScrollRef.current;
-    if (!container) return;
-    const observer = new ResizeObserver(checkOverflow);
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [checkOverflow]);
-
-  // Simple scroll function for finite carousel
-  const scroll = (direction) => {
-    const container = desktopScrollRef.current;
-    if (!container) return;
-
-    const scrollAmount = 320;
-    const currentScroll = container.scrollLeft;
-    const maxScroll = container.scrollWidth - container.clientWidth;
-
-    if (direction === 'left') {
-      const newScrollPosition = Math.max(0, currentScroll - scrollAmount);
-      container.scrollTo({
-        left: newScrollPosition,
-        behavior: 'smooth',
-      });
-    } else {
-      const newScrollPosition = Math.min(maxScroll, currentScroll + scrollAmount);
-      container.scrollTo({
-        left: newScrollPosition,
-        behavior: 'smooth',
-      });
-    }
-  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -171,13 +115,57 @@ export function HeroSection({
     <>
       <section
         id="home"
-        className="relative z-10 min-h-[50vh] sm:min-h-[52vh] md:min-h-[50vh] lg:min-h-[52vh] xl:min-h-[60vh] flex items-start pt-[12vh] overflow-visible bg-(--brand-green) text-white pb-4"
+        className="relative z-10 min-h-[50vh] sm:min-h-[52vh] md:min-h-[50vh] lg:min-h-[52vh] xl:min-h-[60vh] flex items-start pt-[6vh] overflow-visible bg-(--brand-green) text-white pb-4"
       >
         <HeroImageCarousel />
 
-        <div className="relative mx-auto w-full max-w-[1520px] px-2 py-10 sm:px-4 sm:py-14 md:py-16 overflow-visible">
+        <div className="relative mx-auto w-full max-w-[1520px] px-2 py-6 sm:px-4 sm:py-8 md:py-10 overflow-visible">
           <div className="mx-auto max-w-4xl text-center">
             <div className="flex justify-center" />
+
+            {/* Hero Search Bar */}
+            <div className="hero-search-wrap relative z-10 mt-4 sm:mt-3.5 md:mt-4 mx-auto w-full max-w-xl sm:max-w-2xl lg:max-w-3xl">
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <div
+                  id="hero-search-bar"
+                  className="flex w-full items-center gap-0 rounded-full border-2 border-white/80 bg-white shadow-xl mx-auto overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0 pl-5 pr-3 py-3 sm:py-3.5">
+                    <Search className="text-slate-400 shrink-0 size-5" />
+                    <div className="min-w-0 flex-1">
+                    <Input
+                      ref={searchInputRef}
+                      value={activeSearchQuery}
+                      onChange={handleSearchChange}
+                      onFocus={() =>
+                        activeSearchQuery.trim().length >= 2 &&
+                        searchResults.total > 0 &&
+                        setShowAutocomplete(true)
+                      }
+                      className="h-auto border-0 px-0 py-0 w-full text-[15px] sm:text-base text-slate-900 placeholder:text-slate-400 placeholder:truncate shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        style={{
+                          caretColor: 'var(--brand-green)',
+                          outline: 'none',
+                          textAlign: 'left',
+                        }}
+                        placeholder={t('hero.destinationPlaceholder')}
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                  <div className="pr-1.5 py-1.5">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="h-full rounded-full text-[13px] font-semibold px-5 py-2.5 sm:text-[14px] sm:px-6 sm:py-3"
+                    >
+                      {t('hero.search')}
+                    </Button>
+                  </div>
+                </div>
+                <div ref={autocompleteRef} />
+              </form>
+            </div>
 
             {/* Hero Content */}
             <div className="hero-content-wrap">
@@ -205,60 +193,6 @@ export function HeroSection({
               >
                 {t('hero.subtitle')}
               </p>
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 backdrop-blur-md">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-green)]" />
-                <p className="text-xs font-medium tracking-wide text-white/80">
-                  {t('hero.availability')}
-                </p>
-              </div>
-            </div>
-
-            {/* Hero Search Bar */}
-            <div className="hero-search-wrap relative z-10 mt-4 sm:mt-3.5 md:mt-4 mx-auto w-full max-w-xl sm:max-w-2xl lg:max-w-3xl">
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <div
-                  id="hero-search-bar"
-                  className="grid w-full gap-0 rounded-lg border border-slate-200 bg-white grid-cols-[1fr_auto] shadow-md mx-auto"
-                >
-                  <div className="flex items-center gap-2 px-3 py-2">
-                    <MapPin className="text-(--brand-green) shrink-0 size-4" />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-[10px] sm:text-[11px] mb-0">
-                        {t('hero.destination')}
-                      </p>
-                      <Input
-                        ref={searchInputRef}
-                        value={activeSearchQuery}
-                        onChange={handleSearchChange}
-                        onFocus={() =>
-                          activeSearchQuery.trim().length >= 2 &&
-                          searchResults.total > 0 &&
-                          setShowAutocomplete(true)
-                        }
-                        className="h-auto border-0 px-0 py-0 text-sm sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                        style={{
-                          caretColor: '#01311a',
-                          outline: 'none',
-                          textAlign: 'left',
-                        }}
-                        placeholder={t('hero.destinationPlaceholder')}
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
-                  <div className="p-1">
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className="h-full w-full rounded-lg min-h-7 text-[10px] px-3 sm:min-h-8 sm:text-[11px] sm:px-4"
-                    >
-                      <Search className="size-2.5 sm:size-3" />
-                      {t('hero.search')}
-                    </Button>
-                  </div>
-                </div>
-                <div ref={autocompleteRef} />
-              </form>
             </div>
 
             {/* Hero Stats */}
@@ -276,74 +210,6 @@ export function HeroSection({
               ))}
             </div>
           </div>
-
-          {/* Recently Viewed Carousel */}
-          {carouselItems.length > 0 && (
-            <div className="hero-carousel-wrap mt-4 sm:mt-5 md:mt-6 overflow-visible">
-              <h2
-                className="mb-3 text-center font-semibold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
-                style={{ fontSize: 'clamp(15px, 2.5vw, 16px)' }}
-              >
-                {t('sections.pickupTitle')}
-              </h2>
-              <div className="overflow-visible">
-                <div className="mx-auto hidden w-full max-w-full items-center gap-2 px-1 sm:gap-3 md:flex lg:gap-4">
-                  {isOverflowing && (
-                    <button
-                      type="button"
-                      onClick={() => scroll('left')}
-                      className="grid size-10 shrink-0 place-items-center rounded-full bg-white/95 text-slate-900 shadow-lg backdrop-blur-sm transition hover:scale-110 hover:bg-white"
-                      aria-label="Previous"
-                    >
-                      <ChevronLeft className="size-5" />
-                    </button>
-                  )}
-                  <div
-                    ref={desktopScrollRef}
-                    className="relative z-[3] flex min-w-0 flex-1 gap-3 overflow-x-auto overflow-y-hidden pb-6 scrollbar-hide"
-                    style={{
-                      WebkitOverflowScrolling: 'touch',
-                      scrollSnapType: 'x mandatory',
-                      justifyContent: isOverflowing ? 'flex-start' : 'center',
-                    }}
-                  >
-                    {carouselItems.map((item, index) => (
-                      <div
-                        key={`${item.title}-${index}-desktop`}
-                        className="w-[280px] min-w-[280px] shrink-0"
-                        style={{ scrollSnapAlign: isOverflowing ? 'start' : 'none' }}
-                      >
-                        <HeroTourCard {...item} disableTracking={true} />
-                      </div>
-                    ))}
-                  </div>
-                  {isOverflowing && (
-                    <button
-                      type="button"
-                      onClick={() => scroll('right')}
-                      className="grid size-10 shrink-0 place-items-center rounded-full bg-white/95 text-slate-900 shadow-lg backdrop-blur-sm transition hover:scale-110 hover:bg-white"
-                      aria-label="Next"
-                    >
-                      <ChevronRight className="size-5" />
-                    </button>
-                  )}
-                </div>
-                <div
-                  ref={scrollContainerRef}
-                  className="relative z-[3] md:hidden overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
-                  style={{ WebkitOverflowScrolling: 'touch' }}
-                >
-                  <div className="flex gap-3 px-4">
-                    {carouselItems.map((item, index) => (
-                      <div key={`${item.title}-${index}`} className="w-[280px] shrink-0 snap-start">
-                        <HeroTourCard {...item} disableTracking={true} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </section>
       {showAutocomplete &&

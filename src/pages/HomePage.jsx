@@ -3,7 +3,7 @@
  * @description Main landing route (/). Composes homepage sections and handles
  *   post-auth splash → skeleton loading handoff.
  *
- * Section order: Navbar → Hero → Recommended → Destinations → Top Rated → Featured → Extra Categories →
+ * Section order: Navbar → Hero → Continue Planning → Todo → Recommended → Destinations → Top Rated → Featured → Extra Categories →
  *   Last Minute Deals → New Experiences → Top Attractions Nearby → Newsletter →
  *   Features → Reviews → Explore More → Footer
  *
@@ -37,6 +37,7 @@ import { SectionHeading } from '@/components/homepage/SectionHeading';
 import { NewExperiencesCard } from '@/components/homepage/NewExperiencesCard';
 import { LastMinuteDealsCard } from '@/components/homepage/LastMinuteDealsCard';
 import { FeaturedExperiencesCard } from '@/components/homepage/FeaturedExperiencesCard';
+import { ContinuePlanningCard } from '@/components/homepage/ContinuePlanningCard';
 import { RecommendedExperiencesCard } from '@/components/homepage/RecommendedExperiencesCard';
 import { TopRatedExperiencesCard } from '@/components/homepage/TopRatedExperiencesCard';
 import {
@@ -48,12 +49,12 @@ import {
   sidebarTopRated,
 } from '@/components/homepage/data';
 import { AuthModalProvider } from '@/contexts/AuthModalContext';
-import { RecentlyViewedProvider } from '@/contexts/RecentlyViewedContext';
 import { AuthModal } from '@/components/ui/auth-modal';
 import { useAuthModal } from '@/contexts/AuthModalContext';
 import { useHomePageData } from '@/hooks/useHomePageData';
 import { CarouselClipTrack } from '@/components/ui/CarouselClipTrack';
 import { useAllTours } from '@/hooks/useAllTours';
+import { useRecentlyViewedStorage } from '@/hooks/useRecentlyViewedStorage';
 
 /** Post–sign-in/register handoff: show brand splash, stay under ~1200ms. */
 const POST_AUTH_SPLASH_MS = 700;
@@ -90,12 +91,23 @@ function HomePageContent() {
     'cultural',
     'wildlife',
     'beach',
+    'adventure',
     'food & drink',
+    'food & drinks',
     'food and drink',
+    'food and drinks',
     'food & culinary',
+    'food',
   ]);
+
+  function isExcludedCategory(key) {
+    if (EXCLUDED_CATEGORIES.has(key)) return true;
+    if (key.includes('food') || key.includes('drink') || key.includes('culinary')) return true;
+    return false;
+  }
+
   const categoryKeys = Object.keys(categories).filter(
-    (key) => !EXCLUDED_CATEGORIES.has(key.toLowerCase())
+    (key) => !isExcludedCategory(key)
   );
   const MIN_SLOT_ITEMS = 8;
   const MIN_SLOT_IDS = [categoryKeys[0], categoryKeys[1], categoryKeys[2], categoryKeys[3]];
@@ -182,8 +194,9 @@ function HomePageContent() {
     .slice(4)
     .map((key) => ({
       id: key,
-      title: key,
+      title: key.replace(/\b\w/g, (c) => c.toUpperCase()),
       items: categories[key] || [],
+      fallbackKey: key,
     }))
     .filter((slot) => slot.items.length > 0);
   const allCarouselSlots = [...carouselSlots, ...extraSlots];
@@ -206,6 +219,8 @@ function HomePageContent() {
   const [sharedHeroDateRange, setSharedHeroDateRange] = useState({ from: null, to: null });
   const [sharedSearchQuery, setSharedSearchQuery] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const { recentlyViewed } = useRecentlyViewedStorage();
 
   const CAROUSEL_SCROLL_MS = 260;
   const scrollRafRef = useRef({});
@@ -239,6 +254,8 @@ function HomePageContent() {
   }
   const dealsScrollRef = useRef(null);
   const experiencesScrollRef = useRef(null);
+  const continuePlanningScrollRef = useRef(null);
+  const [continuePlanningOverflow, setContinuePlanningOverflow] = useState(false);
   const scrollDeals = useCallback((direction) => {
     const container = dealsScrollRef.current;
     if (!container) return;
@@ -253,6 +270,27 @@ function HomePageContent() {
     const target = container.scrollLeft + (direction === 'left' ? -amount : amount);
     smoothScrollTo(container, target);
   }, []);
+  const scrollContinuePlanning = useCallback((direction) => {
+    const container = continuePlanningScrollRef.current;
+    if (!container) return;
+    const amount = 380 + 16;
+    const target = container.scrollLeft + (direction === 'left' ? -amount : amount);
+    smoothScrollTo(container, target);
+  }, []);
+
+  useEffect(() => {
+    const container = continuePlanningScrollRef.current;
+    if (!container || recentlyViewed.length === 0) return;
+    const check = () => {
+      if (container) {
+        setContinuePlanningOverflow(container.scrollWidth > container.clientWidth + 2);
+      }
+    };
+    check();
+    const observer = new ResizeObserver(check);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [recentlyViewed]);
 
   useEffect(() => {
     if (!showPostAuthSplash) {
@@ -367,8 +405,56 @@ function HomePageContent() {
           onExternalSearchChange={setSharedSearchQuery}
         />
 
-        <main className="mx-auto max-w-[1520px] overflow-x-hidden px-4 pb-14 sm:px-6 lg:px-8">
+        <main className="mx-auto max-w-[1520px] px-4 pb-14 sm:px-6 lg:px-8">
           <div className="space-y-6 pt-6 min-w-0 md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
+            {/* Continue Planning Our Trip */}
+            {recentlyViewed.length > 0 && (
+              <section className="py-4 md:py-4 xl:py-5">
+                <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+                  <div className="min-w-0 flex-1">
+                    <h2
+                      className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
+                      style={{ fontSize: 'clamp(1.2rem, 1.2vw + 0.5rem, 1.375rem)' }}
+                      title="Continue planning our Trip"
+                    >
+                      Continue planning our Trip
+                    </h2>
+                  </div>
+                </div>
+                  <div className="relative overflow-visible">
+                    <button
+                      onClick={() => scrollContinuePlanning('left')}
+                      className="absolute left-0 top-1/2 z-10 -translate-y-1/2 hidden xl:grid size-12 place-items-center rounded-full bg-white text-slate-700 shadow-[0_4px_14px_rgba(0,0,0,0.18)] border border-slate-200 transition hover:shadow-[0_4px_18px_rgba(0,0,0,0.28)] hover:text-[color:var(--brand-green)]"
+                      aria-label="Scroll left"
+                    >
+                      <ChevronLeft className="size-6" />
+                    </button>
+                  <div
+                    ref={continuePlanningScrollRef}
+                    className="flex gap-4 overflow-x-auto xl:overflow-x-hidden overflow-y-hidden overscroll-x-contain pb-1 scrollbar-hide items-stretch"
+                    style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}
+                >
+                  {recentlyViewed.map((item, index) => (
+                    <div
+                      key={`${item.title}-${index}`}
+                      className="w-[290px] md:w-[380px] shrink-0 h-full"
+                      style={{ scrollSnapAlign: 'start' }}
+                    >
+                      <ContinuePlanningCard {...item} />
+                    </div>
+                  ))}
+                </div>
+                    <button
+                      onClick={() => scrollContinuePlanning('right')}
+                      className="absolute right-0 top-1/2 z-10 -translate-y-1/2 hidden xl:grid size-12 place-items-center rounded-full bg-white text-slate-700 shadow-[0_4px_14px_rgba(0,0,0,0.18)] border border-slate-200 transition hover:shadow-[0_4px_18px_rgba(0,0,0,0.28)] hover:text-[color:var(--brand-green)]"
+                      aria-label="Scroll right"
+                    >
+                      <ChevronRight className="size-6" />
+                    </button>
+                </div>
+              </section>
+            )}
+
             {/* Todo Section - Mood/Category Selection */}
             <TodoSection />
 
@@ -409,12 +495,7 @@ function HomePageContent() {
 
             {/* Extra carousel slots */}
             {extraSlots.map((slot) => (
-              <TourCarouselSection
-                key={slot.id}
-                id={slot.id}
-                title={slot.title}
-                items={slot.items}
-              />
+              <TourCarouselSection key={slot.id} {...slot} />
             ))}
 
             {/* 6. Last Minute Deals */}
@@ -601,9 +682,7 @@ function HomePageContent() {
 function HomePage() {
   return (
     <AuthModalProvider>
-      <RecentlyViewedProvider>
-        <HomePageContent />
-      </RecentlyViewedProvider>
+      <HomePageContent />
     </AuthModalProvider>
   );
 }

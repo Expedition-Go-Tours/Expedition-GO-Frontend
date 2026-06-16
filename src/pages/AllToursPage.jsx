@@ -645,7 +645,7 @@ function AllToursPageContent() {
 
         <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
 
-        <main className="mx-auto flex-1 w-full max-w-[1520px] overflow-x-hidden bg-white px-4 pt-2 pb-6 sm:px-6 lg:px-8 lg:py-6">
+        <main className="mx-auto flex-1 w-full max-w-[1360px] overflow-x-hidden bg-white px-4 pt-2 pb-6 sm:px-6 lg:px-8 lg:py-6">
           <div className="mb-8 mt-4">
             <Link
               to="/"
@@ -804,7 +804,7 @@ function AllToursPageContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 pb-2 sm:pb-0 sm:gap-x-1.5 sm:gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-y-6 sm:gap-x-4 sm:gap-y-8 pb-2 sm:pb-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {isLoading ? (
                   <div className="col-span-full py-20 text-center text-sm text-slate-500">
                     Loading tours...

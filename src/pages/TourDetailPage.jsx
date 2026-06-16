@@ -36,7 +36,7 @@ import {
   Truck,
   Users,
   MapPin,
-  Share2,
+  Upload,
   Grid3X3,
   MessageSquare,
   Phone,
@@ -57,12 +57,12 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { AuthModalProvider, useAuthModal } from '@/contexts/AuthModalContext';
 import { AuthModal } from '@/components/ui/auth-modal';
-import { RecentlyViewedProvider, useRecentlyViewed } from '@/contexts/RecentlyViewedContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigationLoader } from '@/contexts/NavigationContext';
 import { useTourById } from '@/hooks/useTourById';
+import { useRecentlyViewedStorage } from '@/hooks/useRecentlyViewedStorage';
 import {
   adaptTourDetail,
   buildOverviewHighlights,
@@ -458,7 +458,7 @@ function TourDetailContent() {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { convertPrice } = useCurrency();
   const { addToCart } = useCart();
-  const { addToRecentlyViewed } = useRecentlyViewed();
+  const { addToRecentlyViewed } = useRecentlyViewedStorage();
   const { user } = useAuth();
   const { isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModal();
   const { data: rawTour, isLoading, error } = useTourById(id);
@@ -539,7 +539,7 @@ function TourDetailContent() {
   const selectedTourDuration = tourData?.duration || 'Flexible';
   const selectedTourPriceNumber = tourData?.price || 0;
   const selectedTourTitle = useMemo(
-    () => rawTour?.metaTitle || safeDecodeRouteParam(id) || tourData?.name || id,
+    () => rawTour?.title || rawTour?.name || rawTour?.metaTitle || safeDecodeRouteParam(id) || id,
     [id, rawTour, tourData]
   );
   const selectedTourRatingNumber = Number(tourData?.ratingsAverage) || 4.8;
@@ -559,6 +559,9 @@ function TourDetailContent() {
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1)
   );
   const [activeDetailTab, setActiveDetailTab] = useState('overview');
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const headerRef = useRef(null);
+  const storedCleanup = useRef(null);
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [replyTargetQuestion, setReplyTargetQuestion] = useState(null);
   const [replyMessage, setReplyMessage] = useState('');
@@ -592,23 +595,41 @@ function TourDetailContent() {
     [selectedTourRatingNumber, selectedTourReviewsNumber]
   );
 
-  const completeBackNavigation = useCallback(() => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
-    navigate('/', { state: { skipHomeSkeletonDelay: true } });
-  }, [navigate]);
-
-  const handleBackClick = useCallback(() => {
-    completeBackNavigation();
-  }, [completeBackNavigation]);
-
   useEffect(() => {
     if (activeDetailTab !== 'itinerary') {
       setFocusedItineraryStopIndex(null);
     }
   }, [activeDetailTab]);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const raf = requestAnimationFrame(() => {
+      const header = headerRef.current;
+      if (!header) return;
+
+      let ticking = false;
+      const onScroll = () => {
+        if (!ticking) {
+        requestAnimationFrame(() => {
+          const rect = header.getBoundingClientRect();
+          setShowStickyHeader(rect.bottom < 0);
+          ticking = false;
+        });
+          ticking = true;
+        }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      storedCleanup.current = () => {
+        window.removeEventListener('scroll', onScroll);
+      };
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      if (storedCleanup.current) storedCleanup.current();
+    };
+  }, [isLoading]);
 
   useEffect(() => {
     setCurrentImageIndex(0);
@@ -630,11 +651,14 @@ function TourDetailContent() {
   }, [id]);
 
   useEffect(() => {
+    const tourSlug = rawTour?.slug || id;
+    if (!tourSlug || !selectedTourTitle) return;
+
     const tourImage = tourData?.imageCover || mergedImages[0] || fallbackTourImage;
 
     const recentTourData = {
       title: selectedTourTitle,
-      slug: rawTour?.slug || '',
+      slug: tourSlug,
       duration: tourData?.duration || selectedTourDuration,
       price: tourData?.price || selectedTourPriceNumber,
       rating: String(tourData?.ratingsAverage || selectedTourRatingNumber),
@@ -643,8 +667,7 @@ function TourDetailContent() {
     };
 
     addToRecentlyViewed(recentTourData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]); // Only re-run when the tour ID changes
+  }, [id, rawTour?.slug, selectedTourTitle, addToRecentlyViewed]);
 
   const isFavorited = isInWishlist(selectedTourTitle);
 
@@ -1323,27 +1346,32 @@ function TourDetailContent() {
 
         <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
 
-        <main className="mx-auto max-w-[1520px] px-4 pb-8 pt-6 text-[color:var(--brand-green)] sm:px-6 sm:pt-8 lg:px-8">
-          <div className="mb-5 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={handleBackClick}
-              className="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-[color:var(--brand-green)]/30 hover:bg-[color:var(--brand-mist)] hover:text-[color:var(--brand-green)] hover:shadow-md"
-            >
-              <ArrowLeft className="size-4 text-[color:var(--brand-green)] transition group-hover:-translate-x-0.5" />
-              <span className="hidden sm:inline">{t('common.back')}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setIsWriteReviewOpen(true)}
-              className="inline-flex items-center rounded-full border border-[color:var(--brand-green)] px-4 py-2 text-sm font-bold transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
-            >
-              Review
-            </button>
+        {/* Sticky mobile header — back arrow + title when scrolled past hero */}
+        <div
+          className={`fixed top-[var(--navbar-offset)] left-0 right-0 z-40 bg-white/95 backdrop-blur-md transition-transform duration-200 ${
+            showStickyHeader ? 'translate-y-0' : '-translate-y-full'
+          }`}
+        >
+          <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3 py-2.5">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="grid size-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="size-4" />
+              </button>
+              <h2 className="truncate text-[15px] font-bold text-slate-900">
+                {selectedTourTitle}
+              </h2>
+            </div>
           </div>
+        </div>
 
-          <header className="space-y-3">
+        <main className="mx-auto max-w-[1520px] px-4 pb-8 pt-6 text-[color:var(--brand-green)] sm:px-6 sm:pt-8 lg:px-8">
+
+          <header ref={headerRef} className="space-y-3">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-5xl">
                 <h1
@@ -1352,7 +1380,7 @@ function TourDetailContent() {
                 >
                   {selectedTourTitle}
                 </h1>
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm font-semibold text-slate-900 sm:gap-4">
+                <div className="mt-3 flex items-center gap-x-3 text-sm font-semibold text-slate-900 sm:gap-4">
                   <span
                     className="inline-flex items-center gap-1 text-[#00b67a]"
                     aria-label={`${selectedTourRatingNumber} out of 5 rating`}
@@ -1446,14 +1474,25 @@ function TourDetailContent() {
                   ))}
                 </div>
 
+                <div className={`absolute left-4 top-4 z-10 flex flex-wrap items-start gap-2 transition-opacity duration-200 ${showStickyHeader ? 'opacity-0 pointer-events-none' : ''}`}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="inline-grid size-11 shrink-0 place-items-center rounded-full bg-white/90 text-slate-950 shadow-[0_2px_10px_rgba(15,23,42,0.18)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-[0.98] touch-manipulation"
+                    aria-label="Go back"
+                  >
+                    <ArrowLeft className="size-5" />
+                  </button>
+                </div>
+
                 <div className="absolute right-4 top-4 z-10 flex flex-wrap justify-end gap-2">
                   <button
                     type="button"
                     onClick={handleShare}
-                    className="inline-flex h-11 items-center gap-2 rounded-full bg-white px-4 text-sm font-black text-slate-950 shadow-[0_2px_10px_rgba(15,23,42,0.18)] transition hover:bg-white/95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    aria-label="Share"
+                    className="inline-grid size-11 shrink-0 place-items-center rounded-full bg-white text-slate-950 shadow-[0_2px_10px_rgba(15,23,42,0.18)] transition hover:bg-white/95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-[0.98] touch-manipulation"
                   >
-                    <Share2 className="size-4" />
-                    Share
+                    <Upload className="size-5" />
                   </button>
                   <button
                     type="button"
@@ -1694,13 +1733,13 @@ function TourDetailContent() {
           </div>
 
           <nav className="sticky top-[58px] z-30 -mx-4 mt-5 overflow-x-auto bg-white px-4 sm:-mx-6 sm:px-6 lg:top-[104px] lg:-mx-8 lg:px-8 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex gap-3 px-3 text-xs font-bold text-[color:var(--brand-green)] sm:gap-5 sm:px-4 sm:text-sm">
+            <div className="flex gap-2 sm:gap-5 justify-center px-2 sm:px-4 text-[11px] font-bold text-[color:var(--brand-green)] sm:text-sm">
               {TOUR_DETAIL_TABS.map((tab) => (
                 <button
                   key={tab.key}
                   type="button"
                   onClick={() => setActiveDetailTab(tab.key)}
-                  className={`shrink-0 whitespace-nowrap border-b-2 px-2 py-3 transition-colors duration-200 sm:px-2.5 ${
+                  className={`shrink sm:shrink-0 whitespace-nowrap border-b-2 px-1.5 py-3 transition-colors duration-200 sm:px-2.5 ${
                     activeDetailTab === tab.key
                       ? 'border-[color:var(--brand-green)]'
                       : 'border-transparent hover:border-[color:var(--brand-green)]/50'
@@ -2972,9 +3011,7 @@ function SupplierTabContent({
 function TourDetailPage() {
   return (
     <AuthModalProvider>
-      <RecentlyViewedProvider>
-        <TourDetailContent />
-      </RecentlyViewedProvider>
+      <TourDetailContent />
     </AuthModalProvider>
   );
 }

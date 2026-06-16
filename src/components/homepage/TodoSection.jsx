@@ -5,60 +5,68 @@ import { useNavigationLoader } from '@/contexts/NavigationContext';
 
 const MOOD_CATEGORIES = [
   {
-    id: 'beach',
-    title: 'Beach',
-    chip: '12 tours',
-    image:
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'mountains',
-    title: 'Mountains',
-    chip: '8 tours',
-    image:
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80',
-  },
-  {
     id: 'adventure',
     title: 'Adventure',
-    chip: '15 tours',
+    tag: 'Adventure',
+    count: 15,
     image:
       'https://images.unsplash.com/photo-1533240332313-0db49b459ad6?auto=format&fit=crop&w=600&q=80',
   },
   {
-    id: 'romantic',
-    title: 'Romantic',
-    chip: '6 tours',
-    image:
-      'https://images.unsplash.com/photo-1519112232436-9922c602e93c?auto=format&fit=crop&w=600&q=80',
-  },
-  {
     id: 'cultural',
     title: 'Cultural',
-    chip: '20 tours',
+    tag: 'Cultural',
+    count: 20,
     image:
       'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80',
   },
   {
+    id: 'nature',
+    title: 'Nature',
+    tag: 'Nature',
+    count: 18,
+    image:
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'beach',
+    title: 'Beach',
+    tag: 'Beach',
+    count: 12,
+    image:
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
+  },
+  {
     id: 'wildlife',
     title: 'Wildlife',
-    chip: '10 tours',
+    tag: 'Wildlife',
+    count: 10,
     image:
       'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=600&q=80',
   },
   {
-    id: 'food',
-    title: 'Food & Drink',
-    chip: '9 tours',
+    id: 'city-tours',
+    title: 'City Tours',
+    tag: 'City Tours',
+    count: 22,
+    image:
+      'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'food-drinks',
+    title: 'Food & Drinks',
+    tag: 'Food & Drinks',
+    count: 9,
     image:
       'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80',
   },
   {
-    id: 'waterfall',
-    title: 'Waterfalls',
-    chip: '7 tours',
+    id: 'wellness',
+    title: 'Wellness',
+    tag: 'Wellness',
+    count: 7,
     image:
-      'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
@@ -147,7 +155,7 @@ export function TodoSection() {
             key={category.id}
             type="button"
             onClick={() => handleCardClick(category)}
-            className="group relative flex h-[188px] w-[280px] shrink-0 scroll-snap-start flex-col overflow-hidden rounded-[22px] border border-white/70 bg-slate-200 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
+            className="group relative flex h-[188px] w-[280px] shrink-0 scroll-snap-start flex-col overflow-hidden rounded-[22px] border border-white/70 bg-slate-200 transition-all hover:-translate-y-1"
             style={{
               scrollSnapAlign: 'start',
               backgroundImage: `url(${category.image})`,
@@ -155,8 +163,11 @@ export function TodoSection() {
               backgroundPosition: 'center',
             }}
           >
-            <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[12px] font-bold text-[color:var(--brand-green)] shadow-sm">
-              {category.chip}
+            <span className="absolute left-4 top-4 rounded-full bg-[color:var(--brand-green)]/90 px-3 py-1 text-[12px] font-semibold text-white shadow-sm backdrop-blur-sm">
+              {category.tag}
+            </span>
+            <span className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[12px] font-bold text-slate-700 shadow-sm backdrop-blur-sm">
+              {category.count} tours
             </span>
             <div className="absolute bottom-0 left-0 right-0 top-0 bg-gradient-to-t from-black/70 via-black/18 to-transparent" />
             <div className="relative z-10 mt-auto flex items-end justify-between px-5 pb-5">

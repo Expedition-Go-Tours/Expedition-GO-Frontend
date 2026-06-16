@@ -82,20 +82,31 @@ export function BrandLoader({
 
   return (
     <div className={wrapperClass} role="status" aria-live="polite" aria-label={label}>
-      <div
-        className={cn(
-          'brand-loader',
-          splash && 'brand-loader--splash',
-          once && 'brand-loader--once',
-          initial && 'brand-loader--initial'
-        )}
-      >
-        <div ref={fillWrapRef} className="brand-loader__fill-wrap">
-          <div className="brand-loader__fill">
-            <span className="brand-loader__travio">Travio</span>
-            <span className="brand-loader__africa">Africa</span>
+      <div className="flex flex-col items-center gap-2">
+        <div
+          className={cn(
+            'brand-loader',
+            splash && 'brand-loader--splash',
+            once && 'brand-loader--once',
+            initial && 'brand-loader--initial'
+          )}
+        >
+          <div ref={fillWrapRef} className="brand-loader__fill-wrap">
+            <div className="brand-loader__fill">
+              <span className="brand-loader__travio">Travio</span>
+              <span className="brand-loader__africa">Africa</span>
+              <p className={cn(
+          'brand-loader__tagline text-center text-[15px] font-medium tracking-wide text-black',
+          initial && 'brand-loader__tagline--initial',
+          once && 'brand-loader__tagline--once',
+          splash && 'brand-loader__tagline--splash'
+        )}>
+          by Expedition-Go Tours
+        </p>
+            </div>
           </div>
         </div>
+       
       </div>
     </div>
   );

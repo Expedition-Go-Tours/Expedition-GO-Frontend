@@ -50,7 +50,12 @@ export function useHomePageData({
       const categories = {};
       if (popularData.status === 'fulfilled' && popularData.value?.categories) {
         for (const [cat, tours] of Object.entries(popularData.value.categories)) {
-          categories[cat] = (tours || []).map(adaptTourCard);
+          const key = cat.trim().toLowerCase();
+          if (!key) continue;
+          if (!categories[key]) {
+            categories[key] = [];
+          }
+          categories[key].push(...(tours || []).map(adaptTourCard));
         }
       }
 

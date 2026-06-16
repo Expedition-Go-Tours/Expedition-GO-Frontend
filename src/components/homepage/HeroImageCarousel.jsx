@@ -6,16 +6,16 @@
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-import img1 from '@/assets/images/unsplash1.jpg';
-import img2 from '@/assets/images/unsplash2.jpg';
-import img3 from '@/assets/images/unsplash3.jpg';
-import heroPic from '@/assets/images/hero_pic.jpg';
+import imgWaterfall from '@/assets/images/WATERFALL .png';
+import imgRock from '@/assets/images/ROCK.png';
+import imgCanopy from '@/assets/images/CANOPY.png';
+import imgBoat from '@/assets/images/BOAT.png';
 
 const SLIDES = [
-  { src: img1, alt: 'Hero 1' },
-  { src: img2, alt: 'Hero 2' },
-  { src: img3, alt: 'Hero 3' },
-  { src: heroPic, alt: 'Hero background' },
+  { src: imgWaterfall, alt: 'Waterfall', pos: 'object-[center_40%]' },
+  { src: imgRock, alt: 'Rock formation', pos: 'object-[center_35%]' },
+  { src: imgCanopy, alt: 'Canopy walk', pos: 'object-[center_30%]' },
+  { src: imgBoat, alt: 'Boat ride', pos: 'object-[center_40%]' },
 ];
 
 const SWIPE_THRESHOLD = 50;
@@ -86,21 +86,15 @@ export function HeroImageCarousel() {
     <>
       {/* Background images — crossfade */}
       <div className="absolute inset-0">
-        {SLIDES.map((slide, i) => {
-          const pos =
-            i === 1
-              ? 'object-[center_25%]'
-              : 'object-[center_bottom] lg:object-[center_80%] xl:object-center';
-          return (
+        {SLIDES.map((slide, i) => (
             <img
               key={i}
               src={slide.src}
               alt={slide.alt}
-              className={`absolute inset-0 h-full w-full object-cover ${pos} transition-opacity duration-500 ${i === active ? 'opacity-80' : 'opacity-0'}`}
+              className={`absolute inset-0 h-full w-full object-cover ${slide.pos} transition-opacity duration-500 ${i === active ? 'opacity-80' : 'opacity-0'}`}
               draggable={false}
             />
-          );
-        })}
+          ))}
       </div>
 
       {/* Gradient overlay */}

@@ -11,11 +11,10 @@
 import {
   Globe,
   Heart,
-  Headset,
-  LoaderCircle,
-  MapPin,
-  Menu,
-  ShoppingCart,
+   Headset,
+   LoaderCircle,
+   Menu,
+   ShoppingCart,
   Settings,
   Store,
   UserCircle2,
@@ -369,15 +368,15 @@ export function Navbar({
 
         {renderCompactSearch && (
           <div
-            className={`navbar-compact-search${forceShowCompactSearch ? ' navbar-compact-search--forced' : ''} w-[320px] sm:w-[380px] lg:w-full lg:max-w-[600px]`}
+            className={`navbar-compact-search${forceShowCompactSearch ? ' navbar-compact-search--forced' : ''} w-full max-w-[400px] sm:max-w-[520px] lg:max-w-[600px]`}
           >
             <form
               onSubmit={handleCompactSearchSubmit}
-              className="navbar-search-form relative flex w-full max-w-[360px] sm:max-w-[440px] lg:max-w-[520px] xl:max-w-[700px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 shadow-md"
+              className="navbar-search-form relative flex w-full items-center gap-0 rounded-full border-2 border-slate-200 bg-white overflow-hidden shadow-lg"
             >
-              <MapPin className="text-(--brand-green) shrink-0 size-4" />
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[10px] sm:text-[11px] mb-0">Destination</p>
+              <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0 pl-4 pr-2 py-2 sm:pl-5 sm:pr-3 sm:py-2.5">
+                <Search className="text-slate-400 shrink-0 size-4.5 sm:size-5" />
+                <div className="min-w-0 flex-1">
                 <Input
                   ref={navSearchInputRef}
                   value={compactSearchValue}
@@ -405,17 +404,20 @@ export function Navbar({
                     }, 200);
                   }}
                   placeholder="Where are you going?"
-                  className="h-auto border-0 px-0 py-0 text-sm sm:text-sm text-slate-900 placeholder:text-slate-400 shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  style={{ caretColor: '#01311a', outline: 'none', textAlign: 'left' }}
+                  className="h-auto border-0 px-0 py-0 w-full text-[14px] sm:text-[15px] text-slate-900 placeholder:text-slate-400 placeholder:truncate shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  style={{ caretColor: 'var(--brand-green)', outline: 'none', textAlign: 'left' }}
                   autoComplete="off"
                 />
+                </div>
               </div>
-<button
-                type="submit"
-                className="rounded-md bg-(--brand-green) px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-(--brand-green-2)"
-              >
-                Search
-              </button>
+              <div className="pr-1 py-1 sm:pr-1.5 sm:py-1.5">
+                <button
+                  type="submit"
+                  className="rounded-full bg-(--brand-green) px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-(--brand-green-2) sm:px-6 sm:py-2.5 sm:text-[14px]"
+                >
+                  Search
+                </button>
+              </div>
             </form>
 
             <div ref={navAutocompleteRef}>

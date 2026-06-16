@@ -58,15 +58,7 @@ export function WishlistProvider({ children }) {
         return [...prev, { ...item, addedAt: new Date().toISOString() }];
       });
 
-      if (exists) {
-        toast.error('Removed from WishList', {
-          style: {
-            background: '#FEF2F2',
-            color: '#B91C1C',
-            border: '1px solid rgba(185, 28, 28, 0.25)',
-          },
-        });
-      } else {
+      if (!exists) {
         toast.success('Added to Wishlist');
       }
     },

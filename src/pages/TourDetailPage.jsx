@@ -1612,7 +1612,7 @@ function TourDetailContent() {
                   )}
 
                   {isTravelerPickerOpen && (
-                    <div className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-[color:var(--brand-green)] shadow-[0_18px_45px_rgba(15,23,42,0.18)] xl:right-0 xl:left-auto">
+                    <div className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.18)] xl:right-0 xl:left-auto">
                       <div className="space-y-6">
                         {travelerOptions.map((option) => {
                           const canDecrement =
@@ -1626,7 +1626,7 @@ function TourDetailContent() {
                               <div className="min-w-0">
                                 <p className="leading-tight">
                                   <span className="text-base font-black">{option.label}</span>{' '}
-                                  <span className="text-sm font-medium text-[color:var(--brand-green)]/70">
+                                    <span className="text-sm font-medium text-slate-500">
                                     {option.age}
                                   </span>
                                 </p>
@@ -1637,7 +1637,7 @@ function TourDetailContent() {
                                   type="button"
                                   onClick={option.decrement}
                                   disabled={!canDecrement}
-                                  className="grid size-9 place-items-center rounded-full bg-[color:var(--brand-green)] text-white transition hover:bg-[color:var(--brand-green)]/90 disabled:bg-[color:var(--brand-green)]/35"
+                                  className="grid size-9 place-items-center rounded-full bg-[#39AD6C] text-white transition hover:bg-[#39AD6C]/90 disabled:bg-[#39AD6C]/35"
                                   aria-label={`Remove one ${option.label}`}
                                 >
                                   <Minus className="size-5" />
@@ -1648,7 +1648,7 @@ function TourDetailContent() {
                                 <button
                                   type="button"
                                   onClick={option.increment}
-                                  className="grid size-9 place-items-center rounded-full bg-[color:var(--brand-green)] text-white transition hover:bg-[color:var(--brand-green)]/90"
+                                  className="grid size-9 place-items-center rounded-full bg-[#39AD6C] text-white transition hover:bg-[#39AD6C]/90"
                                   aria-label={`Add one ${option.label}`}
                                 >
                                   <Plus className="size-5" />
@@ -1662,7 +1662,7 @@ function TourDetailContent() {
                       <Button
                         type="button"
                         onClick={() => setIsTravelerPickerOpen(false)}
-                        className="mt-8 h-12 w-full rounded-full bg-[#1A4530] text-sm font-black !text-white hover:bg-[#163b29]"
+                        className="mt-8 h-12 w-full rounded-full bg-[#39AD6C] text-sm font-black !text-white hover:bg-[#39AD6C]/90"
                       >
                         Update search
                       </Button>
@@ -1684,7 +1684,7 @@ function TourDetailContent() {
                 <Button
                   onClick={handleCheckAvailability}
                   disabled={!bookingDateRange}
-                  className="mt-6 h-12 w-full rounded-full bg-[color:var(--brand-green)] text-base font-black !text-white hover:bg-[color:var(--brand-green)]/90 disabled:opacity-60"
+                  className="mt-6 h-12 w-full rounded-full bg-[#39AD6C] text-base font-black !text-white hover:bg-[#39AD6C]/90 disabled:opacity-60"
                 >
                   Check availability
                 </Button>
@@ -2290,7 +2290,7 @@ function TourDetailContent() {
                                 type="button"
                                 onClick={option.decrement}
                                 disabled={!canDecrement}
-                                className="grid size-9 place-items-center rounded-full bg-[color:var(--brand-green)] text-white transition hover:bg-[color:var(--brand-green)]/90 disabled:bg-[color:var(--brand-green)]/35"
+                                className="grid size-9 place-items-center rounded-full bg-[#39AD6C] text-white transition hover:bg-[#39AD6C]/90 disabled:bg-[#39AD6C]/35"
                                 aria-label={`Remove one ${option.label}`}
                               >
                                 <Minus className="size-5" />
@@ -2301,7 +2301,7 @@ function TourDetailContent() {
                               <button
                                 type="button"
                                 onClick={option.increment}
-                                className="grid size-9 place-items-center rounded-full bg-[color:var(--brand-green)] text-white transition hover:bg-[color:var(--brand-green)]/90"
+                                className="grid size-9 place-items-center rounded-full bg-[#39AD6C] text-white transition hover:bg-[#39AD6C]/90"
                                 aria-label={`Add one ${option.label}`}
                               >
                                 <Plus className="size-5" />
@@ -2315,7 +2315,7 @@ function TourDetailContent() {
                     <Button
                       type="button"
                       onClick={() => setIsTravelerPickerOpen(false)}
-                      className="mt-8 h-12 w-full rounded-full bg-[#1A4530] text-sm font-black !text-white hover:bg-[#163b29]"
+                      className="mt-8 h-12 w-full rounded-full bg-[#39AD6C] text-sm font-black !text-white hover:bg-[#39AD6C]/90"
                     >
                       Update search
                     </Button>

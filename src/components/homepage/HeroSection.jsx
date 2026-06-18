@@ -201,6 +201,7 @@ export function HeroSection({
                       type="submit"
                       size="sm"
                       className="h-full rounded-full text-[13px] font-semibold px-5 py-2.5 sm:text-[14px] sm:px-6 sm:py-3"
+                      style={{ backgroundColor: '#39AD6C' }}
                     >
                       {t('hero.search')}
                     </Button>

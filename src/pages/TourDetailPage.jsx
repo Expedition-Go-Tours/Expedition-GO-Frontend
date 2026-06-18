@@ -74,7 +74,6 @@ import {
 } from '@/lib/tourDetailAdapter';
 import { getTourByTitle, getAllTours } from '@/lib/tourData';
 import { mapSupplierProfile, normalizeWebsiteUrl } from '@/lib/supplierProfile';
-import { openTawkChat } from '@/lib/tawk';
 import { DotSpinner } from '@/components/ui/DotSpinner';
 import { toast } from 'sonner';
 import fallbackTourImage from '@/assets/images/hero_pic.jpg';
@@ -1392,8 +1391,7 @@ function TourDetailContent() {
       </p>
       <button
         type="button"
-        onClick={() => openTawkChat()}
-        className="mt-2.5 inline-flex w-full items-center gap-2 text-left text-sm font-normal text-[color:var(--brand-green)] underline underline-offset-[3px] decoration-[color:var(--brand-green)] transition hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)] sm:w-auto"
+        className="mt-2.5 inline-flex w-full items-center gap-2 text-left text-sm font-normal text-[color:var(--brand-green)] underline underline-offset-[3px] decoration-[color:var(--brand-green)] transition hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)] sm:w-auto cursor-default"
       >
         <MessageSquare className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
         {t('tourDetail.startChat')}

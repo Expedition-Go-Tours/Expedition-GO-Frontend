@@ -63,6 +63,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useNavigationLoader } from '@/contexts/NavigationContext';
 import { useTourById } from '@/hooks/useTourById';
 import { useRecentlyViewedStorage } from '@/hooks/useRecentlyViewedStorage';
+import { fetchTourAvailability } from '@/api/tours';
 import {
   adaptTourDetail,
   buildOverviewHighlights,
@@ -75,6 +76,7 @@ import { getTourByTitle, getAllTours } from '@/lib/tourData';
 import { mapSupplierProfile, normalizeWebsiteUrl } from '@/lib/supplierProfile';
 import { openTawkChat } from '@/lib/tawk';
 import { DotSpinner } from '@/components/ui/DotSpinner';
+import { toast } from 'sonner';
 import fallbackTourImage from '@/assets/images/hero_pic.jpg';
 
 const EXTERNAL_FALLBACK_IMAGES = [
@@ -218,6 +220,7 @@ function BookingCalendarPopover({
   onCommitRange,
   selectedRange,
   today,
+  availabilityMap,
 }) {
   const [dragRedraw, setDragRedraw] = useState(0);
   const dragActiveRef = useRef(false);
@@ -357,7 +360,9 @@ function BookingCalendarPopover({
           }}
         >
           {monthDays.map(({ date, isCurrentMonth }) => {
-            const isUnavailable = !isCurrentMonth || date < todayStart;
+            const dateKey = getDateKey(date);
+            const dayAvail = availabilityMap?.get(dateKey);
+            const isUnavailable = !isCurrentMonth || date < todayStart || dayAvail?.status === 'FULL' || dayAvail?.status === 'BLOCKED';
             const range = liveRange;
             const inRange = range ? isDayInInclusiveRange(date, range.start, range.end) : false;
             const t = dayTime(date);
@@ -371,18 +376,20 @@ function BookingCalendarPopover({
 
             return (
               <button
-                key={`${monthDate.getFullYear()}-${monthDate.getMonth()}-${getDateKey(date)}`}
+                key={`${monthDate.getFullYear()}-${monthDate.getMonth()}-${dateKey}`}
                 type="button"
                 tabIndex={isUnavailable ? -1 : 0}
                 aria-disabled={isUnavailable}
                 className={`relative mx-auto flex size-9 items-center justify-center text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)] ${
                   isUnavailable ? 'cursor-not-allowed text-slate-400' : 'font-medium text-slate-900'
-                } ${!isUnavailable ? 'hover:bg-slate-100' : ''} `}
+                } ${!isUnavailable ? 'hover:bg-slate-100' : ''} ${
+                  dayAvail?.status === 'LIMITED' && !isUnavailable ? 'text-amber-600' : ''
+                }`}
                 {...(isUnavailable
                   ? { disabled: true }
                   : {
                       'data-cal-selectable': true,
-                      'data-cal-day': getDateKey(date),
+                      'data-cal-day': dateKey,
                       onPointerDown: (e) => {
                         if (e.button !== 0) return;
                         e.preventDefault();
@@ -418,6 +425,14 @@ function BookingCalendarPopover({
                   }`}
                 >
                   {date.getDate()}
+                  {(dayAvail?.status === 'FULL' || dayAvail?.status === 'BLOCKED') && (
+                    <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[7px] font-bold uppercase text-slate-400">
+                      {dayAvail.status === 'FULL' ? 'full' : '×'}
+                    </span>
+                  )}
+                  {dayAvail?.status === 'LIMITED' && (
+                    <span className="absolute -top-0.5 right-0 size-1.5 rounded-full bg-amber-400" />
+                  )}
                 </span>
               </button>
             );
@@ -588,6 +603,7 @@ function TourDetailContent() {
   const [_travelerType, _setTravelerType] = useState('adults');
   const [focusedItineraryStopIndex, setFocusedItineraryStopIndex] = useState(null);
   const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [availabilityMap, setAvailabilityMap] = useState(null);
   const [overviewAccordionOpen, setOverviewAccordionOpen] = useState({
     highlights: true,
   });
@@ -658,6 +674,33 @@ function TourDetailContent() {
       window.history.replaceState(null, '', expectedPath);
     }
   }, [rawTour?.slug]);
+
+  useEffect(() => {
+    if (!isDateCalendarOpen || !id) {
+      setAvailabilityMap(null);
+      return;
+    }
+    const start = new Date(calendarMonthCursor.getFullYear(), calendarMonthCursor.getMonth(), 1);
+    const end = new Date(calendarMonthCursor.getFullYear(), calendarMonthCursor.getMonth() + 2, 0);
+    const fmtStart = getDateKey(start);
+    const fmtEnd = getDateKey(end);
+    let cancelled = false;
+    fetchTourAvailability(id, fmtStart, fmtEnd)
+      .then((result) => {
+        if (cancelled) return;
+        const map = new Map();
+        if (result?.calendar) {
+          for (const day of result.calendar) {
+            map.set(day.date, day);
+          }
+        }
+        setAvailabilityMap(map);
+      })
+      .catch(() => {
+        if (!cancelled) setAvailabilityMap(new Map());
+      });
+    return () => { cancelled = true; };
+  }, [isDateCalendarOpen, calendarMonthCursor, id]);
 
   useEffect(() => {
     setReviewStarFilter(null);
@@ -798,7 +841,7 @@ function TourDetailContent() {
     setIsDateCalendarOpen(false);
   }, []);
 
-  const handleCheckAvailability = () => {
+  const handleCheckAvailability = async () => {
     if (!bookingDateRange?.start) return;
 
     if (!user) {
@@ -806,31 +849,63 @@ function TourDetailContent() {
       return;
     }
 
-    const added = addToCart({
-      tourId: id,
-      title: selectedTourTitle,
-      duration: selectedTourDuration,
-      price: totalPrice,
-      unitPrice: selectedTourPriceNumber,
-      rating: String(selectedTourRatingNumber),
-      reviews: String(selectedTourReviewsNumber),
-      image: mergedImages[0] || tourData?.imageCover || fallbackTourImage,
-      selectedDate: bookingDateRange.start.toISOString(),
-      ...(!isSameCalendarDay(bookingDateRange.start, bookingDateRange.end) && {
-        selectedDateEnd: bookingDateRange.end.toISOString(),
-      }),
-      adults,
-      seniors,
-      youths,
-      children,
-      infants,
-    });
+    const startDate = getDateKey(bookingDateRange.start);
+    const endDate = bookingDateRange.end
+      ? getDateKey(bookingDateRange.end)
+      : startDate;
 
-    if (added) {
-      setCheckingAvailability(true);
-      setTimeout(() => {
-        navigate('/cart');
-      }, 800);
+    setCheckingAvailability(true);
+
+    try {
+      const result = await fetchTourAvailability(id, startDate, endDate);
+      const dayData = result?.calendar?.[0];
+
+      if (dayData?.status === 'BLOCKED') {
+        setCheckingAvailability(false);
+        toast.error('This date is not available for booking.');
+        return;
+      }
+
+      if (dayData?.status === 'FULL') {
+        setCheckingAvailability(false);
+        toast.error('This date is fully booked. Please select a different date.');
+        return;
+      }
+
+      if (dayData?.status === 'LIMITED') {
+        toast.warning(`Only ${dayData.remaining} spot(s) remaining!`, { duration: 4000 });
+      }
+
+      const added = addToCart({
+        tourId: id,
+        title: selectedTourTitle,
+        duration: selectedTourDuration,
+        price: totalPrice,
+        unitPrice: selectedTourPriceNumber,
+        rating: String(selectedTourRatingNumber),
+        reviews: String(selectedTourReviewsNumber),
+        image: mergedImages[0] || tourData?.imageCover || fallbackTourImage,
+        selectedDate: bookingDateRange.start.toISOString(),
+        ...(!isSameCalendarDay(bookingDateRange.start, bookingDateRange.end) && {
+          selectedDateEnd: bookingDateRange.end.toISOString(),
+        }),
+        adults,
+        seniors,
+        youths,
+        children,
+        infants,
+      });
+
+      if (added) {
+        setTimeout(() => {
+          navigate('/cart');
+        }, 800);
+      } else {
+        setCheckingAvailability(false);
+      }
+    } catch (err) {
+      setCheckingAvailability(false);
+      toast.error('Unable to check availability. Please try again.');
     }
   };
 
@@ -1608,6 +1683,7 @@ function TourDetailContent() {
                       onCommitRange={commitBookingRange}
                       selectedRange={bookingDateRange}
                       today={today}
+                      availabilityMap={availabilityMap}
                     />
                   )}
 
@@ -2261,6 +2337,7 @@ function TourDetailContent() {
                     onCommitRange={commitBookingRange}
                     selectedRange={bookingDateRange}
                     today={today}
+                    availabilityMap={availabilityMap}
                   />
                 )}
 

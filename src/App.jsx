@@ -26,10 +26,9 @@
  */
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
 
-import { AuthProvider } from '@/components/auth/AuthProvider';
+import { AuthProvider, useAuth } from '@/components/auth/AuthProvider';
 import BrandLoader from '@/components/ui/BrandLoader';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { NavigationProvider } from '@/contexts/NavigationContext';
@@ -63,6 +62,10 @@ import AllReviewsPage from '@/pages/AllReviewsPage';
 
 function AppContent() {
   useScrollRestoration();
+  const { loading } = useAuth();
+  const [splashShown, setSplashShown] = useState(() =>
+    sessionStorage.getItem('eg_splash_shown') === 'true'
+  );
 
   const routes = (
     <WishlistProvider>
@@ -100,44 +103,19 @@ function AppContent() {
     </WishlistProvider>
   );
 
-  const [showSplash, setShowSplash] = useState(() => {
-    if (typeof sessionStorage === 'undefined') return false;
-    return sessionStorage.getItem('eg_splash_shown') !== 'true';
-  });
+  const showSplash = loading && !splashShown;
 
   useEffect(() => {
-    if (!showSplash) return;
-    const timer = setTimeout(() => {
+    if (!showSplash && !splashShown) {
       sessionStorage.setItem('eg_splash_shown', 'true');
-      setShowSplash(false);
-    }, 1800);
-    return () => clearTimeout(timer);
-  }, [showSplash]);
+      setSplashShown(true);
+    }
+  }, [showSplash, splashShown]);
 
   return (
     <>
-      <AnimatePresence>
-        {showSplash && (
-          <motion.div
-            key="splash"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="fixed inset-0 z-[200]"
-          >
-            <BrandLoader fullScreen />
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: showSplash ? 0 : 1 }}
-        transition={{ duration: 0.35, delay: 0.1, ease: 'easeOut' }}
-        style={{ pointerEvents: showSplash ? 'none' : undefined }}
-      >
-        {routes}
-      </motion.div>
+      {showSplash && <BrandLoader fullScreen initial />}
+      <div style={{ display: showSplash ? 'none' : undefined }}>{routes}</div>
     </>
   );
 }

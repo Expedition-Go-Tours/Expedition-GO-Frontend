@@ -580,6 +580,8 @@ function TourDetailContent() {
   const pricingRef = useRef(null);
   const storedCleanup = useRef(null);
   const similarCarouselRef = useRef(null);
+  const dateCalendarRef = useRef(null);
+  const travelerPickerRef = useRef(null);
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [replyTargetQuestion, setReplyTargetQuestion] = useState(null);
   const [replyMessage, setReplyMessage] = useState('');
@@ -856,6 +858,22 @@ function TourDetailContent() {
     setCalendarMonthCursor(new Date(normStart.getFullYear(), normStart.getMonth(), 1));
     setIsDateCalendarOpen(false);
   }, []);
+
+  useEffect(() => {
+    if (!isDateCalendarOpen && !isTravelerPickerOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (isDateCalendarOpen && dateCalendarRef.current && !dateCalendarRef.current.contains(event.target)) {
+        setIsDateCalendarOpen(false);
+      }
+      if (isTravelerPickerOpen && travelerPickerRef.current && !travelerPickerRef.current.contains(event.target)) {
+        setIsTravelerPickerOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDateCalendarOpen, isTravelerPickerOpen]);
 
   const handleCheckAvailability = async () => {
     if (!bookingDateRange?.start) return;
@@ -1732,6 +1750,7 @@ function TourDetailContent() {
                   </button>
 
                   {isDateCalendarOpen && (
+                    <div ref={dateCalendarRef}>
                     <BookingCalendarPopover
                       monthCursor={calendarMonthCursor}
                       onMonthChange={setCalendarMonthCursor}
@@ -1740,10 +1759,11 @@ function TourDetailContent() {
                       today={today}
                       availabilityMap={availabilityMap}
                     />
+                    </div>
                   )}
 
                   {isTravelerPickerOpen && (
-                    <div className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.18)] xl:right-0 xl:left-auto">
+                    <div ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.18)] xl:right-0 xl:left-auto">
                       <div className="space-y-6">
                         {travelerOptions.map((option) => {
                           const canDecrement =
@@ -2472,6 +2492,7 @@ function TourDetailContent() {
                 </button>
 
                 {isDateCalendarOpen && (
+                  <div ref={dateCalendarRef}>
                   <BookingCalendarPopover
                     monthCursor={calendarMonthCursor}
                     onMonthChange={setCalendarMonthCursor}
@@ -2480,10 +2501,11 @@ function TourDetailContent() {
                     today={today}
                     availabilityMap={availabilityMap}
                   />
+                  </div>
                 )}
 
                 {isTravelerPickerOpen && (
-                  <div className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-[color:var(--brand-green)] shadow-[0_18px_45px_rgba(15,23,42,0.18)] lg:right-0 lg:left-auto">
+                  <div ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-[color:var(--brand-green)] shadow-[0_18px_45px_rgba(15,23,42,0.18)] lg:right-0 lg:left-auto">
                     <div className="space-y-6">
                       {travelerOptions.map((option) => {
                         const canDecrement =

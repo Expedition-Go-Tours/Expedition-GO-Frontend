@@ -120,7 +120,7 @@ export function ReviewsCarousel() {
   };
 
   return (
-    <section className="relative bg-white py-4 md:py-4 xl:py-5">
+    <section id="reviews-carousel" className="relative bg-white py-4 md:py-4 xl:py-5">
         <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
           <div className="min-w-0 flex-1">
             <h2
@@ -134,6 +134,7 @@ export function ReviewsCarousel() {
           <div className="section-header-actions">
             <Link
               to="/reviews/all"
+              state={{ returnTo: '/#reviews-carousel' }}
               className="group relative inline-flex min-h-[44px] min-w-[44px] shrink-0 touch-manipulation items-center justify-center gap-1 whitespace-nowrap rounded-md py-2 pl-2 pr-1.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100/90 hover:text-slate-950 sm:text-[13px] lg:min-h-0 lg:min-w-0 lg:py-1.5 lg:px-2 lg:text-[14px]"
             >
               <span className="relative">
@@ -196,7 +197,7 @@ export function ReviewsCarousel() {
                 <div className="mt-4">
                   <button
                     type="button"
-                    onClick={() => navigate(`/review/${encodeURIComponent(review.title)}`)}
+                    onClick={() => navigate(`/review/${encodeURIComponent(review.title)}`, { state: { returnTo: '/#reviews-carousel', tour: { title: review.title, image: review.image, rating: 5, reviews: 120, duration: '4h', location: 'Ghana' } } })}
                     className="rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
                   >
                     View Experience

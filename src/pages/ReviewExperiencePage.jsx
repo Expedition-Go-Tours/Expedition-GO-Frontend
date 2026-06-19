@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronDown,
   ChevronRight,
@@ -7,8 +7,12 @@ import {
   Sparkles,
   Camera,
   Image,
-  ShieldCheck,
+  ArrowLeft,
+  Star,
+  MapPin,
+  Clock,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Navbar } from '@/components/homepage/Navbar';
 
 function RatingCircle({ filled, onClick, size = 'md' }) {
@@ -49,40 +53,6 @@ function StarRating({ value, onChange, count = 5 }) {
   );
 }
 
-function SubRatingRow({ label, value, onChange, hasNA }) {
-  return (
-    <div className="flex items-center justify-between py-2">
-      <span className="text-[15px] font-medium text-slate-800">{label}</span>
-      <div className="flex items-center gap-3">
-        {Array.from({ length: 5 }, (_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => onChange(i + 1)}
-            className={`size-7 rounded-full border-2 transition-all duration-150 ${
-              value === i + 1
-                ? 'border-emerald-600 bg-emerald-600'
-                : 'border-emerald-600 bg-white hover:border-emerald-700'
-            }`}
-          />
-        ))}
-        {hasNA && (
-          <button
-            type="button"
-            onClick={() => onChange(null)}
-            className={`rounded-full border px-3 py-1 text-[13px] font-medium transition ${
-              value === null
-                ? 'border-slate-800 bg-slate-800 text-white'
-                : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400'
-            }`}
-          >
-            N/A
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function CompanionToggle({ label, active, onClick }) {
   return (
@@ -100,31 +70,27 @@ function CompanionToggle({ label, active, onClick }) {
   );
 }
 
-function CategoryTab({ label, active, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-[13px] font-medium transition ${
-        active
-          ? 'border-slate-800 bg-slate-800 text-white'
-          : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-800'
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
-
 export default function ReviewExperiencePage() {
   const { tourTitle } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const stateTour = location.state?.tour;
   const decodedTitle = tourTitle ? decodeURIComponent(tourTitle) : 'Cape Coast Castle, Elmina Castle & Kakum National Park Day Tour';
+  const tour = stateTour || {
+    title: decodedTitle,
+    rating: 4.8,
+    reviews: 248,
+    duration: '8h',
+    price: 85,
+    image: 'https://images.unsplash.com/photo-1589656966895-2f33e7653819?auto=format&fit=crop&w=600&q=80',
+    location: 'Accra, Ghana',
+  };
 
   const [overallRating, setOverallRating] = useState(0);
   const [subRatings, setSubRatings] = useState({
     valueForMoney: 0,
     guide: 0,
-    meeting: null,
+    meeting: 0,
   });
   const [selectedMonth, setSelectedMonth] = useState('November 2025');
   const [companions, setCompanions] = useState({
@@ -134,7 +100,6 @@ export default function ReviewExperiencePage() {
     friends: false,
     solo: false,
   });
-  const [activeCategory, setActiveCategory] = useState('Experience');
   const [reviewText, setReviewText] = useState('');
   const [reviewTitle, setReviewTitle] = useState('');
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
@@ -173,35 +138,87 @@ export default function ReviewExperiencePage() {
       <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
 
       <main className="flex-1">
-      <div className="mx-auto max-w-[1280px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        {/* Page Heading */}
-        <h1 className="mb-8 text-[28px] font-extrabold leading-tight text-slate-900 sm:text-[34px] lg:text-[38px]">
-          Tell us, how was your visit?
-        </h1>
+        <div className="mx-auto max-w-[1280px] px-4 pt-8 sm:px-6 lg:px-8 lg:pt-12">
+        {/* Back Button */}
+        <button
+          type="button"
+          onClick={() => {
+            const returnTo = location.state?.returnTo;
+            if (returnTo) {
+              sessionStorage.removeItem('eg_splash_shown');
+              navigate(returnTo, { replace: true });
+            } else {
+              navigate(-1);
+            }
+          }}
+          className="mb-6 inline-flex items-center gap-1.5 text-[14px] font-semibold text-slate-600 transition hover:text-emerald-700"
+        >
+          <ArrowLeft className="size-4" />
+          Back
+        </button>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          style={{ overflow: 'visible' }}
+        >
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 pb-12">
 
         <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
           {/* ========== LEFT COLUMN ========== */}
-          <aside className="shrink-0 lg:w-[340px]">
-            <div className="sticky top-8 space-y-6">
+          <aside className="shrink-0 lg:w-[340px] lg:pr-10">
+            {/* Page Heading */}
+            <h1 className="mb-6 text-[28px] font-black leading-[1.1] tracking-tight text-slate-900 sm:text-[34px] lg:text-[42px]">
+              Tell Us, How Was Your Trip
+            </h1>
+            <div className="sticky top-[calc(var(--navbar-offset)+1rem)] space-y-6 lg:border-r lg:border-slate-200 lg:-mr-10 lg:pr-10">
               {/* Tour Info Card */}
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
                   <img
-                    src="https://images.unsplash.com/photo-1589656966895-2f33e7653819?auto=format&fit=crop&w=600&q=80"
-                    alt={decodedTitle}
+                    src={tour.image}
+                    alt={tour.title}
                     className="h-full w-full object-cover"
                   />
                 </div>
                 <div className="p-4">
                   <h3 className="text-[15px] font-bold leading-snug text-slate-900">
-                    {decodedTitle}
+                    {tour.title}
                   </h3>
-                  <Link
-                    to="/supplier/profile/expedition-go-tours-ltd"
-                    className="mt-1 inline-block text-[13px] font-medium text-emerald-700 underline decoration-emerald-300 underline-offset-2 hover:text-emerald-800 hover:decoration-emerald-500"
-                  >
-                    By Expedition-Go Tours Ltd
-                  </Link>
+                  <div className="mt-2 flex items-center gap-2">
+                    <img
+                      src="https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=60&q=80"
+                      alt="Supplier logo"
+                      className="size-8 shrink-0 rounded-full object-cover"
+                    />
+                    <Link
+                      to="/supplier/profile/expedition-go-tours-ltd"
+                      style={{ color: '#000', fontSize: '13px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '2px' }}
+                    >
+                      Expedition-Go Tours Ltd
+                    </Link>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-slate-600">
+                    <div className="flex items-center gap-1">
+                      <Star className="size-3.5 fill-emerald-600 text-emerald-600" />
+                      <span className="font-semibold text-slate-900">{tour.rating}</span>
+                      <span>({tour.reviews})</span>
+                    </div>
+                    {tour.location && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="size-3 shrink-0 text-slate-400" />
+                        <span>{tour.location}</span>
+                      </div>
+                    )}
+                    {tour.duration && (
+                      <div className="flex items-center gap-1">
+                        <Clock className="size-3 shrink-0 text-slate-400" />
+                        <span>{tour.duration}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -213,28 +230,11 @@ export default function ReviewExperiencePage() {
                 Not the right one? Change activity
                 <ChevronRight className="size-4" />
               </Link>
-
-              {/* Become an Experience Explorer */}
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                <div className="mb-3 flex items-start gap-3">
-                  <div className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700">
-                    <ShieldCheck className="size-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-[15px] font-bold text-slate-900">
-                      Become an Experience Explorer
-                    </h4>
-                    <p className="mt-1 text-[13px] leading-relaxed text-slate-600">
-                      Complete your first experience review to start earning a badge.
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </aside>
 
           {/* ========== RIGHT COLUMN ========== */}
-          <div className="min-w-0 flex-1 space-y-10">
+          <div className="min-w-0 flex-1 space-y-10 lg:pl-10">
             {/* Section: Overall Rating */}
             <section>
               <h2 className="mb-4 text-[17px] font-bold text-slate-900">
@@ -252,24 +252,69 @@ export default function ReviewExperiencePage() {
                 How would you rate these?
               </h2>
               <div className="divide-y divide-slate-100">
-                <SubRatingRow
-                  label="Value for money"
-                  value={subRatings.valueForMoney}
-                  onChange={(v) => setSubRatings((p) => ({ ...p, valueForMoney: v }))}
-                  hasNA={false}
-                />
-                <SubRatingRow
-                  label="Guide"
-                  value={subRatings.guide}
-                  onChange={(v) => setSubRatings((p) => ({ ...p, guide: v }))}
-                  hasNA={false}
-                />
-                <SubRatingRow
-                  label="Meeting or pickup"
-                  value={subRatings.meeting}
-                  onChange={(v) => setSubRatings((p) => ({ ...p, meeting: v }))}
-                  hasNA={true}
-                />
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-[15px] font-medium text-slate-800">Value for money</span>
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setSubRatings((p) => ({ ...p, valueForMoney: i + 1 }))}
+                        className="transition-transform hover:scale-110"
+                      >
+                        <svg
+                          className={`size-6 ${i < subRatings.valueForMoney ? 'text-emerald-600' : 'text-slate-200'}`}
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-[15px] font-medium text-slate-800">Guide</span>
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setSubRatings((p) => ({ ...p, guide: i + 1 }))}
+                        className="transition-transform hover:scale-110"
+                      >
+                        <svg
+                          className={`size-6 ${i < subRatings.guide ? 'text-emerald-600' : 'text-slate-200'}`}
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-[15px] font-medium text-slate-800">Meeting or pickup</span>
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setSubRatings((p) => ({ ...p, meeting: i + 1 }))}
+                        className="transition-transform hover:scale-110"
+                      >
+                        <svg
+                          className={`size-6 ${i < subRatings.meeting ? 'text-emerald-600' : 'text-slate-200'}`}
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -332,14 +377,14 @@ export default function ReviewExperiencePage() {
               </div>
 
               {/* Category Tabs */}
-              <div className="mb-4 flex flex-wrap gap-2">
+              <div className="mb-4 flex flex-wrap gap-x-4 gap-y-1">
                 {categories.map((cat) => (
-                  <CategoryTab
+                  <span
                     key={cat}
-                    label={cat}
-                    active={activeCategory === cat}
-                    onClick={() => setActiveCategory(cat)}
-                  />
+                    className="text-[13px] font-medium text-slate-600"
+                  >
+                    {cat}
+                  </span>
                 ))}
               </div>
 
@@ -352,14 +397,7 @@ export default function ReviewExperiencePage() {
                   rows={6}
                   className="w-full resize-none rounded-xl border border-slate-300 bg-white p-4 text-[15px] leading-relaxed text-slate-800 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
-                <div className="mt-2 flex items-center justify-between">
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-600 transition hover:text-emerald-700"
-                  >
-                    <Sparkles className="size-4" />
-                    Help me write
-                  </button>
+                <div className="mt-2 flex items-center justify-end">
                   <span className="text-[12px] text-slate-400">
                     {reviewText.length}/25 min
                   </span>
@@ -478,6 +516,7 @@ export default function ReviewExperiencePage() {
           </div>
         </div>
       </div>
+        </motion.div>
       </main>
     </div>
   );

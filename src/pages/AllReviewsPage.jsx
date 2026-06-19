@@ -1,6 +1,5 @@
 import { useRef, useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, X, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Navbar } from '@/components/homepage/Navbar';
 import { NewExperiencesCard } from '@/components/homepage/NewExperiencesCard';
@@ -10,7 +9,6 @@ import { sidebarTopRated, lastMinuteDeals } from '@/components/homepage/data';
 const REVIEWS_PER_PAGE = 6;
 
 export default function AllReviewsPage() {
-  const navigate = useNavigate();
   const similarScrollRef = useRef(null);
   const [activeReview, setActiveReview] = useState(null);
   const [page, setPage] = useState(0);
@@ -41,21 +39,26 @@ export default function AllReviewsPage() {
       <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
 
       <main className="flex-1">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
-        >
-        <div className="mx-auto max-w-[1520px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div className="mx-auto max-w-[1520px] px-4 pt-8 sm:px-6 lg:px-8 lg:pt-12">
           {/* Back Button */}
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              sessionStorage.removeItem('eg_splash_shown');
+              window.location.href = '/';
+            }}
             className="mb-6 inline-flex items-center gap-1.5 text-[14px] font-semibold text-slate-600 transition hover:text-emerald-700"
           >
             <ArrowLeft className="size-4" />
             Back
           </button>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+        >
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 lg:px-8 pb-12">
 
           {/* Page Title */}
           <h1 className="mb-8 text-[28px] font-extrabold leading-tight text-slate-900 sm:text-[34px] lg:text-[38px]">

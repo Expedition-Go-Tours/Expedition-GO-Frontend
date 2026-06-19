@@ -579,6 +579,7 @@ function TourDetailContent() {
   const headerRef = useRef(null);
   const pricingRef = useRef(null);
   const storedCleanup = useRef(null);
+  const similarCarouselRef = useRef(null);
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [replyTargetQuestion, setReplyTargetQuestion] = useState(null);
   const [replyMessage, setReplyMessage] = useState('');
@@ -1549,7 +1550,7 @@ function TourDetailContent() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`)}
+                  onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana' } } })}
                   className="shrink-0 rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
                 >
                   Write a review
@@ -2185,7 +2186,7 @@ function TourDetailContent() {
                         <h2 className="text-2xl font-black text-slate-950">Reviews</h2>
                         <button
                           type="button"
-                          onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`)}
+                          onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana' } } })}
                           className="rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
                         >
                           Write a review
@@ -2406,10 +2407,31 @@ function TourDetailContent() {
           </div>
 
           <section className="px-5 py-8 sm:px-6">
-            <div className="mb-3 flex items-center justify-between">
+            <div className="section-header-row relative z-30 isolate mb-3 flex items-center justify-between gap-4">
               <h2 className="text-xl font-bold text-slate-900">Similar Experiences</h2>
+              <div className="section-header-actions">
+                <div className="section-header-scroll-arrows">
+                  <button
+                    type="button"
+                    onClick={() => similarCarouselRef.current?.scrollBy(-1)}
+                    className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                    aria-label="Scroll left"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => similarCarouselRef.current?.scrollBy(1)}
+                    className="grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                    aria-label="Scroll right"
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
+              </div>
             </div>
             <SimilarExperiencesCarousel
+              ref={similarCarouselRef}
               excludeTitle={selectedTourTitle}
               onImageError={handleImageError}
             />

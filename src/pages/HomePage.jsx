@@ -430,9 +430,9 @@ function HomePageContent() {
                     <h2
                       className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
                       style={{ fontSize: 'clamp(1.2rem, 1.2vw + 0.5rem, 1.375rem)' }}
-                      title="Continue planning our Trip"
+                      title="Continue Planning Your Trip"
                     >
-                      Continue planning our Trip
+                      Continue Planning Your Trip
                     </h2>
                   </div>
                   <div className="section-header-actions">

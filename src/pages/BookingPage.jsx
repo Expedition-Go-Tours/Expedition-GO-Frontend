@@ -1222,7 +1222,7 @@ export default function BookingPage() {
   const handleNext = (nextStep) => setStep(nextStep);
 
   const handleBook = () => {
-    navigate(`/review/${encodeURIComponent(tour.title)}`);
+    navigate(`/review/${encodeURIComponent(tour.title)}`, { state: { tour: { title: tour.title, image: tour.image, rating: tour.rating, reviews: tour.reviews, duration: tour.duration, location: tour.location, price: tour.price } } });
   };
 
   const handleApplyPromo = useCallback(async () => {

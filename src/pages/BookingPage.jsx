@@ -1230,8 +1230,35 @@ export default function BookingPage() {
 
   const handleNext = (nextStep) => setStep(nextStep);
 
-  const handleBook = () => {
-    navigate(`/review/${encodeURIComponent(tour.title)}`, { state: { tour: { title: tour.title, image: tour.image, rating: tour.rating, reviews: tour.reviews, duration: tour.duration, location: tour.location, price: tour.price } } });
+  const handleBook = async () => {
+    try {
+      const payload = {
+        tourId: editableTour.tourId,
+        selectedDate: editableTour.selectedDate,
+        paymentMethodId: payment.paymentMethod === 'card' ? 'pm_card_visa' : `pm_mock_${payment.paymentMethod}`,
+        travelers: {
+          adults: editableTour.adults || 1,
+          children: editableTour.children || 0,
+          infants: editableTour.infants || 0,
+          phoneNumber: contact.phone,
+          location: activity.pickupLocation,
+          details: [{
+            name: `${activity.leadFirstName} ${activity.leadLastName}`.trim() || `${contact.firstName} ${contact.lastName}`,
+            ageGroup: 'adult',
+          }],
+        },
+      };
+      const data = await createBooking(payload);
+      toast.success(t('booking.success') || 'Booking confirmed!');
+      navigate(`/review/${encodeURIComponent(tour.title)}`, {
+        state: {
+          booking: data,
+          tour: { title: tour.title, image: tour.image, rating: tour.rating, reviews: tour.reviews, duration: tour.duration, location: tour.location, price: tour.price },
+        },
+      });
+    } catch (err) {
+      toast.error(err?.message || 'Booking failed. Please try again.');
+    }
   };
 
   const handleApplyPromo = useCallback(async () => {

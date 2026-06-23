@@ -872,7 +872,7 @@ function TourDetailContent() {
     setCheckingAvailability(true);
 
     try {
-      const result = await fetchTourAvailability(id, startDate, endDate);
+      const result = await fetchTourAvailability(rawTour?.id, startDate, endDate);
       const dayData = result?.calendar?.[0];
 
       if (dayData?.status === 'BLOCKED') {
@@ -904,7 +904,7 @@ function TourDetailContent() {
     try {
       const data = await validatePromoCode({
         promoCode: code,
-        tourId: id,
+        tourId: rawTour?.id,
         selectedDate: bookingDateRange?.start?.toISOString() || new Date().toISOString(),
       });
       if (data?.valid && data?.offer) {
@@ -923,14 +923,14 @@ function TourDetailContent() {
     } catch {
       setPromoError('Could not validate promo code. Please try again.');
     }
-  }, [promoCode, totalPrice, id, bookingDateRange]);
+  }, [promoCode, totalPrice, rawTour?.id, bookingDateRange]);
 
   const confirmBooking = useCallback(() => {
     if (!availabilityDialog || !bookingDateRange?.start) return;
 
     const discountAmount = promoDiscount > 0 ? promoDiscount : 0;
     const added = addToCart({
-      tourId: id,
+      tourId: rawTour?.id,
       title: selectedTourTitle,
       duration: selectedTourDuration,
       price: totalPrice,
@@ -959,7 +959,7 @@ function TourDetailContent() {
         navigate('/cart');
       }, 800);
     }
-  }, [availabilityDialog, bookingDateRange, id, selectedTourTitle, selectedTourDuration, totalPrice, selectedTourPriceNumber, selectedTourRatingNumber, selectedTourReviewsNumber, mergedImages, tourData, fallbackTourImage, adults, seniors, youths, children, infants, addToCart, navigate, promoApplied, promoCode, promoDiscount]);
+  }, [availabilityDialog, bookingDateRange, rawTour?.id, selectedTourTitle, selectedTourDuration, totalPrice, selectedTourPriceNumber, selectedTourRatingNumber, selectedTourReviewsNumber, mergedImages, tourData, fallbackTourImage, adults, seniors, youths, children, infants, addToCart, navigate, promoApplied, promoCode, promoDiscount]);
 
   const handleOpenReplyDialog = (question) => {
     setReplyTargetQuestion(question);

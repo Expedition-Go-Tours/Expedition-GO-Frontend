@@ -13,7 +13,9 @@ import {
   Clock,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { Navbar } from '@/components/homepage/Navbar';
+import { createReview } from '@/api/reviews';
 
 function RatingCircle({ filled, onClick, size = 'md' }) {
   const sizeClasses = size === 'sm' ? 'size-8' : 'size-9';
@@ -104,7 +106,59 @@ export default function ReviewExperiencePage() {
   const [reviewTitle, setReviewTitle] = useState('');
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [certified, setCertified] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
+
+  const tourId = stateTour?.tourId || null;
+  const bookingId = stateTour?.bookingId || null;
+
+  const handleSubmitReview = async () => {
+    if (!overallRating) {
+      toast.error('Please select an overall rating');
+      return;
+    }
+    if (!reviewText.trim() || reviewText.trim().length < 20) {
+      toast.error('Please write at least 20 characters in your review');
+      return;
+    }
+    if (!certified) {
+      toast.error('Please certify that this review is based on your own experience');
+      return;
+    }
+    if (!tourId) {
+      toast.error('Tour information is missing. Please try again from the tour page.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const fd = new FormData();
+      fd.append('rating', String(overallRating));
+      fd.append('tourId', tourId);
+      if (bookingId) fd.append('bookingId', bookingId);
+      if (reviewTitle.trim()) fd.append('title', reviewTitle.trim());
+      fd.append('comment', reviewText.trim());
+      if (subRatings.valueForMoney) fd.append('valueForMoneyRating', String(subRatings.valueForMoney));
+      if (subRatings.guide) fd.append('guideRating', String(subRatings.guide));
+      if (subRatings.meeting) fd.append('meetingRating', String(subRatings.meeting));
+      if (selectedMonth) fd.append('travelMonth', selectedMonth);
+      const selectedCompanions = Object.entries(companions)
+        .filter(([, v]) => v)
+        .map(([k]) => k);
+      if (selectedCompanions.length) fd.append('companions', selectedCompanions.join(','));
+      for (const photo of uploadedPhotos) {
+        fd.append('photos', photo);
+      }
+
+      await createReview(fd);
+      toast.success('Review submitted successfully!');
+      navigate(-1);
+    } catch (err) {
+      toast.error(err?.message || 'Failed to submit review. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const categories = [
     'Experience',
@@ -501,9 +555,11 @@ export default function ReviewExperiencePage() {
             {/* Submit Button */}
             <button
               type="button"
-              className="w-full rounded-xl bg-emerald-700 py-3.5 text-[16px] font-bold text-white transition hover:bg-emerald-800 active:scale-[0.98]"
+              onClick={handleSubmitReview}
+              disabled={isSubmitting || !overallRating || !certified}
+              className="w-full rounded-xl bg-emerald-700 py-3.5 text-[16px] font-bold text-white transition hover:bg-emerald-800 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit review
+              {isSubmitting ? 'Submitting...' : 'Submit review'}
             </button>
           </div>
         </div>

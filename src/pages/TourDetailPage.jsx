@@ -64,6 +64,7 @@ import { useTourById } from '@/hooks/useTourById';
 import { useRecentlyViewedStorage } from '@/hooks/useRecentlyViewedStorage';
 import { fetchTourAvailability, fetchTourOffers } from '@/api/tours';
 import { validatePromoCode } from '@/api/bookings';
+import { createReview } from '@/api/reviews';
 import {
   adaptTourDetail,
   buildOverviewHighlights,
@@ -605,6 +606,7 @@ function TourDetailContent() {
   const [writeReviewRating, setWriteReviewRating] = useState(5);
   const [writeReviewText, setWriteReviewText] = useState('');
   const [writeReviewFiles, setWriteReviewFiles] = useState([]);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [travelerSubmittedReviews, setTravelerSubmittedReviews] = useState([]);
   const persistedReviewPhotoUrlsRef = useRef(new Set());
   const [adults, setAdults] = useState(2);
@@ -1035,33 +1037,51 @@ function TourDetailContent() {
     setWriteReviewFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmitTravelerReview = (event) => {
+  const handleSubmitTravelerReview = async (event) => {
     event.preventDefault();
     const text = writeReviewText.trim();
-    if (!text) return;
+    if (!text || !rawTour?.id) return;
 
-    const photoUrls = writeReviewFiles.map((file) => {
-      const url = URL.createObjectURL(file);
-      persistedReviewPhotoUrlsRef.current.add(url);
-      return url;
-    });
+    setIsSubmittingReview(true);
+    try {
+      const fd = new FormData();
+      fd.append('rating', String(writeReviewRating));
+      fd.append('tourId', rawTour.id);
+      if (writeReviewDisplayName.trim()) fd.append('title', writeReviewDisplayName.trim());
+      fd.append('comment', text);
+      for (const file of writeReviewFiles) {
+        fd.append('photos', file);
+      }
 
-    const id = `traveler-${Date.now()}`;
-    setTravelerSubmittedReviews((prev) => [
-      ...prev,
-      {
-        id,
-        name: writeReviewDisplayName.trim() || 'You',
-        tag: 'Traveler',
-        date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        rating: writeReviewRating,
-        text,
-        photos: photoUrls,
-      },
-    ]);
+      const result = await createReview(fd);
+      const created = result?.review || result;
 
-    resetWriteReviewForm();
-    setIsWriteReviewOpen(false);
+      const photoUrls = writeReviewFiles.map((file) => {
+        const url = URL.createObjectURL(file);
+        persistedReviewPhotoUrlsRef.current.add(url);
+        return url;
+      });
+
+      setTravelerSubmittedReviews((prev) => [
+        ...prev,
+        {
+          id: created?.id || `traveler-${Date.now()}`,
+          name: created?.customer?.name || writeReviewDisplayName.trim() || 'You',
+          tag: created?.verified ? 'Verified' : 'Traveler',
+          date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          rating: writeReviewRating,
+          text,
+          photos: photoUrls,
+        },
+      ]);
+
+      resetWriteReviewForm();
+      setIsWriteReviewOpen(false);
+    } catch (err) {
+      toast.error(err?.message || 'Failed to submit review. Please try again.');
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
 
   const travelerOptions = [
@@ -1594,7 +1614,7 @@ function TourDetailContent() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana' } } })}
+                  onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana', tourId: rawTour?.id } } })}
                   className="shrink-0 rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
                 >
                   Write a review
@@ -2232,7 +2252,7 @@ function TourDetailContent() {
                         <h2 className="text-2xl font-black text-slate-950">Reviews</h2>
                         <button
                           type="button"
-                          onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana' } } })}
+                          onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana', tourId: rawTour?.id } } })}
                           className="rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
                         >
                           Write a review
@@ -2815,10 +2835,10 @@ function TourDetailContent() {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={!writeReviewText.trim()}
+                    disabled={!writeReviewText.trim() || isSubmittingReview}
                     className="rounded-full bg-[#1A4530] px-5 font-black !text-white hover:bg-[#163b29] disabled:opacity-50"
                   >
-                    Post review
+                    {isSubmittingReview ? 'Posting...' : 'Post review'}
                   </Button>
                 </div>
               </form>

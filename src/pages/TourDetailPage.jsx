@@ -472,7 +472,7 @@ function TourDetailContent() {
   const { t } = useTranslation();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { convertPrice } = useCurrency();
-  const { addToCart } = useCart();
+  const { addToCart, hasItem } = useCart();
   const { addToRecentlyViewed } = useRecentlyViewedStorage();
   const { user } = useAuth();
   const { isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModal();
@@ -625,6 +625,7 @@ function TourDetailContent() {
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [availabilityMap, setAvailabilityMap] = useState(null);
   const [availabilityDialog, setAvailabilityDialog] = useState(null);
+  const [duplicateCartDialog, setDuplicateCartDialog] = useState(null);
   const [overviewAccordionOpen, setOverviewAccordionOpen] = useState({
     highlights: true,
   });
@@ -879,7 +880,7 @@ function TourDetailContent() {
       if (isDateCalendarOpen && dateCalendarRef.current && !dateCalendarRef.current.contains(event.target)) {
         setIsDateCalendarOpen(false);
       }
-      if (isTravelerPickerOpen && travelerPickerRef.current && !travelerPickerRef.current.contains(event.target)) {
+      if (isTravelerPickerOpen && !event.target.closest('[data-traveler-picker]')) {
         setIsTravelerPickerOpen(false);
       }
     };
@@ -961,7 +962,7 @@ function TourDetailContent() {
     if (!availabilityDialog || !bookingDateRange?.start) return;
 
     const discountAmount = promoDiscount > 0 ? promoDiscount : 0;
-    const added = addToCart({
+    const cartItem = {
       tourId: id,
       title: selectedTourTitle,
       duration: selectedTourDuration,
@@ -982,16 +983,24 @@ function TourDetailContent() {
       promoCode: promoApplied ? promoCode : undefined,
       discount: discountAmount,
       finalPrice: Math.max(0, totalPrice - discountAmount),
-    });
+    };
 
+    const existing = hasItem(cartItem);
+    if (existing) {
+      setAvailabilityDialog(null);
+      setDuplicateCartDialog({ cartItem, existingItem: existing });
+      return;
+    }
+
+    const result = addToCart(cartItem, { skipDuplicateCheck: true });
     setAvailabilityDialog(null);
 
-    if (added) {
+    if (result.added) {
       setTimeout(() => {
         navigate('/cart');
       }, 800);
     }
-  }, [availabilityDialog, bookingDateRange, id, selectedTourTitle, selectedTourDuration, totalPrice, selectedTourPriceNumber, selectedTourRatingNumber, selectedTourReviewsNumber, mergedImages, tourData, fallbackTourImage, adults, seniors, youths, children, infants, addToCart, navigate, promoApplied, promoCode, promoDiscount]);
+  }, [availabilityDialog, bookingDateRange, id, selectedTourTitle, selectedTourDuration, totalPrice, selectedTourPriceNumber, selectedTourRatingNumber, selectedTourReviewsNumber, mergedImages, tourData, fallbackTourImage, adults, seniors, youths, children, infants, addToCart, navigate, promoApplied, promoCode, promoDiscount, hasItem]);
 
   const handleOpenReplyDialog = (question) => {
     setReplyTargetQuestion(question);
@@ -1780,7 +1789,7 @@ function TourDetailContent() {
                   )}
 
                   {isTravelerPickerOpen && (
-                    <div ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.18)] xl:right-0 xl:left-auto">
+                    <div data-traveler-picker ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.18)] xl:right-0 xl:left-auto">
                       <div className="space-y-6">
                         {travelerOptions.map((option) => {
                           const canDecrement =
@@ -2522,7 +2531,7 @@ function TourDetailContent() {
                 )}
 
                 {isTravelerPickerOpen && (
-                  <div ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-[color:var(--brand-green)] shadow-[0_18px_45px_rgba(15,23,42,0.18)] lg:right-0 lg:left-auto">
+                  <div data-traveler-picker ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-[color:var(--brand-green)] shadow-[0_18px_45px_rgba(15,23,42,0.18)] lg:right-0 lg:left-auto">
                     <div className="space-y-6">
                       {travelerOptions.map((option) => {
                         const canDecrement =
@@ -3018,6 +3027,56 @@ function TourDetailContent() {
             <button
               type="button"
               onClick={() => setAvailabilityDialog(null)}
+              className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Duplicate cart item confirmation */}
+      <Dialog open={!!duplicateCartDialog} onOpenChange={() => setDuplicateCartDialog(null)}>
+        <DialogContent className="max-w-[440px] text-slate-900">
+          <DialogTitle className="pr-8 text-xl font-black text-slate-900">
+            Already in your cart
+          </DialogTitle>
+          <div className="mt-3 space-y-3 text-sm text-slate-600">
+            <p>
+              You already have <span className="font-semibold text-slate-900">{duplicateCartDialog?.existingItem?.title}</span> in
+              your cart for{' '}
+              <span className="font-semibold text-slate-900">
+                {duplicateCartDialog?.existingItem?.selectedDate
+                  ? new Date(duplicateCartDialog.existingItem.selectedDate).toLocaleDateString('en-US', {
+                      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+                    })
+                  : 'the selected date'}
+              </span>.
+            </p>
+            <div className="rounded-lg bg-amber-50 p-3 text-sm font-medium text-amber-800">
+              Updating will replace your existing cart item with the new traveler details and pricing.
+            </div>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <Button
+              onClick={() => {
+                if (duplicateCartDialog) {
+                  const result = addToCart(duplicateCartDialog.cartItem, { skipDuplicateCheck: true });
+                  setDuplicateCartDialog(null);
+                  if (result.added) {
+                    setTimeout(() => {
+                      navigate('/cart');
+                    }, 800);
+                  }
+                }
+              }}
+              className="flex-1 bg-[color:var(--brand-green)] text-white hover:bg-[color:var(--brand-green)]/90"
+            >
+              Update Cart
+            </Button>
+            <button
+              type="button"
+              onClick={() => setDuplicateCartDialog(null)}
               className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
             >
               Cancel

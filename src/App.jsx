@@ -55,10 +55,12 @@ import SignOutPage from '@/pages/SignOutPage';
 import SupportPage from '@/pages/SupportPage';
 import SettingsPage from '@/pages/SettingsPage';
 import BookingPage from '@/pages/BookingPage';
+import CheckoutPage from '@/pages/CheckoutPage';
 import { BlogPage } from '@/pages/BlogPage';
 import { ArticleDetailPage } from '@/pages/ArticleDetailPage';
 import ReviewExperiencePage from '@/pages/ReviewExperiencePage';
 import AllReviewsPage from '@/pages/AllReviewsPage';
+import MyBookingsPage from '@/pages/MyBookingsPage';
 
 function AppContent() {
   useScrollRestoration();
@@ -92,11 +94,13 @@ function AppContent() {
           <Route path="/support" element={<SupportPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/booking" element={<BookingPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/supplier/profile/:tourTitle" element={<SupplierPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<ArticleDetailPage />} />
           <Route path="/review/:tourTitle" element={<ReviewExperiencePage />} />
           <Route path="/reviews/all" element={<AllReviewsPage />} />
+          <Route path="/bookings" element={<MyBookingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </CartProvider>

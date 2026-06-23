@@ -22,6 +22,7 @@ import {
   Search,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -285,7 +286,7 @@ export function Navbar({
     ? (externalSearchQuery ?? '')
     : compactSearchQuery;
   const _compactSearchMaxWidthClass = forceShowCompactSearch ? 'max-w-[460px]' : 'max-w-[360px]';
-
+ 
   // Morph hero search bar into navbar on scroll
   useEffect(() => {
     if (forceShowCompactSearch) {
@@ -309,26 +310,36 @@ export function Navbar({
     const header = document.querySelector('header');
     const navbarHeight = header ? header.offsetHeight : 88;
 
+    let lastSticky = false;
+
+    const applySticky = (sticky) => {
+      if (sticky === lastSticky) return;
+      lastSticky = sticky;
+      document.body.classList.toggle('hero--search-sticky', sticky);
+      setSearchBarSticky(sticky);
+    };
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Skip callbacks where the element hasn't been laid out yet
         if (entry.boundingClientRect.height === 0) return;
+
         const topOfBar = entry.boundingClientRect.top;
-        const sticky = topOfBar <= navbarHeight;
-        document.body.classList.toggle('hero--search-sticky', sticky);
-        setSearchBarSticky(sticky);
+        const sticky = topOfBar <= navbarHeight + 4;
+        applySticky(sticky);
       },
-      { threshold: [0, 1] }
+      {
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+      }
     );
 
     observer.observe(heroSearch);
 
-    // Safety net for mobile: on fast scroll-to-top gestures, IntersectionObserver
-    // can lag. Force-remove sticky immediately when we are at the very top.
+    // Instant snap on fast scroll-to-top: the observer is async and can lag
+    // by several frames (or seconds under main-thread pressure). A scroll
+    // listener catches the top-of-page case synchronously.
     const handleScroll = () => {
-      if (window.scrollY < 10 && document.body.classList.contains('hero--search-sticky')) {
-        document.body.classList.remove('hero--search-sticky');
-        setSearchBarSticky(false);
+      if (window.scrollY < 10) {
+        applySticky(false);
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -419,7 +430,7 @@ export function Navbar({
                 />
                 </div>
               </div>
-              <div className="pr-1 py-1 sm:pr-1.5 sm:py-1.5">
+              <div className={`pr-1 py-1 sm:pr-1.5 sm:py-1.5${forceShowCompactSearch ? ' hidden sm:block' : ''}`}>
                 <button
                   type="submit"
                   className="rounded-full bg-[#39AD6C] px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-[#2d8a56] sm:px-6 sm:py-2.5 sm:text-[14px]"
@@ -429,15 +440,18 @@ export function Navbar({
               </div>
             </form>
 
-            <div ref={navAutocompleteRef}>
-              <SearchAutocomplete
-                results={navSearchResults}
-                onSelect={handleNavAutocompleteSelect}
-                isVisible={showNavAutocomplete}
-                searchQuery={activeSearchQuery}
-                className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[360px] sm:w-[420px] lg:w-[640px] max-h-[400px] overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg z-50"
-              />
-            </div>
+            {showNavAutocomplete &&
+              createPortal(
+                <SearchAutocomplete
+                  ref={navAutocompleteRef}
+                  results={navSearchResults}
+                  onSelect={handleNavAutocompleteSelect}
+                  isVisible={showNavAutocomplete}
+                  searchQuery={activeSearchQuery}
+                  className="fixed left-1/2 -translate-x-1/2 top-[var(--navbar-logo-height)] mt-1 w-[calc(100vw-2rem)] max-w-[640px] max-h-[400px] overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg z-50"
+                />,
+                document.body
+              )}
           </div>
         )}
 
@@ -533,11 +547,8 @@ export function Navbar({
                           <span>{t('nav.cart')}</span>
                         </Link>
                         <Link
-                          to="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setIsUserMenuOpen(false);
-                          }}
+                          to="/bookings"
+                          onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <svg
@@ -623,11 +634,8 @@ export function Navbar({
                           <span>{t('nav.cart')}</span>
                         </Link>
                         <Link
-                          to="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setIsUserMenuOpen(false);
-                          }}
+                          to="/bookings"
+                          onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                         >
                           <svg

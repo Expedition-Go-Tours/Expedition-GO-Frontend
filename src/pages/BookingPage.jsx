@@ -428,7 +428,7 @@ function ContactDetailsStep({ data, onChange, onNext, valid }) {
             <TextInput
               type="tel"
               value={data.phone}
-              onChange={(e) => onChange('phone', e.target.value)}
+              onChange={(e) => onChange('phone', e.target.value.replace(/\D/g, ''))}
               placeholder=""
               valid={valid.phone}
             />
@@ -1203,12 +1203,13 @@ export default function BookingPage() {
       firstName: contact.firstName.trim().length > 1,
       lastName: contact.lastName.trim().length > 1,
       email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email),
-      phone: contact.phone.trim().length >= 7,
+      phone: contact.phone.trim().length >= 7 && contact.phone.trim().length <= 10,
       all:
         contact.firstName.trim().length > 1 &&
         contact.lastName.trim().length > 1 &&
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email) &&
-        contact.phone.trim().length >= 7,
+        contact.phone.trim().length >= 7 &&
+        contact.phone.trim().length <= 10,
     }),
     [contact]
   );

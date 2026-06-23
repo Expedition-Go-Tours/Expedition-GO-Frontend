@@ -146,7 +146,7 @@ export function DestinationsSection({ apiDestinations = [] }) {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const scrollAmount = cardWidth + gap;
+    const scrollAmount = (cardWidth + gap) * 3;
     const currentScroll = container.scrollLeft;
 
     let newScrollPosition;

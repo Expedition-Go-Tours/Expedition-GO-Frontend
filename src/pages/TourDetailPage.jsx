@@ -934,6 +934,17 @@ function TourDetailContent() {
     setPromoError('');
     setPromoApplied(false);
     setPromoDiscount(0);
+
+    // Client-side validation: 8 chars, letters+digits only, letters uppercase
+    if (code.length !== 8) {
+      setPromoError('Promo code must be exactly 8 characters.');
+      return;
+    }
+    if (!/^[A-Z0-9]+$/.test(code)) {
+      setPromoError('Promo code must contain only uppercase letters and numbers.');
+      return;
+    }
+
     try {
       const data = await validatePromoCode({
         promoCode: code,
@@ -1903,8 +1914,9 @@ function TourDetailContent() {
                     <input
                       type="text"
                       value={promoCode}
-                      onChange={(e) => { setPromoCode(e.target.value); setPromoApplied(false); setPromoDiscount(0); setPromoError(''); }}
+                      onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoDiscount(0); setPromoError(''); }}
                       placeholder="Promo code"
+                      maxLength={8}
                       className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-[color:var(--brand-green)] focus:ring-2 focus:ring-[color:var(--brand-green)]/15"
                     />
                     <button
@@ -3161,7 +3173,7 @@ function SupplierTabContent({
     const card = window.innerWidth >= 640 ? CARD_W_MD : CARD_W_SM;
     const step = card + CARD_GAP;
     const maxScroll = el.scrollWidth - el.clientWidth;
-    const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step * 1.35));
+    const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step * 3));
     el.scrollTo({ left: target, behavior: 'smooth' });
   }, []);
 

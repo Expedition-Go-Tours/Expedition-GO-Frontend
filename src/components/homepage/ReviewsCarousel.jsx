@@ -114,7 +114,7 @@ export function ReviewsCarousel() {
     if (!card) return;
     const cardWidth = card.clientWidth;
     const gap = parseFloat(getComputedStyle(el).columnGap) || 16;
-    const scrollAmount = cardWidth + gap;
+    const scrollAmount = (cardWidth + gap) * 3;
     const target = el.scrollLeft + direction * scrollAmount;
     el.scrollTo({ left: Math.max(0, Math.min(target, el.scrollWidth - el.clientWidth)), behavior: 'smooth' });
   };
@@ -165,7 +165,7 @@ export function ReviewsCarousel() {
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto pb-4 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory overscroll-x-contain pr-1 sm:pr-2 lg:gap-5 lg:overflow-x-hidden lg:pb-0 lg:pt-0 lg:pr-0 lg:snap-none [&::-webkit-scrollbar]:hidden"
-          style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
             {peopleReviews.map((review, idx) => (
               <article

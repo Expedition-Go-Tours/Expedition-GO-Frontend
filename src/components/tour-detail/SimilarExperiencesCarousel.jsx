@@ -43,7 +43,7 @@ export const SimilarExperiencesCarousel = forwardRef(function SimilarExperiences
       const card = window.innerWidth >= 640 ? CARD_WIDTH_MD : CARD_WIDTH_SM;
       const step = card + CARD_GAP_PX;
       const maxScroll = el.scrollWidth - el.clientWidth;
-      const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step * 1.35));
+      const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step * 3));
       el.scrollTo({ left: target, behavior: 'smooth' });
     },
     [],

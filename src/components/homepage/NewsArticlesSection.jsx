@@ -42,7 +42,7 @@ export function NewsArticlesSection() {
   const scrollByDirection = useCallback((dir) => {
     const el = scrollRef.current;
     if (!el) return;
-    const step = 320;
+    const step = 320 * 3;
     const maxScroll = el.scrollWidth - el.clientWidth;
     const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + dir * step));
     el.scrollTo({ left: target, behavior: 'smooth' });

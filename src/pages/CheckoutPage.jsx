@@ -45,6 +45,17 @@ const STEPS = [
   { id: 'payment', label: 'Payment' },
 ];
 
+const COUNTRY_CODES = [
+  { label: 'Ghana (+233)', value: '+233' },
+  { label: 'United States (+1)', value: '+1' },
+  { label: 'United Kingdom (+44)', value: '+44' },
+  { label: 'Nigeria (+234)', value: '+234' },
+  { label: 'South Africa (+27)', value: '+27' },
+  { label: 'Germany (+49)', value: '+49' },
+  { label: 'France (+33)', value: '+33' },
+  { label: 'Canada (+1)', value: '+1' },
+];
+
 const STEP_COLOR = '#39AD6A';
 
 const formatRemainingTime = (ms) => {
@@ -368,6 +379,8 @@ function ContactStep({ contact, onChange, onNext, onBack }) {
   const isComplete =
     contact.firstName.trim() && contact.lastName.trim() && contact.email.trim() && contact.phone.trim();
 
+  const phoneValid = contact.phone.trim().length >= 7 && contact.phone.trim().length <= 10;
+
   return (
     <div className="space-y-5">
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
@@ -412,16 +425,41 @@ function ContactStep({ contact, onChange, onNext, onBack }) {
             </div>
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <label className="text-sm font-semibold text-slate-900">Phone number</label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="tel"
-                value={contact.phone}
-                onChange={(e) => onChange({ ...contact, phone: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-slate-900"
-                placeholder="+1 234 567 890"
-              />
+            <label className="text-sm font-semibold text-slate-900">
+              Phone number *
+              {!phoneValid && contact.phone.trim().length > 0 && (
+                <span className="ml-1 text-xs font-normal text-rose-500">(7-10 digits)</span>
+              )}
+            </label>
+            <div className="grid gap-3 sm:grid-cols-[1.2fr_2fr]">
+              <div className="relative">
+                <select
+                  value={contact.countryCode}
+                  onChange={(e) => onChange({ ...contact, countryCode: e.target.value })}
+                  className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 pr-10 text-sm text-slate-900 outline-none focus:border-slate-900"
+                >
+                  {COUNTRY_CODES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="tel"
+                  value={contact.phone}
+                  onChange={(e) => onChange({ ...contact, phone: e.target.value.replace(/\D/g, '') })}
+                  maxLength={10}
+                  className={`w-full rounded-lg border py-2.5 pl-10 pr-4 text-sm outline-none focus:border-slate-900 ${
+                    !phoneValid && contact.phone.trim().length > 0
+                      ? 'border-rose-300'
+                      : 'border-slate-300'
+                  }`}
+                  placeholder="Phone number"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -432,7 +470,7 @@ function ContactStep({ contact, onChange, onNext, onBack }) {
           </Button>
           <Button
             onClick={onNext}
-            disabled={!isComplete}
+            disabled={!isComplete || !phoneValid}
             className="w-full bg-blue-600 py-6 text-base font-semibold !text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-60 sm:w-auto sm:px-10"
           >
             Next: Payment
@@ -666,6 +704,7 @@ function CheckoutPage() {
     firstName: '',
     lastName: '',
     email: '',
+    countryCode: '+233',
     phone: '',
   });
 

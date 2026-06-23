@@ -254,22 +254,25 @@ function HomePageContent() {
   const scrollDeals = useCallback((direction) => {
     const container = dealsScrollRef.current;
     if (!container) return;
-    const amount = 280 + 12;
-    const target = container.scrollLeft + (direction === 'left' ? -amount : amount);
+    const amount = (280 + 12) * 3;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const target = Math.max(0, Math.min(maxScroll, container.scrollLeft + (direction === 'left' ? -amount : amount)));
     container.scrollTo({ left: target, behavior: 'smooth' });
   }, []);
   const scrollExperiences = useCallback((direction) => {
     const container = experiencesScrollRef.current;
     if (!container) return;
-    const amount = 280 + 12;
-    const target = container.scrollLeft + (direction === 'left' ? -amount : amount);
+    const amount = (280 + 12) * 3;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const target = Math.max(0, Math.min(maxScroll, container.scrollLeft + (direction === 'left' ? -amount : amount)));
     container.scrollTo({ left: target, behavior: 'smooth' });
   }, []);
   const scrollContinuePlanning = useCallback((direction) => {
     const container = continuePlanningScrollRef.current;
     if (!container) return;
-    const amount = 380 + 16;
-    const target = container.scrollLeft + (direction === 'left' ? -amount : amount);
+    const amount = (380 + 16) * 3;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const target = Math.max(0, Math.min(maxScroll, container.scrollLeft + (direction === 'left' ? -amount : amount)));
     container.scrollTo({ left: target, behavior: 'smooth' });
   }, []);
 
@@ -568,6 +571,7 @@ function HomePageContent() {
                 cardWidth={280}
                 gap={12}
                 syncSectionClipWidth
+                style={{ scrollSnapType: 'x mandatory' }}
                 trackClassName="gap-3 overflow-x-auto xl:overflow-x-hidden overflow-y-hidden overscroll-x-contain pb-1 scrollbar-hide"
               >
                 {lastMinuteDeals.map((deal, index) => (
@@ -635,6 +639,7 @@ function HomePageContent() {
                 cardWidth={280}
                 gap={12}
                 syncSectionClipWidth
+                style={{ scrollSnapType: 'x mandatory' }}
                 trackClassName="gap-3 overflow-x-auto xl:overflow-x-hidden overflow-y-hidden overscroll-x-contain pb-1 scrollbar-hide"
               >
                 {newTours.map((tour, index) => (

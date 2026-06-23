@@ -145,8 +145,9 @@ export function TopAttractionsNearby() {
   const scrollCarousel = useCallback((direction) => {
     const container = scrollRef.current;
     if (!container) return;
-    const amount = 280 + 12;
-    const target = container.scrollLeft + (direction === 'left' ? -amount : amount);
+    const amount = (280 + 12) * 3;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const target = Math.max(0, Math.min(maxScroll, container.scrollLeft + (direction === 'left' ? -amount : amount)));
     container.scrollTo({ left: target, behavior: 'smooth' });
   }, []);
 
@@ -208,6 +209,7 @@ export function TopAttractionsNearby() {
         cardWidth={280}
         gap={12}
         syncSectionClipWidth
+        style={{ scrollSnapType: 'x mandatory' }}
         trackClassName="gap-3 overflow-x-auto xl:overflow-x-hidden overflow-y-hidden overscroll-x-contain pb-1 scrollbar-hide"
       >
         {sortedAttractions.map((attraction, index) => (

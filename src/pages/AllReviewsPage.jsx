@@ -24,7 +24,7 @@ export default function AllReviewsPage() {
   const scroll = (ref, direction) => {
     const el = ref.current;
     if (!el) return;
-    const amount = 300;
+    const amount = 300 * 3;
     el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
   };
 

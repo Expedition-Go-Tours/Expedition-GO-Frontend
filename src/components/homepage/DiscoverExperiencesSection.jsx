@@ -35,8 +35,10 @@ export function DiscoverExperiencesSection() {
   const scroll = (direction) => {
     const el = scrollRef.current;
     if (!el) return;
-    const amount = 340;
-    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+    const amount = 340 * 3;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + (direction === 'left' ? -amount : amount)));
+    el.scrollTo({ left: target, behavior: 'smooth' });
   };
 
   return (

@@ -72,7 +72,7 @@ const MOOD_CATEGORIES = [
 
 const CARD_WIDTH = 280;
 const GAP = 18;
-const SCROLL_AMOUNT = CARD_WIDTH + GAP;
+const SCROLL_AMOUNT = (CARD_WIDTH + GAP) * 3;
 
 export function TodoSection() {
   const { t } = useTranslation();

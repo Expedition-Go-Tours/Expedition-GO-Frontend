@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/components/auth/AuthProvider';
 import {
   ChevronDown,
   ChevronRight,
@@ -76,6 +77,7 @@ export default function ReviewExperiencePage() {
   const { tourTitle } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const stateTour = location.state?.tour;
   const decodedTitle = tourTitle ? decodeURIComponent(tourTitle) : 'Cape Coast Castle, Elmina Castle & Kakum National Park Day Tour';
   const tour = stateTour || {
@@ -128,6 +130,10 @@ export default function ReviewExperiencePage() {
     }
     if (!tourId) {
       toast.error('Tour information is missing. Please try again from the tour page.');
+      return;
+    }
+    if (!user) {
+      toast.error('Please log in to submit a review.');
       return;
     }
 

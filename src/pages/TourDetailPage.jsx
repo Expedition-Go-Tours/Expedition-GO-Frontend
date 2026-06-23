@@ -1090,6 +1090,10 @@ function TourDetailContent() {
     event.preventDefault();
     const text = writeReviewText.trim();
     if (!text || !rawTour?.id) return;
+    if (!user) {
+      toast.error('Please log in to submit a review.');
+      return;
+    }
 
     setIsSubmittingReview(true);
     try {

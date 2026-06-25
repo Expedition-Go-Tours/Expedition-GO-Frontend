@@ -108,7 +108,7 @@ export function ContinuePlanningCard({
           />
         </div>
         <div className="flex flex-1 flex-col justify-between p-4">
-          <h3 className="text-[15px] font-bold leading-snug text-[#111827] line-clamp-2">
+          <h3 className="text-[15px] font-semibold leading-snug text-[#111827] line-clamp-2 lg:font-bold">
             {title}
           </h3>
           <div className="flex flex-col gap-2">
@@ -139,7 +139,7 @@ export function ContinuePlanningCard({
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col justify-between py-3 pr-4">
-          <h3 className="text-[15px] font-bold leading-snug text-[#111827] line-clamp-2">
+          <h3 className="text-[15px] font-semibold leading-snug text-[#111827] line-clamp-2 lg:font-bold">
             {title}
           </h3>
           <p className="text-[13px] text-[#6B7280]">

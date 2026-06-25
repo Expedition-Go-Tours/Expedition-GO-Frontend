@@ -1455,19 +1455,23 @@ function TourDetailContent() {
 
   const supplierTours = useMemo(() => {
     const all = getAllTours();
-    return all.filter((t) => t.title !== selectedTourTitle).slice(0, 8);
+    return all.filter((t) => t.title !== selectedTourTitle);
   }, [selectedTourTitle]);
+
+  const displayedSupplierTours = useMemo(() => {
+    return supplierTours.slice(0, 8);
+  }, [supplierTours]);
 
   const infoSections = [
     {
       key: 'included',
-      title: "What's included",
+      title: 'Included',
       content: (
         <div className="space-y-4">
           {includedItems.length > 0 && (
             <div>
-              <h4 className="text-sm font-bold text-[#002b11]">Included</h4>
-              <ul className="mt-3 space-y-2 text-sm leading-6 text-[#002b11]/85">
+              <h4 className="text-base font-bold text-[#002b11] sm:text-lg lg:text-xl">Included</h4>
+              <ul className="mt-3 space-y-2 text-sm leading-6 text-[#002b11]/85 sm:text-base lg:text-lg">
                 {includedItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <Check className="mt-0.5 size-4 shrink-0 text-green-600" strokeWidth={2.5} />
@@ -1481,8 +1485,8 @@ function TourDetailContent() {
           )}
           {excludedItems.length > 0 && (
             <div>
-              <h4 className="text-sm font-bold text-[#002b11]">Not included</h4>
-              <ul className="mt-3 space-y-2 text-sm leading-6 text-[#002b11]/85">
+              <h4 className="text-base font-bold text-[#002b11] sm:text-lg lg:text-xl">Not included</h4>
+              <ul className="mt-3 space-y-2 text-sm leading-6 text-[#002b11]/85 sm:text-base lg:text-lg">
                 {excludedItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <X className="mt-0.5 size-4 shrink-0 text-red-500" strokeWidth={2.5} />
@@ -1502,9 +1506,9 @@ function TourDetailContent() {
     },
     {
       key: 'expect',
-      title: 'What to expect',
+      title: 'About this tour',
       content: (
-        <p className="text-sm leading-7 text-[#002b11]/80">
+        <p className="text-sm leading-7 text-[#002b11]/80 sm:text-base lg:text-lg">
           {expectText || 'Experience details coming soon.'}
         </p>
       ),
@@ -1513,7 +1517,7 @@ function TourDetailContent() {
       key: 'pickup',
       title: 'Meeting and pickup',
       content: (
-        <div className="space-y-2 text-sm leading-7 text-[#002b11]/80">
+        <div className="space-y-2 text-sm leading-7 text-[#002b11]/80 sm:text-base lg:text-lg">
           {meetingAddress && <p>Meeting point: {meetingAddress}</p>}
           {meetingInstructions && <p>{meetingInstructions}</p>}
           {!meetingAddress && !meetingInstructions && (
@@ -1526,7 +1530,7 @@ function TourDetailContent() {
       key: 'accessibility',
       title: 'Accessibility',
       content: (
-        <div className="space-y-2 text-sm leading-7 text-[#002b11]/80">
+        <div className="space-y-2 text-sm leading-7 text-[#002b11]/80 sm:text-base lg:text-lg">
           {accessibilityText && <p>{accessibilityText}</p>}
           {restrictionsText && <p>{restrictionsText}</p>}
           {travelerReqsText && <p>{travelerReqsText}</p>}
@@ -1540,7 +1544,7 @@ function TourDetailContent() {
       key: 'policy',
       title: 'Cancellation policy',
       content: (
-        <div className="space-y-1 text-sm leading-7 text-[#002b11]/80">
+        <div className="space-y-1 text-sm leading-7 text-[#002b11]/80 sm:text-base lg:text-lg">
           {cancellationPolicy.cutoffHours ? (
             <p>
               Free cancellation is available up to {cancellationPolicy.cutoffHours} hour
@@ -2138,7 +2142,7 @@ function TourDetailContent() {
           </div>
 
           <nav className="sticky top-[58px] z-30 -mx-4 mt-5 overflow-x-auto bg-white px-4 sm:-mx-6 sm:px-6 lg:top-[104px] lg:-mx-8 lg:px-8 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex gap-2 sm:gap-5 justify-center px-2 sm:px-4 text-[11px] font-bold text-[color:var(--brand-green)] sm:text-sm">
+            <div className="flex gap-2 sm:gap-5 justify-center px-2 sm:px-4 text-[13px] font-bold text-[color:var(--brand-green)] sm:text-base">
               {TOUR_DETAIL_TABS.map((tab) => (
                 <button
                   key={tab.key}
@@ -2228,8 +2232,8 @@ function TourDetailContent() {
                           <ol className="list-none space-y-4 pl-0 overflow-hidden">
                             {OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.slice(0, 2).map((step) => (
                               <li key={step.title}>
-                                <div className="min-w-0 text-sm leading-7 text-slate-700">
-                                  <p className="text-[1.3em] font-bold text-slate-900">
+                                <div className="min-w-0 text-sm leading-7 text-slate-700 sm:text-base lg:text-lg">
+                                  <p className="text-[1.3em] font-bold text-slate-900 lg:text-[1.222em]">
                                     {step.title}
                                   </p>
                                   <p className="mt-1.5">{step.body}</p>
@@ -2245,8 +2249,8 @@ function TourDetailContent() {
                                   exit={{ opacity: 0, y: -8, height: 0 }}
                                   transition={{ duration: 0.25, ease: "easeOut" }}
                                 >
-                                  <div className="min-w-0 text-sm leading-7 text-slate-700">
-                                    <p className="text-[1.3em] font-bold text-slate-900">
+                                  <div className="min-w-0 text-sm leading-7 text-slate-700 sm:text-base lg:text-lg">
+                                    <p className="text-[1.3em] font-bold text-slate-900 lg:text-[1.222em]">
                                       {step.title}
                                     </p>
                                     <p className="mt-1.5">{step.body}</p>
@@ -2273,15 +2277,15 @@ function TourDetailContent() {
                     {(() => {
                       const displayReviews = paginatedReviews.length > 0 ? paginatedReviews.slice(0, 8) : DUMMY_REVIEWS;
                       return (
-                      <section className="mt-8">
-                        <div className="flex items-center justify-between mb-6">
-                          <h2 className="text-[calc(0.875rem*1.3)] font-black text-slate-900">
+                      <section className="mt-12 sm:mt-14">
+                        <div className="flex items-baseline justify-between gap-3 mb-6">
+                          <h2 className="text-base font-black text-slate-900 sm:text-lg lg:text-xl leading-tight">
                             What travellers loved
                           </h2>
                           <Link
                             to="#reviews"
                             onClick={() => setActiveDetailTab('reviews')}
-                            className="text-sm font-bold text-[color:var(--brand-green)] hover:underline whitespace-nowrap"
+                            className="shrink-0 text-sm font-bold text-[color:var(--brand-green)] hover:underline whitespace-nowrap leading-tight"
                           >
                             See all reviews <span aria-hidden="true">&rarr;</span>
                           </Link>
@@ -2374,16 +2378,6 @@ function TourDetailContent() {
                             </button>
                           )}
                         </div>
-                        <div className="mt-6 flex justify-center">
-                          <Link
-                            to="#reviews"
-                            onClick={() => setActiveDetailTab('reviews')}
-                            className="inline-flex items-center gap-1.5 text-sm font-bold text-[color:var(--brand-green)] hover:underline"
-                          >
-                            See more reviews
-                            <ChevronRight className="size-4" />
-                          </Link>
-                        </div>
                       </section>
                       );
                     })()}
@@ -2398,7 +2392,7 @@ function TourDetailContent() {
                           className="flex w-full items-center justify-between gap-4 py-4 text-left"
                           aria-expanded={overviewAccordionOpen.highlights}
                         >
-                          <span className="text-[calc(0.875rem*1.3)] font-black text-slate-900">
+                          <span className="text-base font-black text-slate-900 sm:text-lg lg:text-xl">
                             {t('tourDetail.highlights')}
                           </span>
                           <span className="flex shrink-0 justify-end">
@@ -2450,7 +2444,7 @@ function TourDetailContent() {
                     id="details"
                     className="pb-6"
                   >
-                    <h2 className="text-lg font-black text-[color:var(--brand-green)]">Details</h2>
+                    <h2 className="text-lg font-black text-[color:var(--brand-green)] sm:text-xl lg:text-2xl">Details</h2>
                     <div className="mt-4 space-y-3">
                       {infoSections.map((section) => {
                         const isOpen = !!expandedInfoSection[section.key];
@@ -2464,7 +2458,7 @@ function TourDetailContent() {
                                   [section.key]: !p[section.key],
                                 }))
                               }
-                              className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold text-[color:var(--brand-green)]"
+                              className="flex w-full items-center justify-between py-4 text-left text-base font-black text-[color:var(--brand-green)] sm:text-lg lg:text-xl"
                             >
                               {section.title}
                               {isOpen ? (
@@ -2504,7 +2498,7 @@ function TourDetailContent() {
                     id="itinerary"
                     className="pb-8"
                   >
-                    <h2 className="text-lg font-black text-[color:var(--brand-green)]">
+                    <h2 className="text-lg font-black text-[color:var(--brand-green)] sm:text-xl lg:text-2xl">
                       Itinerary
                     </h2>
                     {itineraryStops.length === 0 ? (
@@ -2591,7 +2585,7 @@ function TourDetailContent() {
                   >
                     <section id="reviews" className="pb-8">
                       <div className="flex flex-wrap items-end justify-between gap-4">
-                        <h2 className="text-2xl font-black text-slate-950">Reviews</h2>
+                        <h2 className="text-xl font-black text-slate-950 sm:text-2xl lg:text-3xl">Reviews</h2>
                         <button
                           type="button"
                           onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana', tourId: rawTour?.id } } })}
@@ -2764,7 +2758,7 @@ function TourDetailContent() {
 
                         <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_2px_18px_rgba(15,23,42,0.08)]">
                           <div>
-                            <h3 className="text-lg font-black text-slate-950">Traveler photos</h3>
+                            <h3 className="text-base font-black text-slate-950 sm:text-lg lg:text-xl">Traveler photos</h3>
                             <p className="mt-1 text-xs leading-5 text-[color:var(--brand-green)]/70">
                               Only photos travelers attach when they write a review are shown here.
                             </p>
@@ -2797,7 +2791,7 @@ function TourDetailContent() {
                     </section>
 
                     <section id="qa" className="pb-8">
-                      <h2 className="text-lg font-black text-[color:var(--brand-green)]">Q&A</h2>
+                      <h2 className="text-lg font-black text-[color:var(--brand-green)] sm:text-xl lg:text-2xl">Q&A</h2>
                       <div className="mt-5 space-y-8">
                         {qaItems.map((item) => (
                           <article key={item.question}>
@@ -2830,7 +2824,8 @@ function TourDetailContent() {
                   >
                     <SupplierTabContent
                       supplierData={supplierData}
-                      supplierTours={supplierTours}
+                      supplierTours={displayedSupplierTours}
+                      totalSupplierTours={supplierTours.length}
                       supplierInfoOpen={supplierInfoOpen}
                       setSupplierInfoOpen={setSupplierInfoOpen}
                       handleImageError={handleImageError}
@@ -2849,9 +2844,9 @@ function TourDetailContent() {
           </div>
 
           <section className="py-8">
-            <div className="section-header-row relative z-30 isolate mb-3 flex items-center justify-between gap-4">
-              <h2 className="text-xl font-bold text-slate-900">Similar Experiences</h2>
-              <div className="section-header-actions">
+            <div className="section-header-row relative z-30 isolate mb-3 flex items-center justify-between gap-3">
+              <h2 className="text-lg font-bold text-slate-900 sm:text-xl lg:text-2xl">Similar Experiences</h2>
+              <div className="section-header-actions shrink-0">
                 <div className="section-header-scroll-arrows">
                   <button
                     type="button"
@@ -3528,6 +3523,7 @@ const CARD_W_MD = 280;
 function SupplierTabContent({
   supplierData,
   supplierTours,
+  totalSupplierTours,
   supplierInfoOpen,
   setSupplierInfoOpen,
   handleImageError,
@@ -3614,7 +3610,7 @@ function SupplierTabContent({
               )}
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900">{supplierData.name}</h2>
+              <h2 className="text-lg font-black text-slate-900 sm:text-xl lg:text-2xl">{supplierData.name}</h2>
               <div className="mt-1 pl-0.1 flex items-center gap-2 text-sm text-slate-500">
                 {ratingDisplay && (
                   <>
@@ -3623,7 +3619,7 @@ function SupplierTabContent({
                     <span>•</span>
                   </>
                 )}
-                <span>{supplierTours.length} tours</span>
+                <span>{totalSupplierTours} tours</span>
               </div>
             </div>
           </div>
@@ -3631,11 +3627,11 @@ function SupplierTabContent({
       </div>
 
       <div className="mt-6 border-b border-slate-200">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-baseline justify-between gap-3 py-4">
           <button
             type="button"
             onClick={() => setSupplierInfoOpen((o) => !o)}
-            className="flex items-center gap-2 text-left text-sm font-semibold text-[color:var(--brand-green)]"
+            className="flex items-center gap-2 text-left text-base font-semibold text-[color:var(--brand-green)] sm:text-lg lg:text-xl leading-tight"
           >
             About this supplier
             <motion.span
@@ -3654,7 +3650,7 @@ function SupplierTabContent({
                 { state: { supplierData, tourId, tourSlug } }
               )
             }
-            className="inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
+            className="shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--brand-green)] hover:underline leading-tight"
           >
             View More
             <ChevronRight className="size-4" strokeWidth={2} />
@@ -3716,9 +3712,9 @@ function SupplierTabContent({
       </div>
 
       <div className="mt-6">
-        <div className="flex items-center justify-between gap-4 mb-3">
-          <h3 className="text-[calc(1rem*1.3)] font-black text-slate-900">Tours by this supplier</h3>
-          <div className="flex items-center gap-2">
+        <div className="flex items-baseline justify-between gap-3 mb-3">
+          <h3 className="text-base font-black text-slate-900 sm:text-lg lg:text-xl leading-tight">Tours by this supplier</h3>
+          <div className="shrink-0 flex items-center gap-2">
             <button
               ref={scrollBtnLeftRef}
               type="button"

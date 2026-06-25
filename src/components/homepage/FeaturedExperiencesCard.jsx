@@ -170,7 +170,7 @@ export function FeaturedExperiencesCard({
 
         {/* Card.Title */}
         <h5
-          className="line-clamp-3 min-h-[4em] text-[18px] leading-[24px] tracking-normal font-bold text-slate-900"
+          className="line-clamp-3 min-h-[4em] text-[16px] leading-[22px] tracking-normal font-semibold text-slate-900 lg:text-[18px] lg:leading-[24px] lg:font-bold"
         >
           {title}
         </h5>

@@ -43,7 +43,7 @@ export function SectionHeading({
   };
 
   return (
-    <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+    <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-center justify-between gap-4 md:mb-2.5 xl:mb-3">
       <div className="min-w-0 flex-1">
         {!hideTitle ? (
           <h2

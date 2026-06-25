@@ -2,37 +2,22 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import {
-  ChevronDown,
   ChevronRight,
   Info,
-  Sparkles,
   Camera,
   Image,
   ArrowLeft,
-  Star,
-  MapPin,
-  Clock,
+  Calendar,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import '@/styles/datepicker-custom.css';
 import { Navbar } from '@/components/homepage/Navbar';
 import { createReview } from '@/api/reviews';
 import { getMyBookings } from '@/api/bookings';
-
-function RatingCircle({ filled, onClick, size = 'md' }) {
-  const sizeClasses = size === 'sm' ? 'size-8' : 'size-9';
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`${sizeClasses} rounded-full border-2 transition-all duration-150 ${
-        filled
-          ? 'border-emerald-600 bg-emerald-600'
-          : 'border-emerald-600 bg-white hover:border-emerald-700'
-      }`}
-    />
-  );
-}
+import { PlaceCard } from '@/components/ui/card-22';
 
 function StarRating({ value, onChange, count = 5 }) {
   return (
@@ -89,7 +74,25 @@ export default function ReviewExperiencePage() {
     price: 85,
     image: 'https://images.unsplash.com/photo-1589656966895-2f33e7653819?auto=format&fit=crop&w=600&q=80',
     location: 'Accra, Ghana',
+    supplierName: 'Expedition-Go Tours Ltd',
+    supplierLogo:
+      'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80',
   };
+  const tourCardImages = [
+    tour.image,
+    ...(Array.isArray(tour.images) ? tour.images : []),
+  ].filter(Boolean);
+  const supplierName =
+    tour.supplierName ||
+    tour.operatorName ||
+    tour.supplier?.name ||
+    tour.supplier?.companyName ||
+    'Expedition-Go Tours Ltd';
+  const supplierLogo =
+    tour.supplierLogo ||
+    tour.supplier?.logo ||
+    tour.supplier?.photoURL ||
+    'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80';
 
   const [overallRating, setOverallRating] = useState(0);
   const [subRatings, setSubRatings] = useState({
@@ -97,7 +100,7 @@ export default function ReviewExperiencePage() {
     guide: 0,
     meeting: 0,
   });
-  const [selectedMonth, setSelectedMonth] = useState('November 2025');
+  const [selectedDate, setSelectedDate] = useState(null);
   const [companions, setCompanions] = useState({
     business: false,
     couples: false,
@@ -163,7 +166,14 @@ export default function ReviewExperiencePage() {
       if (subRatings.valueForMoney) fd.append('valueForMoneyRating', String(subRatings.valueForMoney));
       if (subRatings.guide) fd.append('guideRating', String(subRatings.guide));
       if (subRatings.meeting) fd.append('meetingRating', String(subRatings.meeting));
-      if (selectedMonth) fd.append('travelMonth', selectedMonth);
+      if (selectedDate) {
+        const monthNames = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        const formattedDate = `${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+        fd.append('travelMonth', formattedDate);
+      }
       const selectedCompanions = Object.entries(companions)
         .filter(([, v]) => v)
         .map(([k]) => k);
@@ -190,12 +200,6 @@ export default function ReviewExperiencePage() {
     'Crowd size',
     'Staff',
     'Best for',
-  ];
-
-  const months = [
-    'June 2026', 'May 2026', 'April 2026', 'March 2026', 'February 2026',
-    'January 2026', 'December 2025', 'November 2025', 'October 2025',
-    'September 2025', 'August 2025', 'July 2025',
   ];
 
   const handlePhotoUpload = (e) => {
@@ -244,54 +248,15 @@ export default function ReviewExperiencePage() {
               Tell Us, How Was Your Trip
             </h1>
             <div className="review-sidebar space-y-6 lg:border-r lg:border-slate-200 lg:-mr-10 lg:pr-10">
-              {/* Tour Info Card */}
-              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                  <img
-                    src={tour.image}
-                    alt={tour.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-[15px] font-bold leading-snug text-slate-900">
-                    {tour.title}
-                  </h3>
-                  <div className="mt-2 flex items-center gap-2">
-                    <img
-                      src="https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=60&q=80"
-                      alt="Supplier logo"
-                      className="size-8 shrink-0 rounded-full object-cover"
-                    />
-                    <Link
-                      to="/supplier/profile/expedition-go-tours-ltd"
-                      style={{ color: '#000', fontSize: '13px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '2px' }}
-                    >
-                      Expedition-Go Tours Ltd
-                    </Link>
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-slate-600">
-                    <div className="flex items-center gap-1">
-                      <Star className="size-3.5 fill-emerald-600 text-emerald-600" />
-                      <span className="font-semibold text-slate-900">{tour.rating}</span>
-                      <span>({tour.reviews})</span>
-                    </div>
-                    {tour.location && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="size-3 shrink-0 text-slate-400" />
-                        <span>{tour.location}</span>
-                      </div>
-                    )}
-                    {tour.duration && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="size-3 shrink-0 text-slate-400" />
-                        <span>{tour.duration}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <PlaceCard
+                images={tourCardImages}
+                rating={tour.rating}
+                title={tour.title}
+                supplierName={supplierName}
+                supplierLogo={supplierLogo}
+                location={tour.location}
+                duration={tour.duration}
+              />
 
               {/* Change Activity Link */}
               <Link
@@ -395,18 +360,27 @@ export default function ReviewExperiencePage() {
                 When did you go?
               </h2>
               <div className="relative inline-block">
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="appearance-none rounded-full border-2 border-blue-500 bg-white py-2.5 pl-5 pr-12 text-[14px] font-medium text-slate-800 outline-none transition focus:border-blue-600"
-                >
-                  {months.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  dateFormat="MMMM yyyy"
+                  showMonthYearPicker
+                  maxDate={new Date()}
+                  minDate={new Date(new Date().setFullYear(new Date().getFullYear() - 2))}
+                  placeholderText="Select month and year"
+                  shouldCloseOnSelect={false}
+                  className="appearance-none rounded-full border-2 border-blue-500 bg-white py-2.5 pl-5 pr-12 text-[14px] font-medium text-slate-800 outline-none transition focus:border-blue-600 cursor-pointer w-full sm:w-auto min-w-[200px]"
+                  wrapperClassName="w-full sm:w-auto"
+                  calendarClassName="!rounded-xl !border-2 !border-slate-200 !shadow-lg"
+                  popperPlacement="bottom-start"
+                  popperModifiers={[
+                    {
+                      name: 'flip',
+                      enabled: false,
+                    },
+                  ]}
+                />
+                <Calendar className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
               </div>
             </section>
 

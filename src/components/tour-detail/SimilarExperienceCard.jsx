@@ -73,7 +73,7 @@ export function SimilarExperienceCard({ tour, index, onImageError }) {
         <div className="flex flex-1 flex-col px-3 pb-3 pt-2.5 sm:px-3.5 sm:pb-3.5 sm:pt-3">
           <Link
             to={detailTo}
-            className="line-clamp-2 min-h-[2.5rem] text-[18px] leading-[24px] tracking-normal font-bold text-slate-900 hover:underline"
+            className="line-clamp-2 min-h-[2.5rem] text-[16px] leading-[22px] tracking-normal font-semibold text-slate-900 hover:underline lg:text-[18px] lg:leading-[24px] lg:font-bold"
           >
             {tour.title}
           </Link>

@@ -121,7 +121,7 @@ export function ReviewsCarousel() {
 
   return (
     <section id="reviews-carousel" className="relative bg-white py-4 md:py-4 xl:py-5">
-        <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+        <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-center justify-between gap-4 md:mb-2.5 xl:mb-3">
           <div className="min-w-0 flex-1">
             <h2
               className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"

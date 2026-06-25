@@ -63,7 +63,7 @@ const POST_AUTH_SPLASH_MS = 700;
 function LoadingCarouselSection({ title }) {
   return (
     <section className="py-4 md:py-4 xl:py-5">
-      <div className="section-header-row mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+      <div className="section-header-row mb-[0.6375rem] flex items-center justify-between gap-4 md:mb-2.5 xl:mb-3">
         <div className="min-w-0 flex-1">
           <h2
             className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
@@ -428,7 +428,7 @@ function HomePageContent() {
             {/* Continue Planning Our Trip */}
             {recentlyViewed.length > 0 && (
               <section className="py-4 md:py-4 xl:py-5">
-                <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+                <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-center justify-between gap-4 md:mb-2.5 xl:mb-3">
                   <div className="min-w-0 flex-1">
                     <h2
                       className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
@@ -520,7 +520,7 @@ function HomePageContent() {
 
             {/* 6. Last Minute Deals */}
             <section className="py-4 md:py-4 xl:py-5">
-              <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+              <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-center justify-between gap-4 md:mb-2.5 xl:mb-3">
                 <div className="min-w-0 flex-1">
                   <h2
                     className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
@@ -588,7 +588,7 @@ function HomePageContent() {
 
             {/* 7. New Experiences */}
             <section className="py-4 md:py-4 xl:py-5">
-              <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-start justify-between gap-4 md:mb-2.5 xl:mb-3">
+              <div className="section-header-row relative z-30 isolate mb-[0.6375rem] flex items-center justify-between gap-4 md:mb-2.5 xl:mb-3">
                 <div className="min-w-0 flex-1">
                   <h2
                     className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"

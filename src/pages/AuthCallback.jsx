@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fetchCurrentUser, getAuthReturnTo, clearAuthReturnTo } from "@/lib/auth";
@@ -10,10 +10,15 @@ function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const handledRef = useRef(false);
 
   useEffect(() => {
+    if (handledRef.current) return;
+    handledRef.current = true;
+
     const accessToken = searchParams.get("accessToken");
     const refreshToken = searchParams.get("refreshToken");
+    const redirect = getAuthReturnTo() || "/";
 
     if (!accessToken || !refreshToken) {
       setError("Invalid authentication response. Missing tokens.");
@@ -31,7 +36,6 @@ function AuthCallback() {
 
         window.dispatchEvent(new Event("auth-storage-changed"));
 
-        const redirect = getAuthReturnTo() || "/";
         clearAuthReturnTo();
         navigate(redirect, { replace: true });
       } catch (err) {

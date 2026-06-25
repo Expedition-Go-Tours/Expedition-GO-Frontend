@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { AlertCircle, Mail, Lock, UserRound, Building2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -103,6 +103,7 @@ export function AuthForm({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -168,16 +169,25 @@ export function AuthForm({
           : t("auth.successWelcomeBack"),
       );
 
-      const returnTo = getAuthReturnTo() || "/";
+      // Wait longer for auth state to propagate before navigation
+      await new Promise((r) => setTimeout(r, 150));
+
+      const returnTo = searchParams.get("returnTo") || getAuthReturnTo() || "/";
       clearAuthReturnTo();
 
-      navigate(returnTo, {
-        state: {
-          postAuthSplash: true,
-          splashKind: isRegister ? "register" : "signin",
-          handoffId: Date.now(),
-        },
-      });
+      if (returnTo === "/") {
+        navigate(returnTo, {
+          replace: true,
+          state: {
+            postAuthSplash: true,
+            splashKind: isRegister ? "register" : "signin",
+            handoffId: Date.now(),
+          },
+        });
+      } else {
+        // Use regular push navigation instead of replace to ensure proper history management
+        window.location.href = returnTo;
+      }
     } catch (submissionError) {
       setError(submissionError.message || t("auth.errorRequest"));
     } finally {
@@ -194,7 +204,7 @@ export function AuthForm({
       // Make sure the page to return to after OAuth is saved before the
       // browser leaves for the Google flow. If nothing was saved (e.g. the
       // user landed directly on /signin), default to home.
-      setAuthReturnTo(getAuthReturnTo() || "/");
+      setAuthReturnTo(searchParams.get("returnTo") || getAuthReturnTo() || "/");
 
       const result = await signInWithGoogle();
 
@@ -203,12 +213,21 @@ export function AuthForm({
 
       setSuccess(t("auth.successGoogleSignIn"));
 
-      const returnTo = getAuthReturnTo() || "/";
+      // Wait longer for auth state to propagate before navigation
+      await new Promise((r) => setTimeout(r, 150));
+
+      const returnTo = searchParams.get("returnTo") || getAuthReturnTo() || "/";
       clearAuthReturnTo();
 
-      navigate(returnTo, {
-        state: { postAuthSplash: true, splashKind: "signin", handoffId: Date.now() },
-      });
+      if (returnTo === "/") {
+        navigate(returnTo, {
+          replace: true,
+          state: { postAuthSplash: true, splashKind: "signin", handoffId: Date.now() },
+        });
+      } else {
+        // Use regular push navigation instead of replace to ensure proper history management
+        window.location.href = returnTo;
+      }
     } catch (submissionError) {
       setError(submissionError.message || t("auth.errorGoogleSignIn"));
     } finally {

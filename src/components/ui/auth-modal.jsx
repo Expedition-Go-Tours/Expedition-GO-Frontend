@@ -157,12 +157,18 @@ export function AuthModal({ isOpen, onClose, title, description }) {
                 className="mt-6 flex flex-row items-center justify-center gap-3"
               >
                 <Button asChild variant="default" size="lg" className="min-w-[148px] !text-white !bg-[#39AD6C] hover:!bg-[#39AD6C]/90">
-                  <Link to="/signin" onClick={onClose}>
+                  <Link 
+                    to={`/signin?returnTo=${encodeURIComponent(window.location.pathname + window.location.search + window.location.hash)}`} 
+                    onClick={onClose}
+                  >
                     Sign In
                   </Link>
                 </Button>
                 <Button asChild variant="default" size="lg" className="min-w-[148px] !text-white !bg-[#39AD6C] hover:!bg-[#39AD6C]/90">
-                  <Link to="/register" onClick={onClose}>
+                  <Link 
+                    to={`/register?returnTo=${encodeURIComponent(window.location.pathname + window.location.search + window.location.hash)}`} 
+                    onClick={onClose}
+                  >
                     Create Account
                   </Link>
                 </Button>

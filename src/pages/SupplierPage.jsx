@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import {
   Star,
   Heart,
@@ -10,7 +11,6 @@ import {
   Globe,
   MapPin,
   ArrowLeft,
-  ChevronUp,
   ChevronDown,
 } from 'lucide-react';
 import { Navbar } from '@/components/homepage/Navbar';
@@ -159,19 +159,29 @@ function SupplierPage() {
 
   if (!supplierData && tourLoading) {
     return (
-      <div className="min-h-screen bg-white">
+      <motion.div 
+        className="min-h-screen bg-white"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <Navbar />
         <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
         <div className="flex min-h-[calc(100vh-var(--navbar-offset))] flex-col items-center justify-center gap-4 px-4">
           <p className="text-sm text-slate-500">Loading supplier...</p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (!supplierData) {
     return (
-      <div className="min-h-screen bg-white">
+      <motion.div 
+        className="min-h-screen bg-white"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <Navbar />
         <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
         <div className="flex min-h-[calc(100vh-var(--navbar-offset))] flex-col items-center justify-center gap-4 px-4">
@@ -184,15 +194,26 @@ function SupplierPage() {
             Back to Home
           </Link>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <motion.div 
+      className="min-h-screen bg-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4, ease: 'easeInOut' }}
+    >
       <Navbar />
       <div className="h-[var(--navbar-offset)] shrink-0" aria-hidden />
-      <main className="mx-auto max-w-[1520px] overflow-x-clip px-4 pb-8 pt-6 text-slate-900 sm:px-6 lg:px-8 lg:pt-10">
+      <motion.main 
+        className="mx-auto max-w-[1520px] overflow-x-clip px-4 pb-8 pt-6 text-slate-900 sm:px-6 lg:px-8 lg:pt-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      >
         <button
           type="button"
           onClick={() => {
@@ -246,13 +267,18 @@ function SupplierPage() {
             className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold text-[color:var(--brand-green)]"
           >
             About this supplier
-            {supplierInfoOpen ? (
-              <ChevronUp className="size-4" />
-            ) : (
+            <motion.span
+              initial={false}
+              animate={{ rotate: supplierInfoOpen ? 180 : 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
               <ChevronDown className="size-4" />
-            )}
+            </motion.span>
           </button>
-          {supplierInfoOpen && (
+          <div
+            className="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+            style={{ maxHeight: supplierInfoOpen ? '500px' : '0', opacity: supplierInfoOpen ? 1 : 0 }}
+          >
             <div className="pb-5">
               {supplierData.description && (
                 <p className="break-words text-sm leading-7 text-slate-600">
@@ -261,7 +287,7 @@ function SupplierPage() {
               )}
               <SupplierContactRows supplierData={supplierData} />
             </div>
-          )}
+          </div>
         </div>
 
         <div className="mt-8">
@@ -368,9 +394,9 @@ function SupplierPage() {
             })}
           </div>
         </div>
-      </main>
+      </motion.main>
       <Footer />
-    </div>
+    </motion.div>
   );
 }
 

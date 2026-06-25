@@ -19,20 +19,22 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
+  ArrowRightToLine,
+  Bus,
+  CalendarCheck,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   ChevronUp,
   Clock,
-  Star,
+  CreditCard,
   Heart,
   Check,
   X,
-  Languages,
   Minus,
   Plus,
-  Truck,
+  UserCheck,
   Users,
   MapPin,
   Upload,
@@ -42,6 +44,7 @@ import {
   Phone,
   Mail,
   Globe,
+  Star,
   Tag,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -773,8 +776,11 @@ function TourDetailContent() {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const expectedPath = rawTour?.slug ? `/tour/${rawTour.slug}` : null;
-    if (expectedPath && currentPath !== expectedPath) {
+    const slug = rawTour?.slug;
+    if (!slug || typeof slug !== 'string' || slug.length < 1) return;
+    if (slug.includes('/')) return;
+    const expectedPath = `/tour/${slug}`;
+    if (currentPath !== expectedPath) {
       window.history.replaceState(null, '', expectedPath);
     }
   }, [rawTour?.slug]);
@@ -1431,27 +1437,6 @@ function TourDetailContent() {
   const pickupDetails = rawTour?.bookingAndTickets?.pickupDetails || '';
   const languages = rawTour?.productContent?.languages || [];
 
-  const quickFacts = [
-    { icon: Clock, label: 'Duration', value: selectedTourDuration },
-    {
-      icon: Truck,
-      label: 'Start time',
-      value: timeSlots.length ? timeSlots.join(', ') : 'Check availability',
-    },
-    {
-      icon: MapPin,
-      label: 'Pickup',
-      value: pickupAvailable
-        ? pickupDetails || `${tourData?.location || 'Accra'} pickup included`
-        : 'Not available',
-    },
-    {
-      icon: Languages,
-      label: 'Language',
-      value: languages.length ? languages.join(', ') : tourData?.language || 'English',
-    },
-  ];
-
   const includedItems = rawTour?.productContent?.included || [];
   const excludedItems = rawTour?.productContent?.excluded || [];
   const expectText = rawTour?.productContent?.uniqueSellingPoints || rawTour?.description || '';
@@ -1481,7 +1466,7 @@ function TourDetailContent() {
         <div className="space-y-4">
           {includedItems.length > 0 && (
             <div>
-              <h4 className="text-sm font-bold text-[#002b11]">What's included</h4>
+              <h4 className="text-sm font-bold text-[#002b11]">Included</h4>
               <ul className="mt-3 space-y-2 text-sm leading-6 text-[#002b11]/85">
                 {includedItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -1496,7 +1481,7 @@ function TourDetailContent() {
           )}
           {excludedItems.length > 0 && (
             <div>
-              <h4 className="text-sm font-bold text-[#002b11]">What's not included</h4>
+              <h4 className="text-sm font-bold text-[#002b11]">Not included</h4>
               <ul className="mt-3 space-y-2 text-sm leading-6 text-[#002b11]/85">
                 {excludedItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -1734,7 +1719,7 @@ function TourDetailContent() {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="grid size-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm"
+                className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-slate-600 shadow-sm"
                 aria-label="Go back"
               >
                 <ArrowLeft className="size-4" />
@@ -1753,16 +1738,16 @@ function TourDetailContent() {
               <div className="max-w-5xl">
                 <h1
                   className="font-black leading-tight tracking-tight text-black"
-                  style={{ fontSize: 'clamp(1.35rem, 2vw + 0.9rem, 2rem)' }}
+                  style={{ fontSize: 'clamp(1.35rem, 2vw + 0.9rem, 2.5rem)' }}
                 >
                   {selectedTourTitle}
                 </h1>
-                <div className="mt-3 flex items-center gap-x-3 text-sm font-semibold text-slate-900 sm:gap-4">
+                <div className="mt-3 flex items-center gap-x-3 text-sm font-semibold text-slate-900 sm:gap-4 lg:text-base">
                   <span
                     className="inline-flex items-center gap-1 text-[#00b67a]"
                     aria-label={`${selectedTourRatingNumber} out of 5 rating`}
                   >
-                    <Star className="size-4 fill-current" />
+                    <Star className="size-4 fill-current lg:size-5" />
                     <span>{selectedTourRatingNumber}</span>
                   </span>
                   <button
@@ -1772,16 +1757,16 @@ function TourDetailContent() {
                   >
                     {selectedTourReviewsNumber} Reviews
                   </button>
-                  <span className="hidden h-5 w-px bg-slate-900/65 sm:block" aria-hidden="true" />
+                  <span className="hidden h-5 w-px bg-slate-900/65 sm:block lg:h-6" aria-hidden="true" />
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="grid size-4 place-items-center rounded-full bg-[#e7583f] text-white">
-                      <Check className="size-3 stroke-[3]" />
+                    <span className="grid size-4 place-items-center rounded-full bg-[#e7583f] text-white lg:size-5">
+                      <Check className="size-3 stroke-[3] lg:size-3.5" />
                     </span>
                     <span className="whitespace-nowrap">96% travel</span>
                   </span>
-                  <span className="hidden h-5 w-px bg-slate-900/65 sm:block" aria-hidden="true" />
+                  <span className="hidden h-5 w-px bg-slate-900/65 sm:block lg:h-6" aria-hidden="true" />
                   <span className="inline-flex items-center gap-1 text-slate-600">
-                    <MapPin className="size-3.5 shrink-0" />
+                    <MapPin className="size-3.5 shrink-0 lg:size-4" />
                     <span>Accra, Ghana</span>
                   </span>
                 </div>
@@ -1789,7 +1774,7 @@ function TourDetailContent() {
                 <button
                   type="button"
                   onClick={() => navigate(`/review/${encodeURIComponent(selectedTourTitle)}`, { state: { returnTo: `/tour/${encodeURIComponent(selectedTourTitle)}#reviews`, tour: { title: selectedTourTitle, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, location: 'Accra, Ghana', tourId: rawTour?.id } } })}
-                  className="shrink-0 rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
+                  className="shrink-0 rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)] lg:text-base lg:px-6 lg:py-3"
                 >
                   Write a review
                 </button>
@@ -2185,16 +2170,53 @@ function TourDetailContent() {
                     id="overview"
                     className="pb-6"
                   >
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {quickFacts.map(({ icon: Icon, label, value }) => (
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {[
+                        {
+                          icon: CalendarCheck,
+                          title: 'Free cancellation',
+                          desc: 'Cancel up to 24 hours in advance for a full refund',
+                        },
+                        {
+                          icon: Clock,
+                          title: `Duration ${selectedTourDuration}`,
+                          desc: 'Check availability to see starting times',
+                        },
+                        {
+                          icon: Users,
+                          title: 'Live tour guide',
+                          desc: languages.length ? languages.join(', ') : tourData?.language || 'English',
+                        },
+                        {
+                          icon: CreditCard,
+                          title: 'Reserve now & pay later',
+                          desc: 'Keep your travel plans flexible — book your spot and pay nothing today.',
+                        },
+                        {
+                          icon: UserCheck,
+                          title: 'Skip the line through a separate entrance',
+                          desc: null,
+                        },
+                        {
+                          icon: Bus,
+                          title: 'Pickup included',
+                          desc: pickupAvailable
+                            ? pickupDetails || 'Check availability for details'
+                            : 'Not available',
+                        },
+                      ].map(({ icon: Icon, title, desc }) => (
                         <div
-                          key={label}
-                          className="flex items-start gap-3 text-sm text-[color:var(--brand-green)]"
+                          key={title}
+                          className="flex items-start gap-4 rounded-xl bg-white p-4"
                         >
-                          <Icon className="mt-0.5 size-4 shrink-0" />
-                          <div>
-                            <p className="font-bold">{label}</p>
-                            <p className="text-[color:var(--brand-green)]/75">{value}</p>
+                          <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-50 lg:size-12">
+                            <Icon className="size-5 text-emerald-600 lg:size-6" strokeWidth={1.5} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold leading-snug text-slate-900 lg:text-base">{title}</p>
+                            {desc && (
+                              <p className="mt-0.5 text-xs leading-relaxed text-slate-500 lg:text-sm">{desc}</p>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -2203,11 +2225,8 @@ function TourDetailContent() {
                     {OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.length > 0 && (
                       <div className="mt-8 pt-6">
                         <div className="min-w-0">
-                          <ol className="list-none space-y-4 pl-0">
-                            {(fullDescriptionExpanded
-                              ? OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT
-                              : OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.slice(0, 2)
-                            ).map((step) => (
+                          <ol className="list-none space-y-4 pl-0 overflow-hidden">
+                            {OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.slice(0, 2).map((step) => (
                               <li key={step.title}>
                                 <div className="min-w-0 text-sm leading-7 text-slate-700">
                                   <p className="text-[1.3em] font-bold text-slate-900">
@@ -2217,6 +2236,24 @@ function TourDetailContent() {
                                 </div>
                               </li>
                             ))}
+                            <AnimatePresence initial={false}>
+                              {fullDescriptionExpanded && OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.slice(2).map((step) => (
+                                <motion.li
+                                  key={step.title}
+                                  initial={{ opacity: 0, y: -8, height: 0 }}
+                                  animate={{ opacity: 1, y: 0, height: "auto" }}
+                                  exit={{ opacity: 0, y: -8, height: 0 }}
+                                  transition={{ duration: 0.25, ease: "easeOut" }}
+                                >
+                                  <div className="min-w-0 text-sm leading-7 text-slate-700">
+                                    <p className="text-[1.3em] font-bold text-slate-900">
+                                      {step.title}
+                                    </p>
+                                    <p className="mt-1.5">{step.body}</p>
+                                  </div>
+                                </motion.li>
+                              ))}
+                            </AnimatePresence>
                           </ol>
                           {OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.length > 2 && (
                             <button
@@ -2256,47 +2293,58 @@ function TourDetailContent() {
                             className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                             onScroll={handleTravellersLovedScroll}
                           >
-                            {displayReviews.map((review) => {
+                            {displayReviews.map((review, idx) => {
                               const initials = review.name
                                 ? review.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
                                 : '?';
+                              const avatarColors = ['bg-amber-600', 'bg-emerald-600', 'bg-blue-600', 'bg-rose-500', 'bg-violet-600', 'bg-orange-500'];
+                              const avatarColor = avatarColors[idx % avatarColors.length];
                               return (
                               <article
                                 key={review.id}
-                                className="min-w-[300px] max-w-[340px] snap-start shrink-0 rounded-xl border border-slate-200 bg-white p-5"
+                                className="min-w-[360px] max-w-[400px] snap-start shrink-0 rounded-xl border border-slate-200 bg-white p-5"
                               >
                                 <div className="flex items-center gap-3">
-                                  <div className="grid size-9 shrink-0 place-items-center rounded-full bg-emerald-600 text-xs font-bold text-white">
+                                  <div className={`grid size-10 shrink-0 place-items-center rounded-full ${avatarColor} text-sm font-bold text-white`}>
                                     {initials}
                                   </div>
                                   <div className="min-w-0 flex-1">
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
                                       <p className="text-sm font-bold text-slate-900 truncate">
                                         {review.name}
                                       </p>
-                                      <span className="text-slate-300">·</span>
-                                      <span className="shrink-0 text-xs text-slate-400">
-                                        {review.date}
+                                      <span className="hidden sm:inline text-slate-300">·</span>
+                                      <span className="text-xs text-slate-500">
+                                        {review.country || 'United States'}
                                       </span>
                                     </div>
-                                    <div className="mt-0.5 flex gap-0.5 text-emerald-600" aria-hidden>
-                                      {[...Array(5)].map((_, i) => (
-                                        <Star
-                                          key={i}
-                                          className={`size-3 ${i < review.rating ? 'fill-current' : 'fill-none text-slate-200'}`}
-                                        />
-                                      ))}
+                                    <div className="mt-0.5 flex items-center gap-2 flex-wrap">
+                                      <span className="text-xs text-slate-400">{review.date}</span>
+                                      <span className="inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+                                        <Check className="size-2.5" strokeWidth={3} />
+                                        Verified booking
+                                      </span>
                                     </div>
                                   </div>
                                 </div>
 
-                                <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-3">
+                                <div className="mt-2.5 flex gap-0.5 text-emerald-500" aria-hidden>
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`size-3.5 ${i < review.rating ? 'fill-current' : 'fill-none text-slate-200'}`}
+                                      strokeWidth={1.5}
+                                    />
+                                  ))}
+                                </div>
+
+                                <p className="mt-2.5 text-sm leading-6 text-slate-600 line-clamp-3">
                                   {review.text}
                                 </p>
                                 <button
                                   type="button"
                                   onClick={() => setReviewDetail(review)}
-                                  className="mt-2 text-xs font-bold text-slate-700 hover:text-[color:var(--brand-green)] hover:underline"
+                                  className="mt-2 text-xs font-bold text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
                                 >
                                   Read more
                                 </button>
@@ -2309,22 +2357,32 @@ function TourDetailContent() {
                             <button
                               type="button"
                               onClick={scrollTravellersLovedLeft}
-                              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 grid size-8 place-items-center rounded-full bg-white border border-slate-200 shadow-sm hover:shadow-md transition z-10"
+                              className="absolute -left-4 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
                               aria-label="Scroll left"
                             >
-                              <ChevronLeft className="size-4 text-slate-600" />
+                              <ChevronLeft className="size-5 text-slate-700" />
                             </button>
                           )}
                           {showTravellersLovedRightArrow && (
                             <button
                               type="button"
                               onClick={scrollTravellersLovedRight}
-                              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 grid size-8 place-items-center rounded-full bg-white border border-slate-200 shadow-sm hover:shadow-md transition z-10"
+                              className="absolute -right-4 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
                               aria-label="Scroll right"
                             >
-                              <ChevronRight className="size-4 text-slate-600" />
+                              <ChevronRight className="size-5 text-slate-700" />
                             </button>
                           )}
+                        </div>
+                        <div className="mt-6 flex justify-center">
+                          <Link
+                            to="#reviews"
+                            onClick={() => setActiveDetailTab('reviews')}
+                            className="inline-flex items-center gap-1.5 text-sm font-bold text-[color:var(--brand-green)] hover:underline"
+                          >
+                            See more reviews
+                            <ChevronRight className="size-4" />
+                          </Link>
                         </div>
                       </section>
                       );
@@ -2357,15 +2415,26 @@ function TourDetailContent() {
                             )}
                           </span>
                         </button>
-                        {overviewAccordionOpen.highlights && (
-                          <div className="pb-5">
-                            <ul className="list-disc space-y-1.5 pl-5 text-sm leading-7 text-slate-700">
-                              {OVERVIEW_HIGHLIGHTS_DEFAULT.map((item) => (
-                                <li key={item}>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
+                        <AnimatePresence initial={false}>
+                          {overviewAccordionOpen.highlights && (
+                            <motion.div
+                              key="highlights-content"
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                              className="overflow-hidden"
+                            >
+                              <div className="pb-5">
+                                <ul className="list-disc space-y-1.5 pl-5 text-sm leading-7 text-slate-700">
+                                  {OVERVIEW_HIGHLIGHTS_DEFAULT.map((item) => (
+                                    <li key={item}>{item}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </div>
                   </motion.section>
@@ -2404,7 +2473,20 @@ function TourDetailContent() {
                                 <ChevronDown className="size-4" />
                               )}
                             </button>
-                            {isOpen && <div className="pb-5">{section.content}</div>}
+                            <AnimatePresence initial={false}>
+                              {isOpen && (
+                                <motion.div
+                                  key={section.key}
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="pb-5">{section.content}</div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
                         );
                       })}
@@ -3462,6 +3544,7 @@ function SupplierTabContent({
     supplierData.rating != null && !Number.isNaN(Number(supplierData.rating))
       ? Number(supplierData.rating).toFixed(1)
       : null;
+  const { navigateWithLoader } = useNavigationLoader();
   const scrollRef = useRef(null);
   const scrollBtnLeftRef = useRef(null);
   const scrollBtnRightRef = useRef(null);
@@ -3514,7 +3597,7 @@ function SupplierTabContent({
       <div className="flex flex-col gap-8 lg:flex-row">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-4">
-            <div className="grid size-16 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-xs font-black text-[color:var(--brand-green)]">
+            <div className="grid size-16 shrink-0 place-items-center rounded-full bg-white text-xs font-black text-[color:var(--brand-green)]">
               {supplierData.logo ? (
                 <img
                   src={supplierData.logo}
@@ -3555,22 +3638,32 @@ function SupplierTabContent({
             className="flex items-center gap-2 text-left text-sm font-semibold text-[color:var(--brand-green)]"
           >
             About this supplier
-            {supplierInfoOpen ? (
-              <ChevronUp className="size-4" />
-            ) : (
+            <motion.span
+              initial={false}
+              animate={{ rotate: supplierInfoOpen ? 180 : 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
               <ChevronDown className="size-4" />
-            )}
+            </motion.span>
           </button>
-          <Link
-            to={`/supplier/profile/${encodeURIComponent(tourTitle)}`}
-            state={{ supplierData, tourId, tourSlug }}
+          <button
+            type="button"
+            onClick={() =>
+              navigateWithLoader(
+                `/supplier/profile/${encodeURIComponent(tourTitle)}`,
+                { state: { supplierData, tourId, tourSlug } }
+              )
+            }
             className="inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
           >
             View More
             <ChevronRight className="size-4" strokeWidth={2} />
-          </Link>
+          </button>
         </div>
-        {supplierInfoOpen && (
+        <div
+          className="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+          style={{ maxHeight: supplierInfoOpen ? '600px' : '0', opacity: supplierInfoOpen ? 1 : 0 }}
+        >
           <div className="pb-5">
             {supplierData.description && (
               <p className="text-sm leading-7 text-slate-600">{supplierData.description}</p>
@@ -3619,7 +3712,7 @@ function SupplierTabContent({
               )}
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="mt-6">
@@ -3700,7 +3793,7 @@ function SupplierTabContent({
                             image: tour.image,
                           })
                         }
-                        className="absolute right-2 top-2 z-10 grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-slate-700 shadow-sm transition hover:scale-105"
+                        className="absolute right-2 top-2 z-10 grid size-9 place-items-center rounded-full bg-white text-slate-700 shadow-sm transition hover:scale-105"
                         aria-label={t('nav.wishlist')}
                       >
                         <Heart

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import Loader from '@/components/ui/Loader';
 import { TourDetailSkeleton } from '@/components/tour-detail/TourDetailSkeleton';
 
@@ -56,11 +57,11 @@ export function NavigationProvider({ children }) {
   }, []);
 
   const navigateWithLoader = useCallback(
-    (to) => {
+    (to, options) => {
       const path = resolveNavigationPath(to);
       setIsNavigating(true);
       setNavigationTarget(path);
-      navigate(to);
+      navigate(to, options);
 
       if (safetyRef.current) clearTimeout(safetyRef.current);
       safetyRef.current = setTimeout(() => {
@@ -74,11 +75,19 @@ export function NavigationProvider({ children }) {
   return (
     <NavigationContext.Provider value={{ isNavigating, navigateWithLoader, hideLoader }}>
       {children}
-      {showTourDetailSkeleton && (
-        <div className="fixed inset-0 z-[200] overflow-y-auto bg-[color:var(--page-bg)]">
-          <TourDetailSkeleton />
-        </div>
-      )}
+      <AnimatePresence>
+        {showTourDetailSkeleton && (
+          <motion.div 
+            className="fixed inset-0 z-[200] overflow-y-auto bg-[color:var(--page-bg)]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            <TourDetailSkeleton />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {isNavigating && !showTourDetailSkeleton && <Loader />}
     </NavigationContext.Provider>
   );

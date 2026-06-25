@@ -16,10 +16,15 @@ export function AuthModalProvider({ children }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const openAuthModal = () => {
-    setAuthReturnTo(window.location.pathname + window.location.search);
+    const currentPath = window.location.pathname + window.location.search;
+    console.log("[AuthModalContext] Opening auth modal, saving return path:", currentPath);
+    setAuthReturnTo(currentPath);
     setIsAuthModalOpen(true);
   };
-  const closeAuthModal = () => setIsAuthModalOpen(false);
+  const closeAuthModal = () => {
+    console.log("[AuthModalContext] Closing auth modal");
+    setIsAuthModalOpen(false);
+  };
 
   return (
     <AuthModalContext.Provider value={{ isAuthModalOpen, openAuthModal, closeAuthModal }}>

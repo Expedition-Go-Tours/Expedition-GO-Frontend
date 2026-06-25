@@ -27,6 +27,7 @@ export function AuthProvider({ children }) {
 
     subscribeToAuthState((nextUser) => {
       if (!mounted) return;
+      console.log("[AuthProvider] Auth state changed. User:", nextUser ? nextUser.email : "null");
       setUser(nextUser);
       setLoading(false);
     }).then((unsubscribe) => {

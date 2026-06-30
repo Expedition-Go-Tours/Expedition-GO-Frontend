@@ -15,7 +15,7 @@
  * @see lib/tawk.js — support chat widget
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
@@ -117,6 +117,37 @@ const safeDecodeRouteParam = (value) => {
     return value;
   }
 };
+
+const REVIEW_SUBMISSION_STORAGE_PREFIX = 'eg_submitted_review:';
+
+function getSubmittedReviewKeys(tourTitle, tourId) {
+  return [
+    tourId ? `${REVIEW_SUBMISSION_STORAGE_PREFIX}tour:${tourId}` : null,
+    tourTitle ? `${REVIEW_SUBMISSION_STORAGE_PREFIX}title:${encodeURIComponent(tourTitle)}` : null,
+  ].filter(Boolean);
+}
+
+function readSubmittedReviewHandoff(tourTitle, tourId) {
+  try {
+    for (const key of getSubmittedReviewKeys(tourTitle, tourId)) {
+      const raw = sessionStorage.getItem(key);
+      if (raw) return JSON.parse(raw);
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function clearSubmittedReviewHandoff(tourTitle, tourId) {
+  try {
+    for (const key of getSubmittedReviewKeys(tourTitle, tourId)) {
+      sessionStorage.removeItem(key);
+    }
+  } catch {
+    // Ignore storage failures.
+  }
+}
 
 const MONTH_NAMES = [
   'January',
@@ -474,6 +505,7 @@ const _OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT = [
 function TourDetailContent() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { convertPrice } = useCurrency();
@@ -672,6 +704,43 @@ function TourDetailContent() {
     highlights: true,
   });
   const [fullDescriptionExpanded, setFullDescriptionExpanded] = useState(true);
+
+  useEffect(() => {
+    const routeReview = location.state?.submittedReview;
+    const storedReview = readSubmittedReviewHandoff(selectedTourTitle, rawTour?.id);
+    const submittedReview = routeReview || storedReview;
+    if (!submittedReview) return;
+
+    const routeTourId = location.state?.submittedReviewTourId;
+    const routeTourTitle = location.state?.submittedReviewTourTitle;
+    const matchesTour =
+      !routeReview ||
+      (routeTourId ? routeTourId === rawTour?.id : routeTourTitle === selectedTourTitle);
+
+    if (!matchesTour) return;
+
+    setActiveDetailTab('reviews');
+    setTravelerSubmittedReviews((prev) => {
+      if (prev.some((review) => review.id === submittedReview.id)) return prev;
+      return [submittedReview, ...prev];
+    });
+    clearSubmittedReviewHandoff(selectedTourTitle, rawTour?.id);
+
+    if (routeReview) {
+      navigate(location.pathname + location.search + location.hash, {
+        replace: true,
+        state: null,
+      });
+    }
+  }, [
+    location.hash,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+    rawTour?.id,
+    selectedTourTitle,
+  ]);
 
   useEffect(() => {
     if (!rawTour?.id) return;
@@ -1171,7 +1240,7 @@ function TourDetailContent() {
     let cancelled = false;
     setReviewBookingId(null);
     setReviewBookingChecked(false);
-    getMyBookings({ tourId: rawTour.id, status: 'COMPLETED', limit: 1 })
+    getMyBookings({ tourId: rawTour.id, status: 'COMPLETED', reviewed: 'false', limit: 1 })
       .then((data) => {
         if (!cancelled) {
           if (data?.bookings?.length) setReviewBookingId(data.bookings[0].id);
@@ -1592,10 +1661,15 @@ function TourDetailContent() {
     }));
   }, [paginatedReviews, rawTour]);
 
-  const allReviewCards = useMemo(
-    () => [...apiReviewCards, ...travelerSubmittedReviews],
-    [apiReviewCards, travelerSubmittedReviews]
-  );
+  const allReviewCards = useMemo(() => {
+    const seen = new Set();
+    return [...travelerSubmittedReviews, ...apiReviewCards].filter((review) => {
+      const key = review.id || `${review.name}-${review.date}-${review.text}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [apiReviewCards, travelerSubmittedReviews]);
 
   const filteredReviewCards = useMemo(() => {
     const q = reviewSearchQuery.trim().toLowerCase();
@@ -2275,7 +2349,7 @@ function TourDetailContent() {
                     )}
 
                     {(() => {
-                      const displayReviews = paginatedReviews.length > 0 ? paginatedReviews.slice(0, 8) : DUMMY_REVIEWS;
+                      const displayReviews = allReviewCards.length > 0 ? allReviewCards.slice(0, 8) : DUMMY_REVIEWS;
                       return (
                       <section className="mt-12 sm:mt-14">
                         <div className="flex items-baseline justify-between gap-3 mb-6">
@@ -2361,7 +2435,7 @@ function TourDetailContent() {
                             <button
                               type="button"
                               onClick={scrollTravellersLovedLeft}
-                              className="absolute -left-4 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
+                              className="absolute -left-4 top-1/2 -translate-y-1/2 hidden lg:grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
                               aria-label="Scroll left"
                             >
                               <ChevronLeft className="size-5 text-slate-700" />
@@ -2371,7 +2445,7 @@ function TourDetailContent() {
                             <button
                               type="button"
                               onClick={scrollTravellersLovedRight}
-                              className="absolute -right-4 top-1/2 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
+                              className="absolute -right-4 top-1/2 -translate-y-1/2 hidden lg:grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
                               aria-label="Scroll right"
                             >
                               <ChevronRight className="size-5 text-slate-700" />

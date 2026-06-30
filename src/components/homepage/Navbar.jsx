@@ -508,7 +508,8 @@ export function Navbar({
                       <img
                         src={user.photoURL}
                         alt={user.name}
-                          onLoad={() => setPhotoLoaded(true)}
+                        onLoad={() => setPhotoLoaded(true)}
+                        onError={() => setPhotoLoaded(false)}
                         className={`absolute inset-0 size-12 rounded-full border-2 border-slate-200 object-cover transition hover:border-[color:var(--brand-green)] ${photoLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
                       />
                     )}
@@ -940,6 +941,7 @@ export function Navbar({
                             src={user.photoURL}
                             alt={user.name}
                             onLoad={() => setPhotoLoaded(true)}
+                            onError={() => setPhotoLoaded(false)}
                             className={`absolute inset-0 size-14 rounded-full border-2 border-[color:var(--brand-green)] object-cover transition-opacity duration-300 ${photoLoaded ? 'opacity-100' : 'opacity-0'}`}
                           />
                         )}

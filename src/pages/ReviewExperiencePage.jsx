@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import {
@@ -18,6 +18,69 @@ import { Navbar } from '@/components/homepage/Navbar';
 import { createReview } from '@/api/reviews';
 import { getMyBookings } from '@/api/bookings';
 import { PlaceCard } from '@/components/ui/card-22';
+import { setAuthReturnTo } from '@/lib/auth';
+
+const REVIEW_DRAFT_STORAGE_PREFIX = 'eg_review_draft:';
+const REVIEW_SUBMISSION_STORAGE_PREFIX = 'eg_submitted_review:';
+
+function getReviewDraftKey(tourTitle) {
+  return `${REVIEW_DRAFT_STORAGE_PREFIX}${encodeURIComponent(tourTitle || 'unknown-tour')}`;
+}
+
+function readReviewDraft(tourTitle) {
+  try {
+    const raw = sessionStorage.getItem(getReviewDraftKey(tourTitle));
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeReviewDraft(tourTitle, draft) {
+  try {
+    sessionStorage.setItem(getReviewDraftKey(tourTitle), JSON.stringify(draft));
+  } catch {
+    // Ignore storage failures; the review can still be submitted in the current page session.
+  }
+}
+
+function clearReviewDraft(tourTitle) {
+  try {
+    sessionStorage.removeItem(getReviewDraftKey(tourTitle));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function getReviewSubmissionKeys(tourTitle, tourId) {
+  return [
+    tourId ? `${REVIEW_SUBMISSION_STORAGE_PREFIX}tour:${tourId}` : null,
+    tourTitle ? `${REVIEW_SUBMISSION_STORAGE_PREFIX}title:${encodeURIComponent(tourTitle)}` : null,
+  ].filter(Boolean);
+}
+
+function writeSubmittedReviewHandoff(tourTitle, tourId, review) {
+  try {
+    for (const key of getReviewSubmissionKeys(tourTitle, tourId)) {
+      sessionStorage.setItem(key, JSON.stringify(review));
+    }
+  } catch {
+    // Ignore storage failures; route state still carries the submitted review when available.
+  }
+}
+
+function parseDraftDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getBookingIdFromStateBooking(booking) {
+  if (!booking) return null;
+  if (booking.id) return booking.id;
+  if (Array.isArray(booking.bookings) && booking.bookings[0]?.id) return booking.bookings[0].id;
+  return null;
+}
 
 function StarRating({ value, onChange, count = 5 }) {
   return (
@@ -66,18 +129,26 @@ export default function ReviewExperiencePage() {
   const { user } = useAuth();
   const stateTour = location.state?.tour;
   const decodedTitle = tourTitle ? decodeURIComponent(tourTitle) : 'Cape Coast Castle, Elmina Castle & Kakum National Park Day Tour';
-  const tour = stateTour || {
-    title: decodedTitle,
-    rating: 4.8,
-    reviews: 248,
-    duration: '8h',
-    price: 85,
-    image: 'https://images.unsplash.com/photo-1589656966895-2f33e7653819?auto=format&fit=crop&w=600&q=80',
-    location: 'Accra, Ghana',
-    supplierName: 'Expedition-Go Tours Ltd',
-    supplierLogo:
-      'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80',
-  };
+  const savedDraft = useMemo(() => readReviewDraft(decodedTitle), [decodedTitle]);
+  const returnTo = location.state?.returnTo || savedDraft?.returnTo || `/tour/${encodeURIComponent(decodedTitle)}#reviews`;
+  const tour = useMemo(
+    () =>
+      stateTour ||
+      savedDraft?.tour || {
+        title: decodedTitle,
+        rating: 4.8,
+        reviews: 248,
+        duration: '8h',
+        price: 85,
+        image:
+          'https://images.unsplash.com/photo-1589656966895-2f33e7653819?auto=format&fit=crop&w=600&q=80',
+        location: 'Accra, Ghana',
+        supplierName: 'Expedition-Go Tours Ltd',
+        supplierLogo:
+          'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80',
+      },
+    [decodedTitle, savedDraft?.tour, stateTour],
+  );
   const tourCardImages = [
     tour.image,
     ...(Array.isArray(tour.images) ? tour.images : []),
@@ -94,44 +165,94 @@ export default function ReviewExperiencePage() {
     tour.supplier?.photoURL ||
     'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80';
 
-  const [overallRating, setOverallRating] = useState(0);
+  const [overallRating, setOverallRating] = useState(savedDraft?.overallRating || 0);
   const [subRatings, setSubRatings] = useState({
-    valueForMoney: 0,
-    guide: 0,
-    meeting: 0,
+    valueForMoney: savedDraft?.subRatings?.valueForMoney || 0,
+    guide: savedDraft?.subRatings?.guide || 0,
+    meeting: savedDraft?.subRatings?.meeting || 0,
   });
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(() => parseDraftDate(savedDraft?.selectedDate));
   const [companions, setCompanions] = useState({
-    business: false,
-    couples: false,
-    family: false,
-    friends: false,
-    solo: false,
+    business: Boolean(savedDraft?.companions?.business),
+    couples: Boolean(savedDraft?.companions?.couples),
+    family: Boolean(savedDraft?.companions?.family),
+    friends: Boolean(savedDraft?.companions?.friends),
+    solo: Boolean(savedDraft?.companions?.solo),
   });
-  const [reviewText, setReviewText] = useState('');
-  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewText, setReviewText] = useState(savedDraft?.reviewText || '');
+  const [reviewTitle, setReviewTitle] = useState(savedDraft?.reviewTitle || '');
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
-  const [certified, setCertified] = useState(false);
+  const [certified, setCertified] = useState(Boolean(savedDraft?.certified));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
-  const tourId = stateTour?.tourId || stateTour?.id || null;
-  const initialBookingId = stateTour?.bookingId || location.state?.booking?.id || null;
-  const [resolvedBookingId, setResolvedBookingId] = useState(initialBookingId);
+  const tourId = stateTour?.tourId || stateTour?.id || savedDraft?.tourId || null;
+  const initialBookingId = stateTour?.bookingId || getBookingIdFromStateBooking(location.state?.booking);
+  const [resolvedBookingId, setResolvedBookingId] = useState(initialBookingId || savedDraft?.resolvedBookingId || null);
+  const [bookingLookupChecked, setBookingLookupChecked] = useState(false);
 
   useEffect(() => {
-    if (resolvedBookingId || !tourId || !user) return;
+    const hasDraftContent =
+      overallRating ||
+      subRatings.valueForMoney ||
+      subRatings.guide ||
+      subRatings.meeting ||
+      selectedDate ||
+      Object.values(companions).some(Boolean) ||
+      reviewText.trim() ||
+      reviewTitle.trim() ||
+      certified;
+
+    if (!hasDraftContent) return;
+
+    writeReviewDraft(decodedTitle, {
+      tour,
+      tourId,
+      resolvedBookingId,
+      overallRating,
+      subRatings,
+      selectedDate: selectedDate ? selectedDate.toISOString() : null,
+      companions,
+      reviewText,
+      reviewTitle,
+      certified,
+      returnTo,
+    });
+  }, [
+    certified,
+    companions,
+    decodedTitle,
+    overallRating,
+    resolvedBookingId,
+    reviewText,
+    reviewTitle,
+    returnTo,
+    selectedDate,
+    subRatings,
+    tour,
+    tourId,
+  ]);
+
+  useEffect(() => {
+    if (!tourId || !user) return;
     let cancelled = false;
-    getMyBookings({ tourId, status: 'COMPLETED', limit: 1 })
+    setBookingLookupChecked(false);
+    getMyBookings({ tourId, status: 'COMPLETED', reviewed: 'false', limit: 1 })
       .then((data) => {
-        if (!cancelled && data?.bookings?.length) {
-          setResolvedBookingId(data.bookings[0].id);
+        if (!cancelled) {
+          setResolvedBookingId(data?.bookings?.[0]?.id || null);
+          setBookingLookupChecked(true);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) {
+          setResolvedBookingId(null);
+          setBookingLookupChecked(true);
+        }
+      });
     return () => { cancelled = true; };
-  }, [tourId, user, resolvedBookingId]);
+  }, [tourId, user]);
 
   const handleSubmitReview = async () => {
     if (!overallRating) {
@@ -151,7 +272,31 @@ export default function ReviewExperiencePage() {
       return;
     }
     if (!user) {
-      toast.error('Please log in to submit a review.');
+      const authReturnTo = window.location.pathname + window.location.search + window.location.hash;
+      writeReviewDraft(decodedTitle, {
+        tour,
+        tourId,
+        resolvedBookingId,
+        overallRating,
+        subRatings,
+        selectedDate: selectedDate ? selectedDate.toISOString() : null,
+        companions,
+        reviewText,
+        reviewTitle,
+        certified,
+        returnTo,
+      });
+      setAuthReturnTo(authReturnTo);
+      toast.info('Please log in to submit your review. Your draft has been saved.');
+      navigate(`/signin?returnTo=${encodeURIComponent(authReturnTo)}`);
+      return;
+    }
+    if (!bookingLookupChecked) {
+      toast.info('Checking your eligible booking. Please try again in a moment.');
+      return;
+    }
+    if (!resolvedBookingId) {
+      toast.error('No completed unreviewed booking was found for this tour.');
       return;
     }
 
@@ -182,9 +327,41 @@ export default function ReviewExperiencePage() {
         fd.append('photos', photo);
       }
 
-      await createReview(fd);
+      const result = await createReview(fd);
+      const created = result?.review || result;
+      const submittedReview = {
+        id: created?.id || `submitted-${Date.now()}`,
+        name: created?.customer?.name || user?.name || user?.email?.split('@')[0] || 'You',
+        tag: created?.verified ? 'Verified' : 'Traveler',
+        title: created?.title || reviewTitle.trim() || null,
+        date: created?.createdAt
+          ? new Date(created.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+          : new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        rating: created?.rating || overallRating,
+        text: created?.comment || reviewText.trim(),
+        photos: created?.photos || [],
+        supplierResponse: created?.supplierResponse || null,
+        supplierResponseAt: created?.supplierResponseAt || null,
+        valueForMoneyRating: created?.valueForMoneyRating || subRatings.valueForMoney || null,
+        guideRating: created?.guideRating || subRatings.guide || null,
+        meetingRating: created?.meetingRating || subRatings.meeting || null,
+        travelMonth: created?.travelMonth || null,
+        companions: created?.companions || selectedCompanions,
+        tourId,
+        tourTitle: decodedTitle,
+      };
+
+      writeSubmittedReviewHandoff(decodedTitle, tourId, submittedReview);
+      clearReviewDraft(decodedTitle);
       toast.success('Review submitted successfully!');
-      navigate(-1);
+      navigate(returnTo, {
+        replace: true,
+        state: {
+          submittedReview,
+          submittedReviewTourId: tourId,
+          submittedReviewTourTitle: decodedTitle,
+        },
+      });
     } catch (err) {
       toast.error(err?.message || 'Failed to submit review. Please try again.');
     } finally {
@@ -368,17 +545,9 @@ export default function ReviewExperiencePage() {
                   maxDate={new Date()}
                   minDate={new Date(new Date().setFullYear(new Date().getFullYear() - 2))}
                   placeholderText="Select month and year"
-                  shouldCloseOnSelect={false}
                   className="appearance-none rounded-full border-2 border-blue-500 bg-white py-2.5 pl-5 pr-12 text-[14px] font-medium text-slate-800 outline-none transition focus:border-blue-600 cursor-pointer w-full sm:w-auto min-w-[200px]"
                   wrapperClassName="w-full sm:w-auto"
                   calendarClassName="!rounded-xl !border-2 !border-slate-200 !shadow-lg"
-                  popperPlacement="bottom-start"
-                  popperModifiers={[
-                    {
-                      name: 'flip',
-                      enabled: false,
-                    },
-                  ]}
                 />
                 <Calendar className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
               </div>

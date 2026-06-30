@@ -259,6 +259,7 @@ export default function SettingsPage() {
                         src={user.photoURL}
                         alt={user.name}
                         onLoad={() => setPhotoLoaded(true)}
+                        onError={() => setPhotoLoaded(false)}
                         className={`absolute inset-0 size-28 rounded-full border-[6px] border-white object-cover shadow-lg transition-opacity duration-300 ${photoLoaded ? 'opacity-100' : 'opacity-0'}`}
                       />
                     )}

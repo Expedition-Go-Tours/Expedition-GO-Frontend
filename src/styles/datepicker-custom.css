@@ -4,11 +4,17 @@
   display: inline-block;
 }
 
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
 .react-datepicker {
   font-family: inherit !important;
   border-radius: 12px !important;
   border: 2px solid #e2e8f0 !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .react-datepicker__header {
@@ -17,6 +23,7 @@
   border-top-left-radius: 10px !important;
   border-top-right-radius: 10px !important;
   padding-top: 16px !important;
+  padding-bottom: 12px !important;
 }
 
 .react-datepicker__current-month,
@@ -25,7 +32,8 @@
   color: #ffffff !important;
   font-size: 16px !important;
   font-weight: 700 !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 12px !important;
 }
 
 .react-datepicker__navigation {
@@ -45,18 +53,25 @@
 
 .react-datepicker__month-container {
   background-color: #ffffff !important;
+  width: 100% !important;
 }
 
 .react-datepicker__month {
   margin: 12px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
 }
 
 .react-datepicker__month .react-datepicker__month-text,
 .react-datepicker__month .react-datepicker__quarter-text {
-  display: inline-block;
-  width: 4.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-width: 80px !important;
   padding: 12px 8px !important;
-  margin: 4px !important;
+  margin: 0 !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
@@ -107,14 +122,17 @@
 
   .react-datepicker__month .react-datepicker__month-text,
   .react-datepicker__month .react-datepicker__quarter-text {
-    width: 3.8rem !important;
+    min-width: 70px !important;
     padding: 10px 6px !important;
-    margin: 2px !important;
     font-size: 13px !important;
   }
 
   .react-datepicker__current-month {
     font-size: 15px !important;
+  }
+
+  .react-datepicker__month {
+    gap: 4px !important;
   }
 }
 

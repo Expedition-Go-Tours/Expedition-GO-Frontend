@@ -134,6 +134,7 @@ export default function MyBookingsPage() {
               const status = statusConfig[booking.status] || statusConfig.PENDING;
               const tourImage = booking.tour?.photos?.[0] || null;
               const travelerCount = (booking.travelers?.adults || 0) + (booking.travelers?.children || 0);
+              const canReview = booking.status === 'COMPLETED' && !booking.review;
 
               return (
                 <motion.div
@@ -197,25 +198,31 @@ export default function MyBookingsPage() {
 
                       {booking.tour?.title && (
                         <div className="mt-4 flex items-center gap-2">
-                          <Link
-                            to={`/review/${encodeURIComponent(booking.tour.title)}`}
-                            state={{
-                              booking,
-                              tour: {
-                                title: booking.tour.title,
-                                tourId: booking.tour?.id,
-                                image: tourImage,
-                                duration: '',
-                                location: '',
-                                price: booking.total || 0,
-                                rating: 0,
-                                reviews: 0,
-                              },
-                            }}
-                            className="inline-flex items-center gap-1 rounded-full border border-[color:var(--brand-green)] px-3 py-1.5 text-xs font-semibold text-[color:var(--brand-green)] transition hover:bg-emerald-50"
-                          >
-                            Write a review
-                          </Link>
+                          {canReview ? (
+                            <Link
+                              to={`/review/${encodeURIComponent(booking.tour.title)}`}
+                              state={{
+                                booking,
+                                tour: {
+                                  title: booking.tour.title,
+                                  tourId: booking.tour?.id,
+                                  image: tourImage,
+                                  duration: '',
+                                  location: '',
+                                  price: booking.total || 0,
+                                  rating: 0,
+                                  reviews: 0,
+                                },
+                              }}
+                              className="inline-flex items-center gap-1 rounded-full border border-[color:var(--brand-green)] px-3 py-1.5 text-xs font-semibold text-[color:var(--brand-green)] transition hover:bg-emerald-50"
+                            >
+                              Write a review
+                            </Link>
+                          ) : booking.review ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500">
+                              Review submitted
+                            </span>
+                          ) : null}
                           {booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED' && (
                             <Link
                               to={`/tour/${encodeURIComponent(booking.tour.title)}`}

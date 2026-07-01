@@ -141,8 +141,9 @@ export function DatePicker({
       <PopoverContent
         className="z-50 w-auto overflow-visible border-0 p-0 shadow-none"
         align="start"
-        side="top"
+        side="bottom"
         sideOffset={8}
+        avoidCollisions={false}
         collisionPadding={16}
       >
         <div className="brand-day-picker overflow-visible rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.14)]">

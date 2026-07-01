@@ -6,7 +6,7 @@
 import { Heart, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useRef } from 'react';
+import { useCarouselSafeClick } from '@/hooks/useCarouselSafeClick';
 
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -35,62 +35,14 @@ export function NewExperiencesCard({
   const { convertPrice } = useCurrency();
   const { navigateWithLoader } = useNavigationLoader();
   const isFavorited = isInWishlist(title);
+  const { pointerEventHandlers, lastGestureWasPanRef } = useCarouselSafeClick();
 
   const convertedPrice = convertPrice(price);
-
-  const panRef = useRef({
-    active: false,
-    originX: 0,
-    originY: 0,
-    maxAbsDx: 0,
-    maxAbsDy: 0,
-  });
-  const lastGestureWasPanRef = useRef(false);
-
-  const resetPanTracking = () => {
-    panRef.current = {
-      active: false,
-      originX: 0,
-      originY: 0,
-      maxAbsDx: 0,
-      maxAbsDy: 0,
-    };
-  };
 
   const handleHeartClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist({ title, slug, duration, price, rating, reviews, image, discount });
-  };
-
-  const handlePointerDown = (e) => {
-    if (e.button !== undefined && e.button !== 0) return;
-    panRef.current = {
-      active: true,
-      originX: e.clientX,
-      originY: e.clientY,
-      maxAbsDx: 0,
-      maxAbsDy: 0,
-    };
-    lastGestureWasPanRef.current = false;
-  };
-
-  const handlePointerMove = (e) => {
-    if (!panRef.current.active) return;
-    const dx = Math.abs(e.clientX - panRef.current.originX);
-    const dy = Math.abs(e.clientY - panRef.current.originY);
-    panRef.current.maxAbsDx = Math.max(panRef.current.maxAbsDx, dx);
-    panRef.current.maxAbsDy = Math.max(panRef.current.maxAbsDy, dy);
-  };
-
-  const endPointerGesture = () => {
-    if (!panRef.current.active) return;
-    const { maxAbsDx, maxAbsDy } = panRef.current;
-    resetPanTracking();
-    const PAN_MIN_PX = 20;
-    const HORIZONTAL_DOMINANCE = 1.35;
-    lastGestureWasPanRef.current =
-      maxAbsDx >= PAN_MIN_PX && maxAbsDx > maxAbsDy * HORIZONTAL_DOMINANCE;
   };
 
   const handleDetailLinkClick = (e) => {
@@ -108,10 +60,7 @@ export function NewExperiencesCard({
 
   return (
     <div
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={endPointerGesture}
-      onPointerCancel={endPointerGesture}
+      {...pointerEventHandlers}
       className="group relative h-full contain-none touch-manipulation overflow-hidden rounded-lg border border-slate-200/50 bg-white font-card shadow-sm transition duration-300 hover:shadow-md"
     >
       {/* Vertical Image */}

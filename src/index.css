@@ -752,6 +752,11 @@ body.hero--search-sticky .hero-search-wrap {
     max-height: calc(100vh - 10.5rem);
     overflow-y: auto;
   }
+
+  .tour-sidebar-picker-open,
+  .tour-sidebar:has([data-traveler-picker]) {
+    overflow: visible;
+  }
 }
 
 /**

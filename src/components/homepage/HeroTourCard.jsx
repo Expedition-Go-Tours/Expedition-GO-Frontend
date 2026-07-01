@@ -6,7 +6,7 @@
 import { Star, CircleCheck, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useRef } from 'react';
+import { useCarouselSafeClick } from '@/hooks/useCarouselSafeClick';
 
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { slugify } from '@/lib/slugify';
@@ -28,6 +28,7 @@ export function HeroTourCard({
   const { navigateWithLoader } = useNavigationLoader();
 
   const convertedPrice = convertPrice(price);
+  const { pointerEventHandlers, lastGestureWasPanRef } = useCarouselSafeClick();
 
   const panRef = useRef({
     active: false,
@@ -93,10 +94,7 @@ export function HeroTourCard({
 
   return (
     <div
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={endPointerGesture}
-      onPointerCancel={endPointerGesture}
+      {...pointerEventHandlers}
       className="group relative contain-none flex h-[133px] touch-manipulation overflow-hidden rounded-xl bg-white p-2 shadow-md transition duration-200 hover:shadow-lg"
     >
       {/* Image - Left side, adjusted for new height */}

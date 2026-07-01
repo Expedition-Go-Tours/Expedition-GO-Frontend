@@ -95,7 +95,7 @@ const EXTERNAL_FALLBACK_IMAGES = [
 const normalizeImageKey = (imageUrl) => {
   const url = String(imageUrl || '').trim();
   if (!url) return '';
-  
+
   try {
     // Parse URL to get base path without query params or fragments
     const urlObj = new URL(url);
@@ -104,8 +104,8 @@ const normalizeImageKey = (imageUrl) => {
   } catch {
     // If URL parsing fails, use simple normalization
     return url
-      .replace(/[?#].*$/, '')  // Remove query params and fragments
-      .replace(/\/$/, '')       // Remove trailing slash
+      .replace(/[?#].*$/, '') // Remove query params and fragments
+      .replace(/\/$/, '') // Remove trailing slash
       .toLowerCase();
   }
 };
@@ -369,7 +369,10 @@ function BookingCalendarPopover({
   };
 
   return (
-    <div className="absolute left-1/2 top-[calc(100%+0.75rem)] z-50 w-[min(640px,100%,calc(100vw-2rem))] -translate-x-1/2 rounded-lg border border-slate-200/80 bg-white p-5 text-slate-900 shadow-[0_18px_45px_rgba(15,23,42,0.12)] select-none">
+    <div
+      data-booking-calendar
+      className="absolute left-1/2 top-[calc(100%+0.75rem)] z-50 w-[min(640px,100%,calc(100vw-2rem))] -translate-x-1/2 rounded-lg border border-slate-200/80 bg-white p-5 text-slate-900 shadow-[0_18px_45px_rgba(15,23,42,0.12)] select-none"
+    >
       <div className="min-w-0">
         <div className="mb-4 flex items-center justify-between gap-2">
           <button
@@ -409,7 +412,11 @@ function BookingCalendarPopover({
           {monthDays.map(({ date, isCurrentMonth }) => {
             const dateKey = getDateKey(date);
             const dayAvail = availabilityMap?.get(dateKey);
-            const isUnavailable = !isCurrentMonth || date < todayStart || dayAvail?.status === 'FULL' || dayAvail?.status === 'BLOCKED';
+            const isUnavailable =
+              !isCurrentMonth ||
+              date < todayStart ||
+              dayAvail?.status === 'FULL' ||
+              dayAvail?.status === 'BLOCKED';
             const range = liveRange;
             const inRange = range ? isDayInInclusiveRange(date, range.start, range.end) : false;
             const t = dayTime(date);
@@ -615,7 +622,12 @@ function TourDetailContent() {
   const selectedTourDuration = tourData?.duration || 'Flexible';
   const selectedTourPriceNumber = tourData?.price || 0;
   const selectedTourTitle = useMemo(
-    () => effectiveRawTour?.title || rawTour?.name || rawTour?.metaTitle || safeDecodeRouteParam(id) || id,
+    () =>
+      effectiveRawTour?.title ||
+      rawTour?.name ||
+      rawTour?.metaTitle ||
+      safeDecodeRouteParam(id) ||
+      id,
     [id, effectiveRawTour]
   );
   const selectedTourRatingNumber = Number(tourData?.ratingsAverage) || 4.8;
@@ -640,12 +652,48 @@ function TourDetailContent() {
   const headerRef = useRef(null);
   const pricingRef = useRef(null);
   const DUMMY_REVIEWS = [
-    { id: 'dummy-1', name: 'Sarah Johnson', date: 'Mar 2026', rating: 5, text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.' },
-    { id: 'dummy-2', name: 'Michael Chen', date: 'Feb 2026', rating: 4, text: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.' },
-    { id: 'dummy-3', name: 'Emma Williams', date: 'Jan 2026', rating: 5, text: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.' },
-    { id: 'dummy-4', name: 'James Rodriguez', date: 'Dec 2025', rating: 4, text: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.' },
-    { id: 'dummy-5', name: 'Olivia Brown', date: 'Nov 2025', rating: 5, text: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.' },
-    { id: 'dummy-6', name: 'David Kim', date: 'Oct 2025', rating: 3, text: 'Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+    {
+      id: 'dummy-1',
+      name: 'Sarah Johnson',
+      date: 'Mar 2026',
+      rating: 5,
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    },
+    {
+      id: 'dummy-2',
+      name: 'Michael Chen',
+      date: 'Feb 2026',
+      rating: 4,
+      text: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
+    },
+    {
+      id: 'dummy-3',
+      name: 'Emma Williams',
+      date: 'Jan 2026',
+      rating: 5,
+      text: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.',
+    },
+    {
+      id: 'dummy-4',
+      name: 'James Rodriguez',
+      date: 'Dec 2025',
+      rating: 4,
+      text: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
+    },
+    {
+      id: 'dummy-5',
+      name: 'Olivia Brown',
+      date: 'Nov 2025',
+      rating: 5,
+      text: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.',
+    },
+    {
+      id: 'dummy-6',
+      name: 'David Kim',
+      date: 'Oct 2025',
+      rating: 3,
+      text: 'Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    },
   ];
 
   const storedCleanup = useRef(null);
@@ -670,7 +718,9 @@ function TourDetailContent() {
     travellersLovedRef.current?.scrollBy({ left: 960, behavior: 'smooth' });
   }, []);
   const dateCalendarRef = useRef(null);
+  const travelerTriggerRef = useRef(null);
   const travelerPickerRef = useRef(null);
+  const [travelerPickerStyle, setTravelerPickerStyle] = useState({});
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);
   const [replyTargetQuestion, setReplyTargetQuestion] = useState(null);
   const [replyMessage, setReplyMessage] = useState('');
@@ -759,7 +809,8 @@ function TourDetailContent() {
       .then((data) => {
         if (data?.reviews) setPaginatedReviews(data.reviews);
         if (data?.ratingDistribution) setRatingDistribution(data.ratingDistribution);
-        if (data?.pagination) setHasMoreReviews(data.pagination.currentPage < data.pagination.totalPages);
+        if (data?.pagination)
+          setHasMoreReviews(data.pagination.currentPage < data.pagination.totalPages);
       })
       .catch(() => {});
   }, [rawTour?.id]);
@@ -775,7 +826,9 @@ function TourDetailContent() {
         setReviewPage(nextPage);
         if (data?.pagination) setHasMoreReviews(nextPage < data.pagination.totalPages);
       }
-    } catch { /* ignore */ } finally {
+    } catch {
+      /* ignore */
+    } finally {
       setLoadingMoreReviews(false);
     }
   }, [rawTour?.id, reviewPage, loadingMoreReviews]);
@@ -790,7 +843,9 @@ function TourDetailContent() {
     ];
     if (ratingDistribution.length > 0) {
       const distMap = {};
-      ratingDistribution.forEach((d) => { distMap[d.rating] = d._count; });
+      ratingDistribution.forEach((d) => {
+        distMap[d.rating] = d._count;
+      });
       const total = selectedTourReviewsNumber || 1;
       return labels.map((item) => {
         const count = distMap[item.stars] || 0;
@@ -816,11 +871,11 @@ function TourDetailContent() {
       let ticking = false;
       const onScroll = () => {
         if (!ticking) {
-        requestAnimationFrame(() => {
-          const rect = header.getBoundingClientRect();
-          setShowStickyHeader(rect.bottom < 0);
-          ticking = false;
-        });
+          requestAnimationFrame(() => {
+            const rect = header.getBoundingClientRect();
+            setShowStickyHeader(rect.bottom < 0);
+            ticking = false;
+          });
           ticking = true;
         }
       };
@@ -889,7 +944,9 @@ function TourDetailContent() {
       .catch(() => {
         if (!cancelled) setAvailabilityMap(new Map());
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [isDateCalendarOpen, calendarMonthCursor, id]);
 
   useEffect(() => {
@@ -913,12 +970,13 @@ function TourDetailContent() {
     if (!tourSlug || !selectedTourTitle) return;
 
     const tourImage = tourData?.imageCover || mergedImages[0] || fallbackTourImage;
-    
+
     // Ensure we have a human-readable title, not a slug
-    const displayTitle = effectiveRawTour?.title || 
-                        effectiveRawTour?.name || 
-                        effectiveRawTour?.metaTitle || 
-                        selectedTourTitle;
+    const displayTitle =
+      effectiveRawTour?.title ||
+      effectiveRawTour?.name ||
+      effectiveRawTour?.metaTitle ||
+      selectedTourTitle;
 
     const recentTourData = {
       title: displayTitle,
@@ -1051,14 +1109,77 @@ function TourDetailContent() {
     setIsDateCalendarOpen(false);
   }, []);
 
+  const updateTravelerPickerPosition = useCallback(() => {
+    const trigger = travelerTriggerRef.current;
+    if (!trigger) return;
+
+    const viewportMargin = 16;
+    const triggerGap = 12;
+    const triggerRect = trigger.getBoundingClientRect();
+    const pickerHeight = travelerPickerRef.current?.offsetHeight || 458;
+    const pickerWidth = Math.min(360, window.innerWidth - viewportMargin * 2);
+    const left = Math.min(
+      window.innerWidth - pickerWidth - viewportMargin,
+      Math.max(viewportMargin, triggerRect.right - pickerWidth)
+    );
+
+    const belowTop = triggerRect.bottom + triggerGap;
+    const spaceBelow = window.innerHeight - belowTop - viewportMargin;
+    const spaceAbove = triggerRect.top - triggerGap - viewportMargin;
+    
+    // On mobile (width < 1024px), always open downward
+    const isMobile = window.innerWidth < 1024;
+    const shouldOpenAbove = !isMobile && pickerHeight > spaceBelow && spaceAbove > spaceBelow;
+    
+    const maxHeight = Math.max(
+      240,
+      Math.min(pickerHeight, shouldOpenAbove ? spaceAbove : spaceBelow)
+    );
+    const top = shouldOpenAbove
+      ? Math.max(viewportMargin, triggerRect.top - triggerGap - maxHeight)
+      : Math.min(belowTop, window.innerHeight - viewportMargin - maxHeight);
+
+    setTravelerPickerStyle({
+      left: `${Math.round(left)}px`,
+      top: `${Math.round(Math.max(viewportMargin, top))}px`,
+      width: `${Math.round(pickerWidth)}px`,
+      maxHeight: `${Math.round(maxHeight)}px`,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isTravelerPickerOpen) return undefined;
+
+    updateTravelerPickerPosition();
+    const frame = window.requestAnimationFrame(updateTravelerPickerPosition);
+
+    window.addEventListener('resize', updateTravelerPickerPosition);
+    window.addEventListener('scroll', updateTravelerPickerPosition, true);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', updateTravelerPickerPosition);
+      window.removeEventListener('scroll', updateTravelerPickerPosition, true);
+    };
+  }, [isTravelerPickerOpen, updateTravelerPickerPosition]);
+
   useEffect(() => {
     if (!isDateCalendarOpen && !isTravelerPickerOpen) return;
 
     const handleClickOutside = (event) => {
-      if (isDateCalendarOpen && dateCalendarRef.current && !dateCalendarRef.current.contains(event.target)) {
+      if (
+        isDateCalendarOpen &&
+        dateCalendarRef.current &&
+        !dateCalendarRef.current.contains(event.target) &&
+        !event.target.closest('[data-booking-calendar]')
+      ) {
         setIsDateCalendarOpen(false);
       }
-      if (isTravelerPickerOpen && !event.target.closest('[data-traveler-picker]')) {
+      if (
+        isTravelerPickerOpen &&
+        !event.target.closest('[data-traveler-picker]') &&
+        !travelerTriggerRef.current?.contains(event.target)
+      ) {
         setIsTravelerPickerOpen(false);
       }
     };
@@ -1076,9 +1197,7 @@ function TourDetailContent() {
     }
 
     const startDate = getDateKey(bookingDateRange.start);
-    const endDate = bookingDateRange.end
-      ? getDateKey(bookingDateRange.end)
-      : startDate;
+    const endDate = bookingDateRange.end ? getDateKey(bookingDateRange.end) : startDate;
 
     setCheckingAvailability(true);
 
@@ -1199,7 +1318,8 @@ function TourDetailContent() {
       const cancellationDeadline = new Date(tourDateTime.getTime() - cutoffHours * 60 * 60 * 1000);
       const cancellationText = cancellationPolicy.cutoffHours
         ? `Free cancellation before ${cancellationDeadline.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} on ${cancellationDeadline.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} (tour local time)`
-        : refundRules || 'Free cancellation is available up to 24 hours before the experience starts local time.';
+        : refundRules ||
+          'Free cancellation is available up to 24 hours before the experience starts local time.';
 
       const bookingTour = {
         ...cartItem,
@@ -1239,7 +1359,33 @@ function TourDetailContent() {
         navigate('/cart');
       }, 800);
     }
-  }, [availabilityDialog, bookingDateRange, id, effectiveRawTour, selectedTourTitle, selectedTourDuration, totalPrice, selectedTourPriceNumber, selectedTourRatingNumber, selectedTourReviewsNumber, mergedImages, tourData, fallbackTourImage, adults, seniors, youths, children, infants, addToCart, navigate, promoApplied, promoCode, promoDiscount, hasItem, user]);
+  }, [
+    availabilityDialog,
+    bookingDateRange,
+    id,
+    effectiveRawTour,
+    selectedTourTitle,
+    selectedTourDuration,
+    totalPrice,
+    selectedTourPriceNumber,
+    selectedTourRatingNumber,
+    selectedTourReviewsNumber,
+    mergedImages,
+    tourData,
+    fallbackTourImage,
+    adults,
+    seniors,
+    youths,
+    children,
+    infants,
+    addToCart,
+    navigate,
+    promoApplied,
+    promoCode,
+    promoDiscount,
+    hasItem,
+    user,
+  ]);
 
   const handleOpenReplyDialog = (question) => {
     setReplyTargetQuestion(question);
@@ -1268,8 +1414,12 @@ function TourDetailContent() {
           setReviewBookingChecked(true);
         }
       })
-      .catch(() => { if (!cancelled) setReviewBookingChecked(true); });
-    return () => { cancelled = true; };
+      .catch(() => {
+        if (!cancelled) setReviewBookingChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [isWriteReviewOpen, rawTour?.id, user]);
 
   const resetWriteReviewForm = () => {
@@ -1323,13 +1473,14 @@ function TourDetailContent() {
       const result = await createReview(fd);
       const created = result?.review || result;
 
-      const photoUrls = (created?.photos && created.photos.length > 0)
-        ? created.photos
-        : writeReviewFiles.map((file) => {
-            const url = URL.createObjectURL(file);
-            persistedReviewPhotoUrlsRef.current.add(url);
-            return url;
-          });
+      const photoUrls =
+        created?.photos && created.photos.length > 0
+          ? created.photos
+          : writeReviewFiles.map((file) => {
+              const url = URL.createObjectURL(file);
+              persistedReviewPhotoUrlsRef.current.add(url);
+              return url;
+            });
 
       setTravelerSubmittedReviews((prev) => [
         ...prev,
@@ -1547,20 +1698,22 @@ function TourDetailContent() {
   const travelerReqsText = rawTour?.productContent?.travelerRequirements || '';
 
   const supplierData = useMemo(
-    () => mapSupplierProfile({ 
-      tour: effectiveRawTour,
-      fallback: {
-        name: 'Expedition-Go Tours Ltd',
-        logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80',
-        email: 'info@expeditiongo.com',
-        phone: '+233 20 123 4567',
-        website: 'https://expeditiongo.com',
-        address: 'Accra, Ghana',
-        description: 'Expedition-Go Tours Ltd offers authentic guided experiences across Ghana, showcasing the country\'s rich culture, history, and natural beauty.',
-        rating: 4.8,
-        toursCount: 24,
-      }
-    }),
+    () =>
+      mapSupplierProfile({
+        tour: effectiveRawTour,
+        fallback: {
+          name: 'Expedition-Go Tours Ltd',
+          logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80',
+          email: 'info@expeditiongo.com',
+          phone: '+233 20 123 4567',
+          website: 'https://expeditiongo.com',
+          address: 'Accra, Ghana',
+          description:
+            "Expedition-Go Tours Ltd offers authentic guided experiences across Ghana, showcasing the country's rich culture, history, and natural beauty.",
+          rating: 4.8,
+          toursCount: 24,
+        },
+      }),
     [effectiveRawTour]
   );
 
@@ -1596,7 +1749,9 @@ function TourDetailContent() {
           )}
           {excludedItems.length > 0 && (
             <div>
-              <h4 className="text-base font-bold text-[#002b11] sm:text-lg lg:text-xl">Not included</h4>
+              <h4 className="text-base font-bold text-[#002b11] sm:text-lg lg:text-xl">
+                Not included
+              </h4>
               <ul className="mt-3 space-y-2 text-sm leading-6 text-[#002b11]/85 sm:text-base lg:text-lg">
                 {excludedItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -1844,15 +1999,14 @@ function TourDetailContent() {
               >
                 <ArrowLeft className="size-4" />
               </button>
-              <h2 className="truncate text-[15px] font-bold text-slate-900">
-                {selectedTourTitle}
-              </h2>
+              <h2 className="truncate text-[15px] font-bold text-slate-900">{selectedTourTitle}</h2>
             </div>
           </div>
         </div>
 
-        <main className={`mx-auto max-w-[1520px] px-4 pt-6 text-[color:var(--brand-green)] sm:px-6 sm:pt-8 lg:px-8 ${showMobilePriceBar ? 'pb-[calc(5rem+env(safe-area-inset-bottom,0px))]' : 'pb-8'}`}>
-
+        <main
+          className={`mx-auto max-w-[1520px] px-4 pt-6 text-[color:var(--brand-green)] sm:px-6 sm:pt-8 lg:px-8 ${showMobilePriceBar ? 'pb-[calc(5rem+env(safe-area-inset-bottom,0px))]' : 'pb-8'}`}
+        >
           <header ref={headerRef} className="space-y-3">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-5xl">
@@ -1877,29 +2031,55 @@ function TourDetailContent() {
                   >
                     {selectedTourReviewsNumber} Reviews
                   </button>
-                  <span className="hidden h-5 w-px bg-slate-900/65 sm:block lg:h-6" aria-hidden="true" />
+                  <span
+                    className="hidden h-5 w-px bg-slate-900/65 sm:block lg:h-6"
+                    aria-hidden="true"
+                  />
                   <span className="inline-flex items-center gap-1.5">
                     <span className="grid size-4 place-items-center rounded-full bg-[#e7583f] text-white lg:size-5">
                       <Check className="size-3 stroke-[3] lg:size-3.5" />
                     </span>
                     <span className="whitespace-nowrap">96% travel</span>
                   </span>
-                  <span className="hidden h-5 w-px bg-slate-900/65 sm:block lg:h-6" aria-hidden="true" />
+                  <span
+                    className="hidden h-5 w-px bg-slate-900/65 sm:block lg:h-6"
+                    aria-hidden="true"
+                  />
                   <span className="inline-flex items-center gap-1 text-slate-600">
                     <MapPin className="size-3.5 shrink-0 lg:size-4" />
                     <span>Accra, Ghana</span>
                   </span>
                 </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => navigate(selectedTourReviewPath, { state: { returnTo: selectedTourReturnTo, tour: { title: selectedTourTitle, slug: selectedTourSlug, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, images: mergedImages.slice(0, 5), location: tourData?.city || 'Accra, Ghana', tourId: rawTour?.id, supplierName: supplierData?.name || 'Expedition-Go Tours Ltd', supplierLogo: supplierData?.logo || null } } })}
-                  className="shrink-0 rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)] lg:text-base lg:px-6 lg:py-3"
-                >
-                  Write a review
-                </button>
               </div>
-            </header>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(selectedTourReviewPath, {
+                    state: {
+                      returnTo: selectedTourReturnTo,
+                      tour: {
+                        title: selectedTourTitle,
+                        slug: selectedTourSlug,
+                        rating: selectedTourRatingNumber,
+                        reviews: selectedTourReviewsNumber,
+                        duration: selectedTourDuration,
+                        price: selectedTourPriceNumber,
+                        image: mergedImages[0] || tourData?.imageCover || fallbackTourImage,
+                        images: mergedImages.slice(0, 5),
+                        location: tourData?.city || 'Accra, Ghana',
+                        tourId: rawTour?.id,
+                        supplierName: supplierData?.name || 'Expedition-Go Tours Ltd',
+                        supplierLogo: supplierData?.logo || null,
+                      },
+                    },
+                  })
+                }
+                className="shrink-0 rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)] lg:text-base lg:px-6 lg:py-3"
+              >
+                Write a review
+              </button>
+            </div>
+          </header>
 
           <div className="tour-layout-grid mt-5">
             <section className="grid min-w-0 gap-2 lg:grid-cols-[130px_minmax(0,1fr)] 2xl:grid-cols-[150px_minmax(0,1fr)]">
@@ -1922,7 +2102,6 @@ function TourDetailContent() {
                         onError={handleImageError}
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                       />
-
                     </button>
                   );
                 })}
@@ -1950,7 +2129,9 @@ function TourDetailContent() {
                   ))}
                 </div>
 
-                <div className={`absolute left-4 top-4 z-10 flex flex-wrap items-start gap-2 transition-opacity duration-200 ${showStickyHeader ? 'opacity-0 pointer-events-none' : ''}`}>
+                <div
+                  className={`absolute left-4 top-4 z-10 flex flex-wrap items-start gap-2 transition-opacity duration-200 ${showStickyHeader ? 'opacity-0 pointer-events-none' : ''}`}
+                >
                   <button
                     type="button"
                     onClick={() => navigate(-1)}
@@ -2029,14 +2210,18 @@ function TourDetailContent() {
             </section>
 
             <aside id="booking-section" ref={pricingRef} className="xl:z-40">
-              <div className="tour-sidebar flex min-h-[calc(300px+6rem+0.5rem)] flex-col rounded-lg border border-slate-200 bg-white p-4 shadow-[0_2px_18px_rgba(15,23,42,0.08)] sm:min-h-[calc(430px+6rem+0.5rem)] lg:min-h-[520px] text-sm text-[color:var(--brand-green)]">
+              <div
+                className={`tour-sidebar flex min-h-[calc(300px+6rem+0.5rem)] flex-col rounded-lg border border-slate-200 bg-white p-4 text-sm text-[color:var(--brand-green)] shadow-[0_2px_18px_rgba(15,23,42,0.08)] sm:min-h-[calc(430px+6rem+0.5rem)] lg:min-h-[520px] ${
+                  isTravelerPickerOpen ? 'tour-sidebar-picker-open' : ''
+                }`}
+              >
                 <p>
                   <span className="font-black">From {convertedUnitPrice.formatted}</span> per adult{' '}
                   <span className="text-xs">(price varies by group size)</span>
                 </p>
                 <p className="mt-4 font-black">Select date and travelers</p>
 
-                <div className="relative mt-3 flex flex-wrap gap-2">
+                <div className="relative mt-3 flex flex-wrap gap-2" style={{ overflow: 'visible' }}>
                   <button
                     type="button"
                     onClick={() => {
@@ -2050,6 +2235,7 @@ function TourDetailContent() {
                     {selectedDateLabel}
                   </button>
                   <button
+                    ref={travelerTriggerRef}
                     type="button"
                     onClick={() => {
                       setIsTravelerPickerOpen((isOpen) => !isOpen);
@@ -2064,19 +2250,24 @@ function TourDetailContent() {
 
                   {isDateCalendarOpen && (
                     <div ref={dateCalendarRef}>
-                    <BookingCalendarPopover
-                      monthCursor={calendarMonthCursor}
-                      onMonthChange={setCalendarMonthCursor}
-                      onCommitRange={commitBookingRange}
-                      selectedRange={bookingDateRange}
-                      today={today}
-                      availabilityMap={availabilityMap}
-                    />
+                      <BookingCalendarPopover
+                        monthCursor={calendarMonthCursor}
+                        onMonthChange={setCalendarMonthCursor}
+                        onCommitRange={commitBookingRange}
+                        selectedRange={bookingDateRange}
+                        today={today}
+                        availabilityMap={availabilityMap}
+                      />
                     </div>
                   )}
 
                   {isTravelerPickerOpen && (
-                    <div data-traveler-picker ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.18)] xl:right-0 xl:left-auto">
+                    <div
+                      data-traveler-picker
+                      ref={travelerPickerRef}
+                      style={travelerPickerStyle}
+                      className="fixed z-[9999] overflow-y-auto rounded-sm border border-slate-100 bg-white p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.18)]"
+                    >
                       <div className="space-y-6">
                         {travelerOptions.map((option) => {
                           const canDecrement =
@@ -2090,7 +2281,7 @@ function TourDetailContent() {
                               <div className="min-w-0">
                                 <p className="leading-tight">
                                   <span className="text-base font-black">{option.label}</span>{' '}
-                                    <span className="text-sm font-medium text-slate-500">
+                                  <span className="text-sm font-medium text-slate-500">
                                     {option.age}
                                   </span>
                                 </p>
@@ -2165,7 +2356,9 @@ function TourDetailContent() {
 
                 {offers.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Available offers</p>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Available offers
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {offers.map((offer) => (
                         <span
@@ -2190,7 +2383,12 @@ function TourDetailContent() {
                     <input
                       type="text"
                       value={promoCode}
-                      onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); setPromoDiscount(0); setPromoError(''); }}
+                      onChange={(e) => {
+                        setPromoCode(e.target.value.toUpperCase());
+                        setPromoApplied(false);
+                        setPromoDiscount(0);
+                        setPromoError('');
+                      }}
                       placeholder="Promo code"
                       maxLength={8}
                       className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-[color:var(--brand-green)] focus:ring-2 focus:ring-[color:var(--brand-green)]/15"
@@ -2203,9 +2401,7 @@ function TourDetailContent() {
                       Apply
                     </button>
                   </div>
-                  {promoError && (
-                    <p className="mt-1 text-xs text-red-500">{promoError}</p>
-                  )}
+                  {promoError && <p className="mt-1 text-xs text-red-500">{promoError}</p>}
                   {promoApplied && (
                     <p className="mt-1 text-xs text-emerald-600">Promo code applied!</p>
                   )}
@@ -2305,7 +2501,9 @@ function TourDetailContent() {
                         {
                           icon: Users,
                           title: 'Live tour guide',
-                          desc: languages.length ? languages.join(', ') : tourData?.language || 'English',
+                          desc: languages.length
+                            ? languages.join(', ')
+                            : tourData?.language || 'English',
                         },
                         {
                           icon: CreditCard,
@@ -2325,17 +2523,18 @@ function TourDetailContent() {
                             : 'Not available',
                         },
                       ].map(({ icon: Icon, title, desc }) => (
-                        <div
-                          key={title}
-                          className="flex items-start gap-4 rounded-xl bg-white p-4"
-                        >
+                        <div key={title} className="flex items-start gap-4 rounded-xl bg-white p-4">
                           <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-50 lg:size-12">
                             <Icon className="size-5 text-emerald-600 lg:size-6" strokeWidth={1.5} />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold leading-snug text-slate-900 lg:text-base">{title}</p>
+                            <p className="text-sm font-bold leading-snug text-slate-900 lg:text-base">
+                              {title}
+                            </p>
                             {desc && (
-                              <p className="mt-0.5 text-xs leading-relaxed text-slate-500 lg:text-sm">{desc}</p>
+                              <p className="mt-0.5 text-xs leading-relaxed text-slate-500 lg:text-sm">
+                                {desc}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -2357,22 +2556,23 @@ function TourDetailContent() {
                               </li>
                             ))}
                             <AnimatePresence initial={false}>
-                              {fullDescriptionExpanded && OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.slice(2).map((step) => (
-                                <motion.li
-                                  key={step.title}
-                                  initial={{ opacity: 0, y: -8, height: 0 }}
-                                  animate={{ opacity: 1, y: 0, height: "auto" }}
-                                  exit={{ opacity: 0, y: -8, height: 0 }}
-                                  transition={{ duration: 0.25, ease: "easeOut" }}
-                                >
-                                  <div className="min-w-0 text-sm leading-7 text-slate-700 sm:text-base lg:text-lg">
-                                    <p className="text-[1.3em] font-bold text-slate-900 lg:text-[1.222em]">
-                                      {step.title}
-                                    </p>
-                                    <p className="mt-1.5">{step.body}</p>
-                                  </div>
-                                </motion.li>
-                              ))}
+                              {fullDescriptionExpanded &&
+                                OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.slice(2).map((step) => (
+                                  <motion.li
+                                    key={step.title}
+                                    initial={{ opacity: 0, y: -8, height: 0 }}
+                                    animate={{ opacity: 1, y: 0, height: 'auto' }}
+                                    exit={{ opacity: 0, y: -8, height: 0 }}
+                                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                                  >
+                                    <div className="min-w-0 text-sm leading-7 text-slate-700 sm:text-base lg:text-lg">
+                                      <p className="text-[1.3em] font-bold text-slate-900 lg:text-[1.222em]">
+                                        {step.title}
+                                      </p>
+                                      <p className="mt-1.5">{step.body}</p>
+                                    </div>
+                                  </motion.li>
+                                ))}
                             </AnimatePresence>
                           </ol>
                           {OVERVIEW_FULL_DESCRIPTION_STEPS_DEFAULT.length > 2 && (
@@ -2391,110 +2591,130 @@ function TourDetailContent() {
                     )}
 
                     {(() => {
-                      const displayReviews = allReviewCards.length > 0 ? allReviewCards.slice(0, 8) : DUMMY_REVIEWS;
+                      const displayReviews =
+                        allReviewCards.length > 0 ? allReviewCards.slice(0, 8) : DUMMY_REVIEWS;
                       return (
-                      <section className="mt-12 sm:mt-14">
-                        <div className="flex items-baseline justify-between gap-3 mb-6">
-                          <h2 className="text-base font-black text-slate-900 sm:text-lg lg:text-xl leading-tight">
-                            What travellers loved
-                          </h2>
-                          <Link
-                            to="#reviews"
-                            onClick={() => setActiveDetailTab('reviews')}
-                            className="shrink-0 text-sm font-bold text-[color:var(--brand-green)] hover:underline whitespace-nowrap leading-tight"
-                          >
-                            See all reviews <span aria-hidden="true">&rarr;</span>
-                          </Link>
-                        </div>
-
-                        <div className="relative">
-                          <div
-                            ref={travellersLovedRef}
-                            className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                            onScroll={handleTravellersLovedScroll}
-                          >
-                            {displayReviews.map((review, idx) => {
-                              const initials = review.name
-                                ? review.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
-                                : '?';
-                              const avatarColors = ['bg-amber-600', 'bg-emerald-600', 'bg-blue-600', 'bg-rose-500', 'bg-violet-600', 'bg-orange-500'];
-                              const avatarColor = avatarColors[idx % avatarColors.length];
-                              return (
-                              <article
-                                key={review.id}
-                                className="min-w-[360px] max-w-[400px] snap-start shrink-0 rounded-xl border border-slate-200 bg-white p-5"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className={`grid size-10 shrink-0 place-items-center rounded-full ${avatarColor} text-sm font-bold text-white`}>
-                                    {initials}
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <div className="flex items-center gap-1.5 flex-wrap">
-                                      <p className="text-sm font-bold text-slate-900 truncate">
-                                        {review.name}
-                                      </p>
-                                      <span className="hidden sm:inline text-slate-300">·</span>
-                                      <span className="text-xs text-slate-500">
-                                        {review.country || 'United States'}
-                                      </span>
-                                    </div>
-                                    <div className="mt-0.5 flex items-center gap-2 flex-wrap">
-                                      <span className="text-xs text-slate-400">{review.date}</span>
-                                      <span className="inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
-                                        <Check className="size-2.5" strokeWidth={3} />
-                                        Verified booking
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="mt-2.5 flex gap-0.5 text-emerald-500" aria-hidden>
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      className={`size-3.5 ${i < review.rating ? 'fill-current' : 'fill-none text-slate-200'}`}
-                                      strokeWidth={1.5}
-                                    />
-                                  ))}
-                                </div>
-
-                                <p className="mt-2.5 text-sm leading-6 text-slate-600 line-clamp-3">
-                                  {review.text}
-                                </p>
-                                <button
-                                  type="button"
-                                  onClick={() => setReviewDetail(review)}
-                                  className="mt-2 text-xs font-bold text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
-                                >
-                                  Read more
-                                </button>
-                              </article>
-                              );
-                            })}
+                        <section className="mt-12 sm:mt-14">
+                          <div className="flex items-baseline justify-between gap-3 mb-6">
+                            <h2 className="text-base font-black text-slate-900 sm:text-lg lg:text-xl leading-tight">
+                              What travellers loved
+                            </h2>
+                            <Link
+                              to="#reviews"
+                              onClick={() => setActiveDetailTab('reviews')}
+                              className="shrink-0 text-sm font-bold text-[color:var(--brand-green)] hover:underline whitespace-nowrap leading-tight"
+                            >
+                              See all reviews <span aria-hidden="true">&rarr;</span>
+                            </Link>
                           </div>
 
-                          {showTravellersLovedLeftArrow && (
-                            <button
-                              type="button"
-                              onClick={scrollTravellersLovedLeft}
-                              className="absolute -left-4 top-1/2 -translate-y-1/2 hidden lg:grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
-                              aria-label="Scroll left"
+                          <div className="relative">
+                            <div
+                              ref={travellersLovedRef}
+                              className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                              onScroll={handleTravellersLovedScroll}
                             >
-                              <ChevronLeft className="size-5 text-slate-700" />
-                            </button>
-                          )}
-                          {showTravellersLovedRightArrow && (
-                            <button
-                              type="button"
-                              onClick={scrollTravellersLovedRight}
-                              className="absolute -right-4 top-1/2 -translate-y-1/2 hidden lg:grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
-                              aria-label="Scroll right"
-                            >
-                              <ChevronRight className="size-5 text-slate-700" />
-                            </button>
-                          )}
-                        </div>
-                      </section>
+                              {displayReviews.map((review, idx) => {
+                                const initials = review.name
+                                  ? review.name
+                                      .split(' ')
+                                      .map((n) => n[0])
+                                      .join('')
+                                      .slice(0, 2)
+                                      .toUpperCase()
+                                  : '?';
+                                const avatarColors = [
+                                  'bg-amber-600',
+                                  'bg-emerald-600',
+                                  'bg-blue-600',
+                                  'bg-rose-500',
+                                  'bg-violet-600',
+                                  'bg-orange-500',
+                                ];
+                                const avatarColor = avatarColors[idx % avatarColors.length];
+                                return (
+                                  <article
+                                    key={review.id}
+                                    className="min-w-[360px] max-w-[400px] snap-start shrink-0 rounded-xl border border-slate-200 bg-white p-5"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        className={`grid size-10 shrink-0 place-items-center rounded-full ${avatarColor} text-sm font-bold text-white`}
+                                      >
+                                        {initials}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                          <p className="text-sm font-bold text-slate-900 truncate">
+                                            {review.name}
+                                          </p>
+                                          <span className="hidden sm:inline text-slate-300">·</span>
+                                          <span className="text-xs text-slate-500">
+                                            {review.country || 'United States'}
+                                          </span>
+                                        </div>
+                                        <div className="mt-0.5 flex items-center gap-2 flex-wrap">
+                                          <span className="text-xs text-slate-400">
+                                            {review.date}
+                                          </span>
+                                          <span className="inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
+                                            <Check className="size-2.5" strokeWidth={3} />
+                                            Verified booking
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div
+                                      className="mt-2.5 flex gap-0.5 text-emerald-500"
+                                      aria-hidden
+                                    >
+                                      {[...Array(5)].map((_, i) => (
+                                        <Star
+                                          key={i}
+                                          className={`size-3.5 ${i < review.rating ? 'fill-current' : 'fill-none text-slate-200'}`}
+                                          strokeWidth={1.5}
+                                        />
+                                      ))}
+                                    </div>
+
+                                    <p className="mt-2.5 text-sm leading-6 text-slate-600 line-clamp-3">
+                                      {review.text}
+                                    </p>
+                                    <button
+                                      type="button"
+                                      onClick={() => setReviewDetail(review)}
+                                      className="mt-2 text-xs font-bold text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                                    >
+                                      Read more
+                                    </button>
+                                  </article>
+                                );
+                              })}
+                            </div>
+
+                            {showTravellersLovedLeftArrow && (
+                              <button
+                                type="button"
+                                onClick={scrollTravellersLovedLeft}
+                                className="absolute -left-4 top-1/2 -translate-y-1/2 hidden lg:grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
+                                aria-label="Scroll left"
+                              >
+                                <ChevronLeft className="size-5 text-slate-700" />
+                              </button>
+                            )}
+                            {showTravellersLovedRightArrow && (
+                              <button
+                                type="button"
+                                onClick={scrollTravellersLovedRight}
+                                className="absolute -right-4 top-1/2 -translate-y-1/2 hidden lg:grid size-10 place-items-center rounded-full bg-white border border-slate-200 shadow-lg hover:shadow-xl transition z-10"
+                                aria-label="Scroll right"
+                              >
+                                <ChevronRight className="size-5 text-slate-700" />
+                              </button>
+                            )}
+                          </div>
+                        </section>
                       );
                     })()}
 
@@ -2530,7 +2750,7 @@ function TourDetailContent() {
                             <motion.div
                               key="highlights-content"
                               initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
+                              animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                               className="overflow-hidden"
@@ -2560,7 +2780,9 @@ function TourDetailContent() {
                     id="details"
                     className="pb-6"
                   >
-                    <h2 className="text-lg font-black text-[color:var(--brand-green)] sm:text-xl lg:text-2xl">Details</h2>
+                    <h2 className="text-lg font-black text-[color:var(--brand-green)] sm:text-xl lg:text-2xl">
+                      Details
+                    </h2>
                     <div className="mt-4 space-y-3">
                       {infoSections.map((section) => {
                         const isOpen = !!expandedInfoSection[section.key];
@@ -2588,7 +2810,7 @@ function TourDetailContent() {
                                 <motion.div
                                   key={section.key}
                                   initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
                                   exit={{ height: 0, opacity: 0 }}
                                   transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                                   className="overflow-hidden"
@@ -2701,10 +2923,33 @@ function TourDetailContent() {
                   >
                     <section id="reviews" className="pb-8">
                       <div className="flex flex-wrap items-end justify-between gap-4">
-                        <h2 className="text-lg font-black text-slate-900 sm:text-xl lg:text-2xl">Reviews</h2>
+                        <h2 className="text-lg font-black text-slate-900 sm:text-xl lg:text-2xl">
+                          Reviews
+                        </h2>
                         <button
                           type="button"
-                          onClick={() => navigate(selectedTourReviewPath, { state: { returnTo: selectedTourReturnTo, tour: { title: selectedTourTitle, slug: selectedTourSlug, rating: selectedTourRatingNumber, reviews: selectedTourReviewsNumber, duration: selectedTourDuration, price: selectedTourPriceNumber, image: mergedImages[0] || tourData?.imageCover || fallbackTourImage, images: mergedImages.slice(0, 5), location: tourData?.city || 'Accra, Ghana', tourId: rawTour?.id, supplierName: supplierData?.name || 'Expedition-Go Tours Ltd', supplierLogo: supplierData?.logo || null } } })}
+                          onClick={() =>
+                            navigate(selectedTourReviewPath, {
+                              state: {
+                                returnTo: selectedTourReturnTo,
+                                tour: {
+                                  title: selectedTourTitle,
+                                  slug: selectedTourSlug,
+                                  rating: selectedTourRatingNumber,
+                                  reviews: selectedTourReviewsNumber,
+                                  duration: selectedTourDuration,
+                                  price: selectedTourPriceNumber,
+                                  image:
+                                    mergedImages[0] || tourData?.imageCover || fallbackTourImage,
+                                  images: mergedImages.slice(0, 5),
+                                  location: tourData?.city || 'Accra, Ghana',
+                                  tourId: rawTour?.id,
+                                  supplierName: supplierData?.name || 'Expedition-Go Tours Ltd',
+                                  supplierLogo: supplierData?.logo || null,
+                                },
+                              },
+                            })
+                          }
                           className="rounded-full border border-[color:var(--brand-green)] bg-white px-5 py-2.5 text-sm font-black text-[color:var(--brand-green)] transition hover:bg-[color:var(--brand-mist)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-green)]"
                         >
                           Write a review
@@ -2790,7 +3035,10 @@ function TourDetailContent() {
                               </p>
                             ) : (
                               filteredReviewCards.map((review) => (
-                                <article key={`review-${review.id}`} className="border-b border-slate-100 pb-4 last:border-0">
+                                <article
+                                  key={`review-${review.id}`}
+                                  className="border-b border-slate-100 pb-4 last:border-0"
+                                >
                                   <p className="font-black">{review.name}</p>
                                   <p className="text-xs text-[color:var(--brand-green)]/65">
                                     {review.date} • {review.tag}
@@ -2807,25 +3055,43 @@ function TourDetailContent() {
                                     ))}
                                   </div>
                                   {review.title && (
-                                    <p className="mt-2 text-sm font-bold text-slate-900">{review.title}</p>
+                                    <p className="mt-2 text-sm font-bold text-slate-900">
+                                      {review.title}
+                                    </p>
                                   )}
                                   <p className="mt-1 text-sm leading-7 text-[color:var(--brand-green)]/85">
                                     {review.text}
                                   </p>
-                                  {(review.valueForMoneyRating || review.guideRating || review.meetingRating) && (
+                                  {(review.valueForMoneyRating ||
+                                    review.guideRating ||
+                                    review.meetingRating) && (
                                     <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
-                                      {review.valueForMoneyRating && <span>Value: {review.valueForMoneyRating}/5</span>}
-                                      {review.guideRating && <span>Guide: {review.guideRating}/5</span>}
-                                      {review.meetingRating && <span>Meeting: {review.meetingRating}/5</span>}
+                                      {review.valueForMoneyRating && (
+                                        <span>Value: {review.valueForMoneyRating}/5</span>
+                                      )}
+                                      {review.guideRating && (
+                                        <span>Guide: {review.guideRating}/5</span>
+                                      )}
+                                      {review.meetingRating && (
+                                        <span>Meeting: {review.meetingRating}/5</span>
+                                      )}
                                     </div>
                                   )}
-                                  {(review.travelMonth || (review.companions && review.companions.length > 0)) && (
+                                  {(review.travelMonth ||
+                                    (review.companions && review.companions.length > 0)) && (
                                     <div className="mt-1 flex flex-wrap gap-2">
                                       {review.travelMonth && (
-                                        <span className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">{review.travelMonth}</span>
+                                        <span className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                                          {review.travelMonth}
+                                        </span>
                                       )}
                                       {review.companions?.map((c) => (
-                                        <span key={c} className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 capitalize">{c}</span>
+                                        <span
+                                          key={c}
+                                          className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 capitalize"
+                                        >
+                                          {c}
+                                        </span>
                                       ))}
                                     </div>
                                   )}
@@ -2849,11 +3115,16 @@ function TourDetailContent() {
                                         Response from supplier
                                         {review.supplierResponseAt && (
                                           <span className="ml-2 font-normal text-emerald-600">
-                                            {new Date(review.supplierResponseAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                            {new Date(review.supplierResponseAt).toLocaleDateString(
+                                              'en-US',
+                                              { month: 'short', year: 'numeric' }
+                                            )}
                                           </span>
                                         )}
                                       </p>
-                                      <p className="mt-1 text-sm text-emerald-900">{review.supplierResponse}</p>
+                                      <p className="mt-1 text-sm text-emerald-900">
+                                        {review.supplierResponse}
+                                      </p>
                                     </div>
                                   )}
                                 </article>
@@ -2874,7 +3145,9 @@ function TourDetailContent() {
 
                         <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_2px_18px_rgba(15,23,42,0.08)]">
                           <div>
-                            <h3 className="text-base font-black text-slate-950 sm:text-lg lg:text-xl">Traveler photos</h3>
+                            <h3 className="text-base font-black text-slate-950 sm:text-lg lg:text-xl">
+                              Traveler photos
+                            </h3>
                             <p className="mt-1 text-xs leading-5 text-[color:var(--brand-green)]/70">
                               Only photos travelers attach when they write a review are shown here.
                             </p>
@@ -2907,7 +3180,9 @@ function TourDetailContent() {
                     </section>
 
                     <section id="qa" className="pb-8">
-                      <h2 className="text-lg font-black text-[color:var(--brand-green)] sm:text-xl lg:text-2xl">Q&A</h2>
+                      <h2 className="text-lg font-black text-[color:var(--brand-green)] sm:text-xl lg:text-2xl">
+                        Q&A
+                      </h2>
                       <div className="mt-5 space-y-8">
                         {qaItems.map((item) => (
                           <article key={item.question}>
@@ -2961,7 +3236,9 @@ function TourDetailContent() {
 
           <section className="py-8">
             <div className="section-header-row relative z-30 isolate mb-3 flex items-center justify-between gap-3">
-              <h2 className="text-lg font-bold text-slate-900 sm:text-xl lg:text-2xl">Similar Experiences</h2>
+              <h2 className="text-lg font-bold text-slate-900 sm:text-xl lg:text-2xl">
+                Similar Experiences
+              </h2>
               <div className="section-header-actions shrink-0">
                 <div className="section-header-scroll-arrows">
                   <button
@@ -2998,7 +3275,7 @@ function TourDetailContent() {
               </p>
               <p className="mt-4 font-black">Select date and travelers</p>
 
-              <div className="relative mt-3 flex flex-wrap gap-2">
+              <div className="relative mt-3 flex flex-wrap gap-2" style={{ overflow: 'visible' }}>
                 <button
                   type="button"
                   onClick={() => {
@@ -3025,20 +3302,20 @@ function TourDetailContent() {
                 </button>
 
                 {isDateCalendarOpen && (
-                  <div ref={dateCalendarRef}>
-                  <BookingCalendarPopover
-                    monthCursor={calendarMonthCursor}
-                    onMonthChange={setCalendarMonthCursor}
-                    onCommitRange={commitBookingRange}
-                    selectedRange={bookingDateRange}
-                    today={today}
-                    availabilityMap={availabilityMap}
-                  />
+                  <div>
+                    <BookingCalendarPopover
+                      monthCursor={calendarMonthCursor}
+                      onMonthChange={setCalendarMonthCursor}
+                      onCommitRange={commitBookingRange}
+                      selectedRange={bookingDateRange}
+                      today={today}
+                      availabilityMap={availabilityMap}
+                    />
                   </div>
                 )}
 
                 {isTravelerPickerOpen && (
-                  <div data-traveler-picker ref={travelerPickerRef} className="absolute left-0 top-[calc(100%+0.75rem)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-[color:var(--brand-green)] shadow-[0_18px_45px_rgba(15,23,42,0.18)] lg:right-0 lg:left-auto">
+                  <div className="absolute right-0 top-[calc(100%+0.75rem)] z-[9999] w-[min(360px,calc(100vw-2rem))] rounded-sm border border-slate-100 bg-white p-5 text-[color:var(--brand-green)] shadow-[0_18px_45px_rgba(15,23,42,0.18)]">
                     <div className="space-y-6">
                       {travelerOptions.map((option) => {
                         const canDecrement =
@@ -3155,7 +3432,12 @@ function TourDetailContent() {
                   <div className="flex items-center gap-3">
                     <div className="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-600 text-sm font-bold text-white">
                       {reviewDetail.name
-                        ? reviewDetail.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+                        ? reviewDetail.name
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')
+                            .slice(0, 2)
+                            .toUpperCase()
                         : '?'}
                     </div>
                     <div>
@@ -3173,9 +3455,7 @@ function TourDetailContent() {
                     ))}
                   </div>
 
-                  <p className="text-sm leading-7 text-slate-600">
-                    {reviewDetail.text}
-                  </p>
+                  <p className="text-sm leading-7 text-slate-600">{reviewDetail.text}</p>
                 </div>
               )}
             </DialogContent>
@@ -3255,7 +3535,10 @@ function TourDetailContent() {
               {reviewBookingChecked && (
                 <p className="mt-2 flex items-center gap-1.5 text-xs">
                   {reviewBookingId ? (
-                    <><Check className="size-3.5 text-emerald-600" /> <span className="text-emerald-700">Verified review</span></>
+                    <>
+                      <Check className="size-3.5 text-emerald-600" />{' '}
+                      <span className="text-emerald-700">Verified review</span>
+                    </>
                   ) : (
                     <span className="text-amber-600">Reviewing as unverified traveler</span>
                   )}
@@ -3263,7 +3546,6 @@ function TourDetailContent() {
               )}
 
               <form onSubmit={handleSubmitTravelerReview} className="mt-5 space-y-4">
-
                 <div>
                   <p className="text-sm font-black">Your rating</p>
                   <div className="mt-2 flex gap-1" role="group" aria-label="Star rating">
@@ -3480,7 +3762,9 @@ function TourDetailContent() {
           </Dialog>
         </main>
 
-        <div className={`${showMobilePriceBar ? 'pb-[calc(5rem+env(safe-area-inset-bottom,0px))]' : ''} lg:pb-0`}>
+        <div
+          className={`${showMobilePriceBar ? 'pb-[calc(5rem+env(safe-area-inset-bottom,0px))]' : ''} lg:pb-0`}
+        >
           <Footer />
         </div>
       </div>
@@ -3543,13 +3827,15 @@ function TourDetailContent() {
 
             {availabilityDialog?.dayData?.status === 'LIMITED' && (
               <div className="rounded-lg bg-amber-50 p-3 text-center text-sm font-semibold text-amber-700">
-                Only {availabilityDialog.dayData.remaining} spot{availabilityDialog.dayData.remaining > 1 ? 's' : ''} remaining at this price!
+                Only {availabilityDialog.dayData.remaining} spot
+                {availabilityDialog.dayData.remaining > 1 ? 's' : ''} remaining at this price!
               </div>
             )}
 
             {availabilityDialog?.dayData?.status === 'AVAILABLE' && (
               <div className="rounded-lg bg-emerald-50 p-3 text-center text-sm font-semibold text-emerald-700">
-                Available — {availabilityDialog.dayData.remaining} spot{availabilityDialog.dayData.remaining > 1 ? 's' : ''} remaining
+                Available — {availabilityDialog.dayData.remaining} spot
+                {availabilityDialog.dayData.remaining > 1 ? 's' : ''} remaining
               </div>
             )}
           </div>
@@ -3580,25 +3866,38 @@ function TourDetailContent() {
           </DialogTitle>
           <div className="mt-3 space-y-3 text-sm text-slate-600">
             <p>
-              You already have <span className="font-semibold text-slate-900">{duplicateCartDialog?.existingItem?.title}</span> in
-              your cart for{' '}
+              You already have{' '}
+              <span className="font-semibold text-slate-900">
+                {duplicateCartDialog?.existingItem?.title}
+              </span>{' '}
+              in your cart for{' '}
               <span className="font-semibold text-slate-900">
                 {duplicateCartDialog?.existingItem?.selectedDate
-                  ? new Date(duplicateCartDialog.existingItem.selectedDate).toLocaleDateString('en-US', {
-                      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-                    })
+                  ? new Date(duplicateCartDialog.existingItem.selectedDate).toLocaleDateString(
+                      'en-US',
+                      {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      }
+                    )
                   : 'the selected date'}
-              </span>.
+              </span>
+              .
             </p>
             <div className="rounded-lg bg-amber-50 p-3 text-sm font-medium text-amber-800">
-              Updating will replace your existing cart item with the new traveler details and pricing.
+              Updating will replace your existing cart item with the new traveler details and
+              pricing.
             </div>
           </div>
           <div className="mt-6 flex gap-3">
             <Button
               onClick={() => {
                 if (duplicateCartDialog) {
-                  const result = addToCart(duplicateCartDialog.cartItem, { skipDuplicateCheck: true });
+                  const result = addToCart(duplicateCartDialog.cartItem, {
+                    skipDuplicateCheck: true,
+                  });
                   setDuplicateCartDialog(null);
                   if (result.added) {
                     setTimeout(() => {
@@ -3726,7 +4025,9 @@ function SupplierTabContent({
               )}
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 sm:text-xl lg:text-2xl">{supplierData.name}</h2>
+              <h2 className="text-lg font-black text-slate-900 sm:text-xl lg:text-2xl">
+                {supplierData.name}
+              </h2>
               <div className="mt-1 pl-0.1 flex items-center gap-2 text-sm text-slate-500">
                 {ratingDisplay && (
                   <>
@@ -3753,7 +4054,7 @@ function SupplierTabContent({
             <motion.span
               initial={false}
               animate={{ rotate: supplierInfoOpen ? 180 : 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
             >
               <ChevronDown className="size-4" />
             </motion.span>
@@ -3761,10 +4062,9 @@ function SupplierTabContent({
           <button
             type="button"
             onClick={() =>
-              navigateWithLoader(
-                `/supplier/profile/${encodeURIComponent(tourTitle)}`,
-                { state: { supplierData, tourId, tourSlug } }
-              )
+              navigateWithLoader(`/supplier/profile/${encodeURIComponent(tourTitle)}`, {
+                state: { supplierData, tourId, tourSlug },
+              })
             }
             className="shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--brand-green)] hover:underline leading-tight"
           >
@@ -3829,7 +4129,9 @@ function SupplierTabContent({
 
       <div className="mt-6">
         <div className="flex items-baseline justify-between gap-3 mb-3">
-          <h3 className="text-base font-black text-slate-900 sm:text-lg lg:text-xl leading-tight">Tours by this supplier</h3>
+          <h3 className="text-base font-black text-slate-900 sm:text-lg lg:text-xl leading-tight">
+            Tours by this supplier
+          </h3>
           <div className="shrink-0 flex items-center gap-2">
             <button
               ref={scrollBtnLeftRef}

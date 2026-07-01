@@ -10,6 +10,7 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
   Building2,
@@ -213,6 +214,87 @@ function getStepValidationError(stepKey, form) {
   }
 
   return null;
+}
+
+const STEP_FIELDS = {
+  business: [
+    { path: 'businessInfo.legalBusinessName', message: 'Legal business name is required' },
+    { path: 'businessInfo.displayName', message: 'Display name is required' },
+    { path: 'businessInfo.businessType', message: 'Business type is required' },
+    { path: 'businessInfo.country', message: 'Country is required' },
+    { path: 'businessInfo.address.line1', message: 'Address line 1 is required' },
+    { path: 'businessInfo.address.city', message: 'City is required' },
+    { path: 'businessInfo.address.state', message: 'State / Province is required' },
+    { path: 'businessInfo.address.postalCode', message: 'Postal code is required' },
+    { path: 'businessInfo.phoneNumber', message: 'Phone number is required' },
+  ],
+  operating: [
+    { path: 'operatingInfo.tourCategories', message: 'Select at least one tour category' },
+    { path: 'operatingInfo.destinations', message: 'Add at least one destination' },
+    { path: 'operatingInfo.languages', message: 'Select at least one language' },
+    { path: 'operatingInfo.yearsInBusiness', message: 'Years in business is required' },
+    { path: 'operatingInfo.cancellationPolicy', message: 'Cancellation policy is required' },
+    { path: 'operatingInfo.meetingStyle', message: 'Meeting style is required' },
+  ],
+  representative: [
+    { path: 'representativeInfo.fullName', message: 'Representative full name is required' },
+    { path: 'representativeInfo.email', message: 'Representative email is required' },
+    { path: 'representativeInfo.dateOfBirth', message: 'Date of birth is required' },
+    { path: 'representativeInfo.address.line1', message: 'Representative address line 1 is required' },
+    { path: 'representativeInfo.address.city', message: 'Representative city is required' },
+    { path: 'representativeInfo.address.state', message: 'Representative state / province is required' },
+    { path: 'representativeInfo.address.postalCode', message: 'Representative postal code is required' },
+    { path: 'representativeInfo.idType', message: 'ID type is required' },
+    { path: 'representativeInfo.idDocument', message: 'ID document image is required' },
+  ],
+  documents: [
+    { path: 'businessDocuments.registrationDocument', message: 'Business registration document is required' },
+    { path: 'businessDocuments.taxDocument', message: 'Tax document is required' },
+    { path: 'businessDocuments.proofOfAddress', message: 'Proof of address document is required' },
+  ],
+  compliance: [
+    { path: 'compliance.acceptedTerms', message: 'You must accept the terms and conditions' },
+  ],
+};
+
+function getFieldErrors(stepKey, form) {
+  const fields = STEP_FIELDS[stepKey] || [];
+  const errors = {};
+
+  for (const { path, message } of fields) {
+    const parts = path.split('.');
+    let value = form;
+    for (const part of parts) {
+      if (value == null || typeof value !== 'object') {
+        value = undefined;
+        break;
+      }
+      value = value[part];
+    }
+
+    const isEmpty =
+      value === undefined ||
+      value === null ||
+      (typeof value === 'string' && !value.trim()) ||
+      (Array.isArray(value) && value.length === 0) ||
+      (typeof value === 'boolean' && !value);
+
+    if (isEmpty) {
+      errors[path] = message;
+    }
+  }
+
+  return errors;
+}
+
+function FieldError({ message }) {
+  if (!message) return null;
+  return (
+    <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-rose-500" role="alert">
+      <AlertCircle className="size-3 shrink-0" />
+      <span>{message}</span>
+    </p>
+  );
 }
 
 function StepIndicator({ steps, currentStep, onStepClick, stepCompleted = [] }) {
@@ -465,11 +547,39 @@ export function SupplierApplicationForm() {
   const restoredForIdRef = useRef(null);
 
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(0);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState(createEmptySupplierApplicationForm);
+
+  const clearFieldError = useCallback((fieldPath) => {
+    setFieldErrors((prev) => {
+      if (!prev[fieldPath]) return prev;
+      const next = { ...prev };
+      delete next[fieldPath];
+      return next;
+    });
+  }, []);
+
+  const scrollToFirstError = useCallback((errors) => {
+    const firstField = Object.keys(errors)[0];
+    if (!firstField) return;
+    setError(errors[firstField]);
+    setTimeout(() => {
+      // Dots are safe inside quoted attribute selectors — no need for CSS.escape
+      const el = document.querySelector(`[data-field="${firstField}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const input = el.querySelector('input, button, [tabindex]:not([tabindex="-1"]), select');
+        if (input) {
+          input.focus({ preventScroll: true });
+        }
+      }
+    }, 150);
+  }, []);
 
   useEffect(() => {
     if (user?.uid || user?.email) {
@@ -502,6 +612,10 @@ export function SupplierApplicationForm() {
   }, [step, form, draftUserId, success]);
 
   const updateForm = useCallback((section, key, value) => {
+    // Clear field error for the field being updated
+    const fieldPath = `${section}.${key}`;
+    clearFieldError(fieldPath);
+
     setForm((prev) => {
       if (key.includes('.')) {
         const [parent, child] = key.split('.');
@@ -524,7 +638,7 @@ export function SupplierApplicationForm() {
         },
       };
     });
-  }, []);
+  }, [clearFieldError]);
 
   const languageOptions = useMemo(
     () => getLanguagesForCountry(form.businessInfo.country),
@@ -566,11 +680,16 @@ export function SupplierApplicationForm() {
     const err = getStepValidationError(STEPS[step].key, form);
     if (err) {
       setError(err);
+      // Compute field-level errors and scroll to the first invalid field
+      const errors = getFieldErrors(STEPS[step].key, form);
+      setFieldErrors(errors);
+      scrollToFirstError(errors);
       return false;
     }
     setError('');
+    setFieldErrors({});
     return true;
-  }, [step, form]);
+  }, [step, form, scrollToFirstError]);
 
   const validateAllSteps = useCallback(() => {
     for (let i = 0; i < STEPS.length; i++) {
@@ -578,27 +697,36 @@ export function SupplierApplicationForm() {
       if (err) {
         setStep(i);
         setError(err);
+        // Compute field-level errors for the step with missing fields
+        const errors = getFieldErrors(STEPS[i].key, form);
+        setFieldErrors(errors);
+        // Scroll after step change takes effect
+        setTimeout(() => scrollToFirstError(errors), 200);
         return false;
       }
     }
     setError('');
+    setFieldErrors({});
     return true;
-  }, [form]);
+  }, [form, scrollToFirstError]);
 
   const handleNext = useCallback(() => {
     if (!validateStep()) return;
+    setDirection(1);
     setStep((prev) => Math.min(prev + 1, STEPS.length - 1));
   }, [validateStep]);
 
   const handleBack = useCallback(() => {
     setError('');
+    setDirection(-1);
     setStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const handleStepClick = useCallback((idx) => {
     setError('');
+    setDirection(idx > step ? 1 : -1);
     setStep(idx);
-  }, []);
+  }, [step]);
 
   const normalizeWebsite = (url) => {
     if (!url || typeof url !== 'string') return '';
@@ -703,9 +831,9 @@ export function SupplierApplicationForm() {
       description="Tell us about your business. This information will be displayed to travellers."
     >
       <div className="grid gap-5 sm:grid-cols-2">
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-field="businessInfo.legalBusinessName">
           <FieldLabel required>Legal Business Name</FieldLabel>
-          <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
+          <div className={`flex items-center rounded-[1.4rem] border px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 ${fieldErrors['businessInfo.legalBusinessName'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-slate-50'}`}>
             <Building2 className="size-4 text-slate-400" />
             <Input
               className="border-0 bg-transparent shadow-none focus:ring-0"
@@ -714,11 +842,12 @@ export function SupplierApplicationForm() {
               onChange={(e) => updateForm('businessInfo', 'legalBusinessName', e.target.value)}
             />
           </div>
+          <FieldError message={fieldErrors['businessInfo.legalBusinessName']} />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-field="businessInfo.displayName">
           <FieldLabel required>Display Name</FieldLabel>
-          <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
+          <div className={`flex items-center rounded-[1.4rem] border px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 ${fieldErrors['businessInfo.displayName'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-slate-50'}`}>
             <BadgeCheck className="size-4 text-slate-400" />
             <Input
               className="border-0 bg-transparent shadow-none focus:ring-0"
@@ -727,15 +856,16 @@ export function SupplierApplicationForm() {
               onChange={(e) => updateForm('businessInfo', 'displayName', e.target.value)}
             />
           </div>
+          <FieldError message={fieldErrors['businessInfo.displayName']} />
         </div>
 
-        <div>
+        <div data-field="businessInfo.businessType">
           <FieldLabel required>Business Type</FieldLabel>
           <Select
             value={form.businessInfo.businessType}
             onValueChange={(value) => updateForm('businessInfo', 'businessType', value)}
           >
-            <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
+            <SelectTrigger className={`h-12 w-full rounded-[1.4rem] border shadow-sm ${fieldErrors['businessInfo.businessType'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-300 bg-white text-slate-900'}`}>
               <SelectValue placeholder="Select business type" />
             </SelectTrigger>
             <SelectContent side="bottom" sideOffset={4}>
@@ -746,12 +876,13 @@ export function SupplierApplicationForm() {
               ))}
             </SelectContent>
           </Select>
+          <FieldError message={fieldErrors['businessInfo.businessType']} />
         </div>
 
-        <div>
+        <div data-field="businessInfo.country">
           <FieldLabel required>Country</FieldLabel>
           <Select value={form.businessInfo.country} onValueChange={handleCountryChange}>
-            <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
+            <SelectTrigger className={`h-12 w-full rounded-[1.4rem] border shadow-sm ${fieldErrors['businessInfo.country'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-300 bg-white text-slate-900'}`}>
               <SelectValue placeholder="Select country" />
             </SelectTrigger>
             <SelectContent side="bottom" sideOffset={4}>
@@ -762,11 +893,12 @@ export function SupplierApplicationForm() {
               ))}
             </SelectContent>
           </Select>
+          <FieldError message={fieldErrors['businessInfo.country']} />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-field="businessInfo.address.line1">
           <FieldLabel required>Address Line 1</FieldLabel>
-          <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
+          <div className={`flex items-center rounded-[1.4rem] border px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 ${fieldErrors['businessInfo.address.line1'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-slate-50'}`}>
             <MapPin className="size-4 text-slate-400" />
             <Input
               className="border-0 bg-transparent shadow-none focus:ring-0"
@@ -775,6 +907,7 @@ export function SupplierApplicationForm() {
               onChange={(e) => updateForm('businessInfo', 'address.line1', e.target.value)}
             />
           </div>
+          <FieldError message={fieldErrors['businessInfo.address.line1']} />
         </div>
 
         <div className="sm:col-span-2">
@@ -790,36 +923,42 @@ export function SupplierApplicationForm() {
           </div>
         </div>
 
-        <div>
+        <div data-field="businessInfo.address.city">
           <FieldLabel required>City</FieldLabel>
           <Input
             placeholder="City"
             value={form.businessInfo.address.city}
             onChange={(e) => updateForm('businessInfo', 'address.city', e.target.value)}
+            className={fieldErrors['businessInfo.address.city'] ? '!border-rose-300 !bg-rose-50/30' : ''}
           />
+          <FieldError message={fieldErrors['businessInfo.address.city']} />
         </div>
 
-        <div>
+        <div data-field="businessInfo.address.state">
           <FieldLabel required>State / Province</FieldLabel>
           <Input
             placeholder="State / Province"
             value={form.businessInfo.address.state}
             onChange={(e) => updateForm('businessInfo', 'address.state', e.target.value)}
+            className={fieldErrors['businessInfo.address.state'] ? '!border-rose-300 !bg-rose-50/30' : ''}
           />
+          <FieldError message={fieldErrors['businessInfo.address.state']} />
         </div>
 
-        <div>
+        <div data-field="businessInfo.address.postalCode">
           <FieldLabel required>Postal Code</FieldLabel>
           <Input
             placeholder="Postal Code"
             value={form.businessInfo.address.postalCode}
             onChange={(e) => updateForm('businessInfo', 'address.postalCode', e.target.value)}
+            className={fieldErrors['businessInfo.address.postalCode'] ? '!border-rose-300 !bg-rose-50/30' : ''}
           />
+          <FieldError message={fieldErrors['businessInfo.address.postalCode']} />
         </div>
 
-        <div>
+        <div data-field="businessInfo.phoneNumber">
           <FieldLabel required>Phone Number</FieldLabel>
-          <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
+          <div className={`flex items-center rounded-[1.4rem] border px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 ${fieldErrors['businessInfo.phoneNumber'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-slate-50'}`}>
             <Phone className="size-4 text-slate-400" />
             <Input
               className="border-0 bg-transparent shadow-none focus:ring-0"
@@ -828,9 +967,10 @@ export function SupplierApplicationForm() {
               onChange={(e) => updateForm('businessInfo', 'phoneNumber', e.target.value)}
             />
           </div>
+          <FieldError message={fieldErrors['businessInfo.phoneNumber']} />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-field="businessInfo.website">
           <FieldLabel>Website</FieldLabel>
           <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
             <LinkIcon className="size-4 text-slate-400" />
@@ -858,27 +998,36 @@ export function SupplierApplicationForm() {
       title="Operating Information"
       description="Tell us about the tours and experiences you offer."
     >
-      <MultiSelect
-        label="Tour Categories"
-        options={TOUR_CATEGORIES_OPTIONS}
-        selected={form.operatingInfo.tourCategories}
-        onChange={(value) => updateForm('operatingInfo', 'tourCategories', value)}
-        required
-      />
+      <div data-field="operatingInfo.tourCategories">
+        <MultiSelect
+          label="Tour Categories"
+          options={TOUR_CATEGORIES_OPTIONS}
+          selected={form.operatingInfo.tourCategories}
+          onChange={(value) => updateForm('operatingInfo', 'tourCategories', value)}
+          required
+        />
+        <FieldError message={fieldErrors['operatingInfo.tourCategories']} />
+      </div>
 
-      <GhanaDestinationSelect
-        selected={form.operatingInfo.destinations}
-        onChange={(value) => updateForm('operatingInfo', 'destinations', value)}
-        required
-      />
+      <div data-field="operatingInfo.destinations">
+        <GhanaDestinationSelect
+          selected={form.operatingInfo.destinations}
+          onChange={(value) => updateForm('operatingInfo', 'destinations', value)}
+          required
+        />
+        <FieldError message={fieldErrors['operatingInfo.destinations']} />
+      </div>
 
-      <MultiSelect
-        label="Languages Offered"
-        options={languageOptions}
-        selected={form.operatingInfo.languages}
-        onChange={(value) => updateForm('operatingInfo', 'languages', value)}
-        required
-      />
+      <div data-field="operatingInfo.languages">
+        <MultiSelect
+          label="Languages Offered"
+          options={languageOptions}
+          selected={form.operatingInfo.languages}
+          onChange={(value) => updateForm('operatingInfo', 'languages', value)}
+          required
+        />
+        <FieldError message={fieldErrors['operatingInfo.languages']} />
+      </div>
       <p className="-mt-3 text-xs text-slate-500">
         {form.businessInfo.country
           ? 'English and French are always available, plus local languages for your country.'
@@ -886,7 +1035,7 @@ export function SupplierApplicationForm() {
       </p>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <div>
+        <div data-field="operatingInfo.yearsInBusiness">
           <FieldLabel>Years in Business</FieldLabel>
           <Input
             type="number"
@@ -894,16 +1043,18 @@ export function SupplierApplicationForm() {
             placeholder="e.g. 5"
             value={form.operatingInfo.yearsInBusiness}
             onChange={(e) => updateForm('operatingInfo', 'yearsInBusiness', e.target.value)}
+            className={fieldErrors['operatingInfo.yearsInBusiness'] ? '!border-rose-300 !bg-rose-50/30' : ''}
           />
+          <FieldError message={fieldErrors['operatingInfo.yearsInBusiness']} />
         </div>
 
-        <div>
+        <div data-field="operatingInfo.meetingStyle">
           <FieldLabel required>Meeting Style</FieldLabel>
           <Select
             value={form.operatingInfo.meetingStyle}
             onValueChange={(value) => updateForm('operatingInfo', 'meetingStyle', value)}
           >
-            <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
+            <SelectTrigger className={`h-12 w-full rounded-[1.4rem] border shadow-sm ${fieldErrors['operatingInfo.meetingStyle'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-300 bg-white text-slate-900'}`}>
               <SelectValue placeholder="Select meeting style" />
             </SelectTrigger>
             <SelectContent side="bottom" sideOffset={4}>
@@ -914,17 +1065,18 @@ export function SupplierApplicationForm() {
               ))}
             </SelectContent>
           </Select>
+          <FieldError message={fieldErrors['operatingInfo.meetingStyle']} />
         </div>
       </div>
 
-      <div>
+      <div data-field="operatingInfo.cancellationPolicy">
         <FieldLabel required>Cancellation Policy</FieldLabel>
         <Select
           modal={false}
           value={form.operatingInfo.cancellationPolicy || undefined}
           onValueChange={(value) => updateForm('operatingInfo', 'cancellationPolicy', value)}
         >
-          <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
+          <SelectTrigger className={`h-12 w-full rounded-[1.4rem] border shadow-sm ${fieldErrors['operatingInfo.cancellationPolicy'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-300 bg-white text-slate-900'}`}>
             <SelectValue placeholder="Select a cancellation policy" />
           </SelectTrigger>
           <SelectContent side="bottom" sideOffset={4} className="max-w-[min(100vw-2rem,32rem)]">
@@ -935,6 +1087,7 @@ export function SupplierApplicationForm() {
             ))}
           </SelectContent>
         </Select>
+        <FieldError message={fieldErrors['operatingInfo.cancellationPolicy']} />
         <div
           className="mt-3 min-h-[17rem] rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600"
           aria-live="polite"
@@ -957,9 +1110,9 @@ export function SupplierApplicationForm() {
       description="Provide details about the primary contact person for your business."
     >
       <div className="grid gap-5 sm:grid-cols-2">
-        <div>
+        <div data-field="representativeInfo.fullName">
           <FieldLabel required>Full Name</FieldLabel>
-          <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
+          <div className={`flex items-center rounded-[1.4rem] border px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 ${fieldErrors['representativeInfo.fullName'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-slate-50'}`}>
             <UserCircle className="size-4 text-slate-400" />
             <Input
               className="border-0 bg-transparent shadow-none focus:ring-0"
@@ -968,11 +1121,12 @@ export function SupplierApplicationForm() {
               onChange={(e) => updateForm('representativeInfo', 'fullName', e.target.value)}
             />
           </div>
+          <FieldError message={fieldErrors['representativeInfo.fullName']} />
         </div>
 
-        <div>
+        <div data-field="representativeInfo.email">
           <FieldLabel required>Email</FieldLabel>
-          <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
+          <div className={`flex items-center rounded-[1.4rem] border px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 ${fieldErrors['representativeInfo.email'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-slate-50'}`}>
             <Globe className="size-4 text-slate-400" />
             <Input
               className="border-0 bg-transparent shadow-none focus:ring-0"
@@ -982,9 +1136,10 @@ export function SupplierApplicationForm() {
               onChange={(e) => updateForm('representativeInfo', 'email', e.target.value)}
             />
           </div>
+          <FieldError message={fieldErrors['representativeInfo.email']} />
         </div>
 
-        <div>
+        <div data-field="representativeInfo.dateOfBirth">
           <FieldLabel required>Date of Birth</FieldLabel>
           <DatePicker
             value={form.representativeInfo.dateOfBirth}
@@ -993,15 +1148,16 @@ export function SupplierApplicationForm() {
             maxDate={new Date()}
             minDate={new Date(1920, 0, 1)}
           />
+          <FieldError message={fieldErrors['representativeInfo.dateOfBirth']} />
         </div>
 
-        <div>
+        <div data-field="representativeInfo.idType">
           <FieldLabel required>ID Type</FieldLabel>
           <Select
             value={form.representativeInfo.idType}
             onValueChange={(value) => updateForm('representativeInfo', 'idType', value)}
           >
-            <SelectTrigger className="h-12 w-full rounded-[1.4rem] border border-slate-300 bg-white text-slate-900 shadow-sm">
+            <SelectTrigger className={`h-12 w-full rounded-[1.4rem] border shadow-sm ${fieldErrors['representativeInfo.idType'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-300 bg-white text-slate-900'}`}>
               <SelectValue placeholder="Select ID type" />
             </SelectTrigger>
             <SelectContent side="bottom" sideOffset={4}>
@@ -1012,20 +1168,22 @@ export function SupplierApplicationForm() {
               ))}
             </SelectContent>
           </Select>
+          <FieldError message={fieldErrors['representativeInfo.idType']} />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-field="representativeInfo.idDocument">
           <ImageUploadField
             label="ID Document"
             file={form.representativeInfo.idDocument}
             onChange={(file) => updateForm('representativeInfo', 'idDocument', file)}
             required
           />
+          <FieldError message={fieldErrors['representativeInfo.idDocument']} />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-field="representativeInfo.address.line1">
           <FieldLabel required>Address Line 1</FieldLabel>
-          <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
+          <div className={`flex items-center rounded-[1.4rem] border px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 ${fieldErrors['representativeInfo.address.line1'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-slate-50'}`}>
             <MapPin className="size-4 text-slate-400" />
             <Input
               className="border-0 bg-transparent shadow-none focus:ring-0"
@@ -1034,9 +1192,10 @@ export function SupplierApplicationForm() {
               onChange={(e) => updateForm('representativeInfo', 'address.line1', e.target.value)}
             />
           </div>
+          <FieldError message={fieldErrors['representativeInfo.address.line1']} />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2" data-field="representativeInfo.address.line2">
           <FieldLabel>Address Line 2</FieldLabel>
           <div className="flex items-center rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 shadow-sm focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
             <MapPin className="size-4 text-slate-400" />
@@ -1049,31 +1208,37 @@ export function SupplierApplicationForm() {
           </div>
         </div>
 
-        <div>
+        <div data-field="representativeInfo.address.city">
           <FieldLabel required>City</FieldLabel>
           <Input
             placeholder="City"
             value={form.representativeInfo.address.city}
             onChange={(e) => updateForm('representativeInfo', 'address.city', e.target.value)}
+            className={fieldErrors['representativeInfo.address.city'] ? '!border-rose-300 !bg-rose-50/30' : ''}
           />
+          <FieldError message={fieldErrors['representativeInfo.address.city']} />
         </div>
 
-        <div>
+        <div data-field="representativeInfo.address.state">
           <FieldLabel required>State / Province</FieldLabel>
           <Input
             placeholder="State / Province"
             value={form.representativeInfo.address.state}
             onChange={(e) => updateForm('representativeInfo', 'address.state', e.target.value)}
+            className={fieldErrors['representativeInfo.address.state'] ? '!border-rose-300 !bg-rose-50/30' : ''}
           />
+          <FieldError message={fieldErrors['representativeInfo.address.state']} />
         </div>
 
-        <div>
+        <div data-field="representativeInfo.address.postalCode">
           <FieldLabel required>Postal Code</FieldLabel>
           <Input
             placeholder="Postal Code"
             value={form.representativeInfo.address.postalCode}
             onChange={(e) => updateForm('representativeInfo', 'address.postalCode', e.target.value)}
+            className={fieldErrors['representativeInfo.address.postalCode'] ? '!border-rose-300 !bg-rose-50/30' : ''}
           />
+          <FieldError message={fieldErrors['representativeInfo.address.postalCode']} />
         </div>
       </div>
     </FormSection>
@@ -1085,32 +1250,43 @@ export function SupplierApplicationForm() {
       description="Upload images of your business verification documents. You will be able to add your payout method after your application is approved."
     >
       <div className="space-y-6">
-        <ImageUploadField
-          label="Business Registration Document"
-          file={form.businessDocuments.registrationDocument}
-          onChange={(file) => updateForm('businessDocuments', 'registrationDocument', file)}
-          required
-        />
+        <div data-field="businessDocuments.registrationDocument">
+          <ImageUploadField
+            label="Business Registration Document"
+            file={form.businessDocuments.registrationDocument}
+            onChange={(file) => updateForm('businessDocuments', 'registrationDocument', file)}
+            required
+          />
+          <FieldError message={fieldErrors['businessDocuments.registrationDocument']} />
+        </div>
 
-        <ImageUploadField
-          label="Tax Document"
-          file={form.businessDocuments.taxDocument}
-          onChange={(file) => updateForm('businessDocuments', 'taxDocument', file)}
-          required
-        />
+        <div data-field="businessDocuments.taxDocument">
+          <ImageUploadField
+            label="Tax Document"
+            file={form.businessDocuments.taxDocument}
+            onChange={(file) => updateForm('businessDocuments', 'taxDocument', file)}
+            required
+          />
+          <FieldError message={fieldErrors['businessDocuments.taxDocument']} />
+        </div>
 
-        <ImageUploadField
-          label="Proof of Address"
-          file={form.businessDocuments.proofOfAddress}
-          onChange={(file) => updateForm('businessDocuments', 'proofOfAddress', file)}
-          required
-        />
+        <div data-field="businessDocuments.proofOfAddress">
+          <ImageUploadField
+            label="Proof of Address"
+            file={form.businessDocuments.proofOfAddress}
+            onChange={(file) => updateForm('businessDocuments', 'proofOfAddress', file)}
+            required
+          />
+          <FieldError message={fieldErrors['businessDocuments.proofOfAddress']} />
+        </div>
 
-        <MultiImageUploadField
-          label="Business Licenses"
-          files={form.businessDocuments.licenses}
-          onChange={(value) => updateForm('businessDocuments', 'licenses', value)}
-        />
+        <div data-field="businessDocuments.licenses">
+          <MultiImageUploadField
+            label="Business Licenses"
+            files={form.businessDocuments.licenses}
+            onChange={(value) => updateForm('businessDocuments', 'licenses', value)}
+          />
+        </div>
       </div>
     </FormSection>
   );
@@ -1170,27 +1346,30 @@ export function SupplierApplicationForm() {
       </div>
 
       <div className="space-y-4">
-        <label className="flex items-start gap-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 shadow-sm cursor-pointer transition hover:border-primary/30">
-          <div className="mt-0.5">
-            <input
-              type="checkbox"
-              checked={form.compliance.acceptedTerms}
-              onChange={(e) => updateForm('compliance', 'acceptedTerms', e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-[color:var(--brand-green)] focus:ring-[color:var(--brand-green)]"
-            />
-          </div>
-          <span className="text-sm text-slate-700">
-            I have read and accept the{' '}
-            <span className="font-semibold text-[color:var(--brand-green)]">
-              Terms and Conditions
-            </span>{' '}
-            and{' '}
-            <span className="font-semibold text-[color:var(--brand-green)]">
-              Supplier Agreement
+        <div data-field="compliance.acceptedTerms">
+          <label className={`flex items-start gap-3 rounded-[1.4rem] border px-4 py-3 shadow-sm cursor-pointer transition hover:border-primary/30 ${fieldErrors['compliance.acceptedTerms'] ? 'border-rose-300 bg-rose-50/30' : 'border-slate-200 bg-white'}`}>
+            <div className="mt-0.5">
+              <input
+                type="checkbox"
+                checked={form.compliance.acceptedTerms}
+                onChange={(e) => updateForm('compliance', 'acceptedTerms', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-[color:var(--brand-green)] focus:ring-[color:var(--brand-green)]"
+              />
+            </div>
+            <span className="text-sm text-slate-700">
+              I have read and accept the{' '}
+              <span className="font-semibold text-[color:var(--brand-green)]">
+                Terms and Conditions
+              </span>{' '}
+              and{' '}
+              <span className="font-semibold text-[color:var(--brand-green)]">
+                Supplier Agreement
+              </span>
+              .
             </span>
-            .
-          </span>
-        </label>
+          </label>
+          <FieldError message={fieldErrors['compliance.acceptedTerms']} />
+        </div>
       </div>
 
       {success && (
@@ -1231,6 +1410,21 @@ export function SupplierApplicationForm() {
     }
   };
 
+  const stepVariants = {
+    enter: (dir) => ({
+      x: dir > 0 ? 120 : -120,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir) => ({
+      x: dir > 0 ? -120 : 120,
+      opacity: 0,
+    }),
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <StepIndicator
@@ -1240,8 +1434,23 @@ export function SupplierApplicationForm() {
         stepCompleted={stepCompleted}
       />
 
-      <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_12px_40px_rgba(15,23,42,0.06)] sm:p-8">
-        {renderStepContent()}
+      <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_12px_40px_rgba(15,23,42,0.06)] sm:p-8 min-h-[600px]">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={STEPS[step].key}
+            custom={direction}
+            variants={stepVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: 'spring', stiffness: 260, damping: 25 },
+              opacity: { duration: 0.15 },
+            }}
+          >
+            {renderStepContent()}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {error && !success && (
@@ -1251,7 +1460,7 @@ export function SupplierApplicationForm() {
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <Button
           type="button"
           variant="outline"
@@ -1264,16 +1473,16 @@ export function SupplierApplicationForm() {
         </Button>
 
         {step < STEPS.length - 1 ? (
-          <Button type="button" onClick={handleNext} disabled={loading} className="h-12 px-8">
+          <Button type="button" onClick={handleNext} disabled={loading} className="h-12 px-6">
             Next
             <ChevronRight className="size-4" />
           </Button>
         ) : (
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-stretch sm:items-end gap-1">
             <Button
               type="submit"
               disabled={loading || !!success || !isFormComplete}
-              className="h-12 px-8"
+              className="h-12 px-6"
               title={
                 !isFormComplete
                   ? t(

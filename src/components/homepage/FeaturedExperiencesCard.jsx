@@ -9,7 +9,7 @@
 import { Heart, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useRef } from 'react';
+import { useCarouselSafeClick } from '@/hooks/useCarouselSafeClick';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -36,16 +36,7 @@ export function FeaturedExperiencesCard({
   const { convertPrice } = useCurrency();
   const { navigateWithLoader } = useNavigationLoader();
   const isFavorited = isInWishlist(title);
-  /** Tracks this pointer gesture so carousel horizontal scroll does not cancel every tap. */
-  const panRef = useRef({
-    active: false,
-    originX: 0,
-    originY: 0,
-    maxAbsDx: 0,
-    maxAbsDy: 0,
-  });
-  /** Set in pointerup/cancel before click; true = user was panning the carousel, not tapping. */
-  const lastGestureWasPanRef = useRef(false);
+  const { pointerEventHandlers, lastGestureWasPanRef } = useCarouselSafeClick();
 
   // Convert price
   const convertedPrice = convertPrice(price);
@@ -54,48 +45,6 @@ export function FeaturedExperiencesCard({
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist({ title, slug, duration, price, rating, reviews, image, discount });
-  };
-
-  const resetPanTracking = () => {
-    panRef.current = {
-      active: false,
-      originX: 0,
-      originY: 0,
-      maxAbsDx: 0,
-      maxAbsDy: 0,
-    };
-  };
-
-  const handlePointerDown = (e) => {
-    if (e.button !== undefined && e.button !== 0) return;
-    panRef.current = {
-      active: true,
-      originX: e.clientX,
-      originY: e.clientY,
-      maxAbsDx: 0,
-      maxAbsDy: 0,
-    };
-    lastGestureWasPanRef.current = false;
-  };
-
-  const handlePointerMove = (e) => {
-    if (!panRef.current.active) return;
-
-    const dx = Math.abs(e.clientX - panRef.current.originX);
-    const dy = Math.abs(e.clientY - panRef.current.originY);
-    panRef.current.maxAbsDx = Math.max(panRef.current.maxAbsDx, dx);
-    panRef.current.maxAbsDy = Math.max(panRef.current.maxAbsDy, dy);
-  };
-
-  const endPointerGesture = () => {
-    if (!panRef.current.active) return;
-    const { maxAbsDx, maxAbsDy } = panRef.current;
-    resetPanTracking();
-    // Only treat as "carousel pan" if movement clearly dominated horizontal (not finger jitter).
-    const PAN_MIN_PX = 20;
-    const HORIZONTAL_DOMINANCE = 1.35;
-    lastGestureWasPanRef.current =
-      maxAbsDx >= PAN_MIN_PX && maxAbsDx > maxAbsDy * HORIZONTAL_DOMINANCE;
   };
 
   const handleDetailLinkClick = (e) => {
@@ -122,10 +71,7 @@ export function FeaturedExperiencesCard({
 
   return (
     <Card
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={endPointerGesture}
-      onPointerCancel={endPointerGesture}
+      {...pointerEventHandlers}
       className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200/50 bg-white font-card shadow-sm transition-shadow duration-300 hover:shadow-md contain-none touch-manipulation"
     >
       {/* ---- Card.Img (top) ---- */}

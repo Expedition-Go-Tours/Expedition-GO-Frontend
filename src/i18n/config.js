@@ -122,7 +122,7 @@ const resources = {
       supplier: {
         badge: 'For suppliers and experience hosts',
         heading: 'Sell your tours to travellers across Africa.',
-        body: 'Join Expedition GO Tours as a verified partner, manage your listings, receive bookings, setup your payment method and grow your tour business with a modern OTA platform.',
+        body: 'Join TravioAfrica as a verified partner, manage your listings, receive bookings, setup your payment method and grow your tour business with a modern OTA platform.',
         ctaPrimary: 'Become a supplier',
         ctaSecondary: 'Learn how it works',
         step1Title: 'Create your supplier account',
@@ -156,7 +156,7 @@ const resources = {
         signInDesc:
           'Access your saved tours, current bookings, payment history, and travel support from one secure account.',
         registerDesc:
-          'Set up an Expedition-Go profile to manage bookings, save destinations, and move from browsing to checkout faster.',
+          'Set up a TravioAfrica profile to manage bookings, save destinations, and move from browsing to checkout faster.',
         needNewAccount: 'Need a new account?',
         registerHere: 'Register here',
         alreadyHaveAccount: 'Already have an account?',
@@ -255,7 +255,7 @@ const resources = {
         googlePlay: 'Google Play',
         downloadOn: 'Download on the',
         appStore: 'App Store',
-        copyright: '© 2026 TravioAfrica by Expedition-Go Tours LTD.',
+        copyright: '© 2026 TravioAfrica. All rights reserved.',
         termsConditions: 'Terms & Conditions',
         privacyPolicy: 'Privacy Policy',
         refundPolicy: 'Refund Policy',
@@ -559,7 +559,7 @@ const resources = {
       supplier: {
         badge: 'Para proveedores y anfitriones de experiencias',
         heading: 'Vende tus tours a viajeros de toda África.',
-        body: 'Únete a Expedition GO Tours como socio verificado, gestiona tus listados, recibe reservas, configura tu método de pago y haz crecer tu negocio de tours con una plataforma OTA moderna.',
+        body: 'Únete a TravioAfrica como socio verificado, gestiona tus listados, recibe reservas, configura tu método de pago y haz crecer tu negocio de tours con una plataforma OTA moderna.',
         ctaPrimary: 'Conviértete en proveedor',
         ctaSecondary: 'Cómo funciona',
         step1Title: 'Crea tu cuenta de proveedor',
@@ -593,7 +593,7 @@ const resources = {
         signInDesc:
           'Accede a tus tours guardados, reservas actuales, historial de pagos y soporte de viaje desde una cuenta segura.',
         registerDesc:
-          'Configura un perfil de Expedition-Go para gestionar reservas, guardar destinos y pasar de navegar a pagar más rápido.',
+          'Configura un perfil de TravioAfrica para gestionar reservas, guardar destinos y pasar de navegar a pagar más rápido.',
         needNewAccount: '¿Necesitas una cuenta nueva?',
         registerHere: 'Regístrate aquí',
         alreadyHaveAccount: '¿Ya tienes una cuenta?',
@@ -668,7 +668,7 @@ const resources = {
         downloadOn: 'Descargar en',
         appStore: 'App Store',
         copyright:
-          '© 2026 Expedition-Go Tours es una marca registrada de Expedition-Go Group Limited.',
+          '© 2026 TravioAfrica. Todos los derechos reservados.',
         termsConditions: 'Términos y condiciones',
         privacyPolicy: 'Política de privacidad',
         refundPolicy: 'Política de reembolso',
@@ -978,7 +978,7 @@ const resources = {
       supplier: {
         badge: "Pour fournisseurs et hôtes d'expériences",
         heading: "Vendez vos circuits aux voyageurs à travers l'Afrique.",
-        body: 'Rejoignez Expedition GO Tours en tant que partenaire vérifié, gérez vos annonces, recevez des réservations, configurez votre mode de paiement et développez votre activité de circuits avec une plateforme OTA moderne.',
+        body: 'Rejoignez TravioAfrica en tant que partenaire vérifié, gérez vos annonces, recevez des réservations, configurez votre mode de paiement et développez votre activité de circuits avec une plateforme OTA moderne.',
         ctaPrimary: 'Devenir fournisseur',
         ctaSecondary: 'Comment ça marche',
         step1Title: 'Créez votre compte fournisseur',
@@ -1013,7 +1013,7 @@ const resources = {
         signInDesc:
           'Accédez à vos circuits enregistrés, réservations en cours, historique des paiements et assistance voyage depuis un compte sécurisé.',
         registerDesc:
-          'Configurez un profil Expedition-Go pour gérer les réservations, enregistrer les destinations et passer de la navigation au paiement plus rapidement.',
+          'Configurez un profil TravioAfrica pour gérer les réservations, enregistrer les destinations et passer de la navigation au paiement plus rapidement.',
         needNewAccount: "Besoin d'un nouveau compte?",
         registerHere: 'Inscrivez-vous ici',
         alreadyHaveAccount: 'Vous avez déjà un compte?',
@@ -1088,7 +1088,7 @@ const resources = {
         downloadOn: 'Télécharger sur',
         appStore: 'App Store',
         copyright:
-          "© 2026 Expedition-Go Tours est une marque déposée d'Expedition-Go Group Limited.",
+          "© 2026 TravioAfrica. Tous droits réservés.",
         termsConditions: 'Termes et conditions',
         privacyPolicy: 'Politique de confidentialité',
         refundPolicy: 'Politique de remboursement',
@@ -1399,7 +1399,7 @@ const resources = {
       supplier: {
         badge: 'Für Anbieter und Erlebnis-Hosts',
         heading: 'Verkaufen Sie Ihre Touren an Reisende in ganz Afrika.',
-        body: 'Werden Sie verifizierter Partner von Expedition GO Tours, verwalten Sie Ihre Einträge, empfangen Sie Buchungen, richten Sie Ihre Zahlungsmethode ein und wachsen Sie mit einer modernen OTA-Plattform.',
+        body: 'Werden Sie verifizierter Partner von TravioAfrica, verwalten Sie Ihre Einträge, empfangen Sie Buchungen, richten Sie Ihre Zahlungsmethode ein und wachsen Sie mit einer modernen OTA-Plattform.',
         ctaPrimary: 'Anbieter werden',
         ctaSecondary: "So funktioniert's",
         step1Title: 'Erstellen Sie Ihr Anbieterkonto',
@@ -1433,7 +1433,7 @@ const resources = {
         signInDesc:
           'Greifen Sie auf Ihre gespeicherten Touren, aktuellen Buchungen, Zahlungshistorie und Reiseunterstützung von einem sicheren Konto aus zu.',
         registerDesc:
-          'Richten Sie ein Expedition-Go-Profil ein, um Buchungen zu verwalten, Ziele zu speichern und schneller vom Durchsuchen zum Bezahlen zu gelangen.',
+          'Richten Sie ein TravioAfrica-Profil ein, um Buchungen zu verwalten, Ziele zu speichern und schneller vom Durchsuchen zum Bezahlen zu gelangen.',
         needNewAccount: 'Benötigen Sie ein neues Konto?',
         registerHere: 'Hier registrieren',
         alreadyHaveAccount: 'Haben Sie bereits ein Konto?',
@@ -1508,7 +1508,7 @@ const resources = {
         googlePlay: 'Google Play',
         downloadOn: 'Laden im',
         appStore: 'App Store',
-        copyright: '© 2026 Expedition-Go Tours ist eine Marke von Expedition-Go Group Limited.',
+        copyright: '© 2026 TravioAfrica. Alle Rechte vorbehalten.',
         termsConditions: 'Geschäftsbedingungen',
         privacyPolicy: 'Datenschutzrichtlinie',
         refundPolicy: 'Rückerstattungsrichtlinie',
@@ -1816,7 +1816,7 @@ const resources = {
       supplier: {
         badge: 'Voor leveranciers en ervaringshosts',
         heading: 'Verkoop je tours aan reizigers door heel Afrika.',
-        body: 'Word een geverifieerde partner van Expedition GO Tours, beheer je listings, ontvang boekingen, stel je betaalmethode in en laat je tourbedrijf groeien met een modern OTA-platform.',
+        body: 'Word een geverifieerde partner van TravioAfrica, beheer je listings, ontvang boekingen, stel je betaalmethode in en laat je tourbedrijf groeien met een modern OTA-platform.',
         ctaPrimary: 'Word leverancier',
         ctaSecondary: 'Hoe het werkt',
         step1Title: 'Maak je leveranciersaccount aan',
@@ -1850,7 +1850,7 @@ const resources = {
         signInDesc:
           'Toegang tot je opgeslagen tours, huidige boekingen, betalingsgeschiedenis en reisondersteuning vanuit één beveiligd account.',
         registerDesc:
-          'Stel een Expedition-Go-profiel in om boekingen te beheren, bestemmingen op te slaan en sneller van browsen naar afrekenen te gaan.',
+          'Stel een TravioAfrica-profiel in om boekingen te beheren, bestemmingen op te slaan en sneller van browsen naar afrekenen te gaan.',
         needNewAccount: 'Heb je een nieuw account nodig?',
         registerHere: 'Registreer hier',
         alreadyHaveAccount: 'Heb je al een account?',
@@ -1924,7 +1924,7 @@ const resources = {
         googlePlay: 'Google Play',
         downloadOn: 'Download in de',
         appStore: 'App Store',
-        copyright: '© 2026 Expedition-Go Tours is een handelsmerk van Expedition-Go Group Limited.',
+        copyright: '© 2026 TravioAfrica. Alle rechten voorbehouden.',
         termsConditions: 'Algemene voorwaarden',
         privacyPolicy: 'Privacybeleid',
         refundPolicy: 'Terugbetalingsbeleid',

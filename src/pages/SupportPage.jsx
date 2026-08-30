@@ -76,7 +76,7 @@ export default function SupportPage() {
               <div className="space-y-4 text-slate-700">
                 <div>
                   <p className="font-semibold text-slate-900">{t('support.emailLabel')}</p>
-                  <p>support@expeditiongo.com</p>
+                  <p>support@travioafrica.com</p>
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">{t('support.phoneLabel')}</p>

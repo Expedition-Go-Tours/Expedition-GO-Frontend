@@ -48,7 +48,7 @@ function AuthShell({
               >
                 <img
                   src={companyLogo}
-                  alt="Expedition-Go Group Limited"
+                  alt="TravioAfrica"
                   className="h-auto w-[170px] xl:w-[230px] object-contain"
                 />
               </Link>

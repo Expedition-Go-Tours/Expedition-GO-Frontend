@@ -384,7 +384,7 @@ export function Navbar({
             <span style={{ color: '#079847' }}>Africa</span>
           </span>
           <span className="text-[7px] font-medium text-black/70 sm:text-[8px] lg:text-[10px] mt-0">
-            by Expedition-Go Tours
+            by TravioAfrica
           </span>
         </button>
 

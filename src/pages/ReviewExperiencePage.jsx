@@ -176,7 +176,7 @@ export default function ReviewExperiencePage() {
           'https://images.unsplash.com/photo-1589656966895-2f33e7653819?auto=format&fit=crop&w=600&q=80',
         location: 'Accra, Ghana',
         slug: tourSlug,
-        supplierName: 'Expedition-Go Tours Ltd',
+        supplierName: 'TravioAfrica',
         supplierLogo:
           'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=120&q=80',
       },
@@ -191,7 +191,7 @@ export default function ReviewExperiencePage() {
     tour.operatorName ||
     tour.supplier?.name ||
     tour.supplier?.companyName ||
-    'Expedition-Go Tours Ltd';
+    'TravioAfrica';
   const supplierLogo =
     tour.supplierLogo ||
     tour.supplier?.logo ||

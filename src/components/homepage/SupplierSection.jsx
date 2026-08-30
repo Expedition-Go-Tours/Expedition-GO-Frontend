@@ -59,7 +59,7 @@ export function SupplierSection() {
               <p className="mt-5 max-w-md text-sm leading-relaxed text-slate-300 sm:text-base">
                 {t(
                   'supplier.body',
-                  'Join Expedition GO Tours as a verified partner, manage your listings, receive bookings, setup your payment method and grow your tour business with a modern OTA platform.'
+                  'Join TravioAfrica as a verified partner, manage your listings, receive bookings, setup your payment method and grow your tour business with a modern OTA platform.'
                 )}
               </p>
 

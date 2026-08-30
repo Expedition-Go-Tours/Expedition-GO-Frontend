@@ -69,7 +69,7 @@ const DEMO_TOUR = {
   title: 'Experience the Beauty, History and the Culture Of Accra in a Day',
   image:
     'https://images.unsplash.com/photo-1601758125946-6ec2ef64daf8?auto=format&fit=crop&w=600&q=80',
-  provider: 'Expedition GO Tours',
+  provider: 'TravioAfrica',
   rating: 4.9,
   reviews: 248,
   date: 'Tuesday, June 2, 2026',

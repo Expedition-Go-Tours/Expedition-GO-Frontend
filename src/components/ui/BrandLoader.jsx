@@ -101,7 +101,7 @@ export function BrandLoader({
           once && 'brand-loader__tagline--once',
           splash && 'brand-loader__tagline--splash'
         )}>
-          by Expedition-Go Tours
+          by TravioAfrica
         </p>
             </div>
           </div>

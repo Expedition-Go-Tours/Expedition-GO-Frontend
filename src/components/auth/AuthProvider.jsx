@@ -8,6 +8,7 @@ import {
   signOutUser,
   subscribeToAuthState,
   waitForAuthToken,
+  ensureValidSession,
 } from '@/lib/auth';
 import { clearSupplierNavCache } from '@/lib/supplierPortal';
 
@@ -43,6 +44,12 @@ export function AuthProvider({ children }) {
     }
 
     window.addEventListener('auth-storage-changed', handleAuthStorageChanged);
+
+    // Validate the stored session before any API request fires: a user object
+    // with no access token is a stale session and would otherwise render a
+    // logged-in UI while every request 401s. ensureValidSession() silently
+    // refreshes, or clears storage + notifies listeners on failure.
+    ensureValidSession();
 
     return () => {
       mounted = false;

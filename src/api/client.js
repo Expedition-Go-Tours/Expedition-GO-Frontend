@@ -12,7 +12,7 @@
  *
  * @see lib/auth.js for token lifecycle
  */
-import { getApiBaseUrl, getStoredAuthUser, getAuthToken, refreshAuthToken } from '@/lib/auth';
+import { getApiBaseUrl, getAuthToken, refreshAuthToken } from '@/lib/auth';
 
 /**
  * Normalized API error for React Query/UI handling.
@@ -115,13 +115,12 @@ export async function apiRequest(path, options = {}) {
     const token = await getAuthToken();
     if (token) {
       finalHeaders.Authorization = `Bearer ${token}`;
-    } else if (getStoredAuthUser()) {
-      throw new ApiError({
-        message: 'You are not logged in! Please log in to get access.',
-        status: 401,
-        url,
-      });
     }
+    // No token: let the request reach the server. Protected endpoints return a
+    // real HTTP 401, which the interceptor below turns into a token refresh +
+    // retry (or a /signin redirect). Never throw a client-side 401 here — it
+    // would skip the server response and strand the UI in a logged-in state
+    // while every request silently fails.
   }
 
   let response;

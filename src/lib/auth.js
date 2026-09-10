@@ -273,6 +273,31 @@ export async function refreshAuthToken() {
   return refreshPromise;
 }
 
+/**
+ * Validate the stored session once on app mount.
+ *
+ * A stale session can leave the user object in localStorage while the access
+ * token has been cleared/expired. Without this, the UI renders a logged-in
+ * profile panel while every authenticated request fails — a client/server auth
+ * desync. When a user is stored but the access token is missing, attempt a
+ * silent refresh; on success the session is restored, on failure
+ * refreshAuthToken() clears storage + notifies listeners so the UI falls back
+ * to the signed-out state before any request fires.
+ */
+export async function ensureValidSession() {
+  const { user, accessToken } = getStoredAuth();
+  if (!user) return null;
+  if (accessToken) return user;
+
+  try {
+    await refreshAuthToken();
+    return getStoredAuthUser();
+  } catch {
+    // refreshAuthToken() already cleared storage + notified listeners.
+    return null;
+  }
+}
+
 export async function fetchCurrentUser(token) {
   const res = await fetch(`${API_BASE}/users/me`, {
     headers: {

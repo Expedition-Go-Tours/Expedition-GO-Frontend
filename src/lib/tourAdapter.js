@@ -50,6 +50,8 @@ export function adaptTourCard(tour) {
     category: tour.category || '',
     city,
     country,
+    placeMatch: tour.placeMatch === true,
+    distanceKm: tour.distanceKm != null ? tour.distanceKm : null,
   };
 }
 

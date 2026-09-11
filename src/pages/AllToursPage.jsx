@@ -33,6 +33,7 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { ReviewsCarousel } from '@/components/homepage/ReviewsCarousel';
 import { TourFiltersPanel } from '@/components/homepage/TourFiltersPanel';
 import { useAllTours } from '@/hooks/useAllTours';
+import { usePlaceResolve } from '@/hooks/usePlaceResolve';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { getAllTours } from '@/lib/tourData';
 import {
@@ -314,6 +315,12 @@ function AllToursPageContent() {
   const fallbackKey = effectiveFallbackKey || (categoryInMap ? category : null);
   const fallbackData = isFallbackCategory ? FALLBACK_MAP[fallbackKey] : null;
 
+  // GYG-style: if the search query resolves to a place (city / attraction),
+  // scope the listing to it — the backend ranks in-place -> near -> rest — and
+  // drop the raw text search so a location search can't dead-end.
+  const { data: resolvedPlace } = usePlaceResolve(searchQuery);
+  const placeValue = nearParam ? '' : (resolvedPlace?.name || '');
+
   const tourParams = {
     page: currentPage,
     limit: perPage,
@@ -328,10 +335,11 @@ function AllToursPageContent() {
     minRating: selectedRating || undefined,
     minPrice: priceMin > 0 ? priceMin : undefined,
     maxPrice: priceMax < 500 ? priceMax : undefined,
-    search: searchQuery || undefined,
+    search: placeValue ? undefined : (searchQuery || undefined),
     sortBy: apiSortBy,
     sortOrder: apiSortOrder,
     near: nearParam || undefined,
+    place: placeValue || undefined,
   };
 
   const { data: tourData, isLoading: apiLoading } = useAllTours(tourParams);

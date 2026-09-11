@@ -18,6 +18,11 @@ export async function fetchSearchFallback(params = {}) {
   return unwrap(data);
 }
 
+export async function fetchPlaceResolve(params = {}) {
+  const data = await apiRequest('/places/resolve', { params, auth: false });
+  return unwrap(data);
+}
+
 export async function fetchFilterOptions() {
   const data = await apiRequest('/tours/filters/options', { auth: false });
   return unwrap(data);

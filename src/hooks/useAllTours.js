@@ -15,6 +15,7 @@ export function useAllTours(params = {}) {
     sortBy,
     sortOrder = 'desc',
     near,
+    place,
     freeCancellation,
     enabled = true,
   } = params;
@@ -30,6 +31,7 @@ export function useAllTours(params = {}) {
   if (sortBy) queryParams.sortBy = sortBy;
   if (sortOrder) queryParams.sortOrder = sortOrder;
   if (near) queryParams.near = near;
+  if (place) queryParams.place = place;
   if (freeCancellation) queryParams.freeCancellation = true;
 
   return useQuery({

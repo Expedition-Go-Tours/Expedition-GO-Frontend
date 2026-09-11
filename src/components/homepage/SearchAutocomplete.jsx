@@ -31,6 +31,15 @@ export const SearchAutocomplete = forwardRef(function SearchAutocomplete(
   }
 
   const handleTourClick = (tour) => {
+    // Selecting a tour from the search bar personalizes the homepage to its
+    // city. Static search data carries `location` ("Accra, Ghana") rather than a
+    // structured city, so derive it (skip non "City, Country" values).
+    const city =
+      tour.city ||
+      (tour.location && tour.location.includes(',')
+        ? tour.location.split(',')[0].trim()
+        : null);
+    if (city) setLocation(city);
     const path = tour.slug ? `/tour/${tour.slug}` : `/tour/${encodeURIComponent(tour.title)}`;
     navigateWithLoader(path);
     onSelect();

@@ -12,13 +12,14 @@ import { PreviousSearchRail } from './PreviousSearchRail';
 
 export function PreviousSearchSections() {
   const { t } = useTranslation();
-  const { hasActiveSearch, currentLocation, previousLocations } = useLocationSearch();
+  const { hasActiveSearch, previousLocations } = useLocationSearch();
 
   if (!hasActiveSearch || previousLocations.length === 0) return null;
 
-  const rails = previousLocations
-    .filter((loc) => loc.toLowerCase() !== currentLocation?.toLowerCase())
-    .slice(0, 2);
+  // Matches the prototype: the two most recent previous searches. History never
+  // contains the current location, so no filtering is needed — filtering here
+  // could silently drop a valid rail.
+  const rails = previousLocations.slice(0, 2);
 
   if (rails.length === 0) return null;
 

@@ -22,10 +22,18 @@ export function PreviousSearchRail({ location, title, note }) {
     );
   }
 
-  // Never render an empty rail.
-  if (!tours || tours.length === 0) return null;
-
   const slug = `history-${location.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
+  // Always render the section (matching the prototype); when the city has no
+  // tours, show a short empty state instead of dropping the section.
+  if (!tours || tours.length === 0) {
+    return (
+      <section className="py-4 md:py-4 xl:py-5">
+        <SectionHeading title={title} subtitle={note} hideViewAll />
+        <p className="text-sm text-slate-500">No experiences in {location} yet.</p>
+      </section>
+    );
+  }
 
   return (
     <TourCarouselSection

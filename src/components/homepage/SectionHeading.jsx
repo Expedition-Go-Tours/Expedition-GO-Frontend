@@ -23,6 +23,7 @@ export function SectionHeading({
   fallbackKey,
   hideViewAll,
   hideTitle,
+  viewAllTo,
   onScrollLeft,
   onScrollRight,
 }) {
@@ -32,14 +33,16 @@ export function SectionHeading({
 
   const hasScrollButtons = onScrollLeft && onScrollRight;
 
+  const viewAllHref =
+    viewAllTo ||
+    `/tours?category=${encodeURIComponent(categoryId || 'all')}&title=${encodeURIComponent(title)}${fallbackKey ? `&fk=${encodeURIComponent(fallbackKey)}` : ''}`;
+
   const handleViewAll = (e) => {
     e.preventDefault();
 
     window.scrollTo({ top: 0, behavior: 'auto' });
 
-    const to = `/tours?category=${encodeURIComponent(categoryId || 'all')}&title=${encodeURIComponent(title)}${fallbackKey ? `&fk=${encodeURIComponent(fallbackKey)}` : ''}`;
-
-    navigateWithLoader(to);
+    navigateWithLoader(viewAllHref);
   };
 
   return (
@@ -68,7 +71,7 @@ export function SectionHeading({
       <div className="section-header-actions">
         {!hideViewAll && (
           <Link
-            to={`/tours?category=${encodeURIComponent(categoryId || 'all')}&title=${encodeURIComponent(title)}${fallbackKey ? `&fk=${encodeURIComponent(fallbackKey)}` : ''}`}
+            to={viewAllHref}
             onClick={handleViewAll}
             className="group relative inline-flex min-h-[44px] min-w-[44px] shrink-0 touch-manipulation items-center justify-center gap-1 whitespace-nowrap rounded-md py-2 pl-2 pr-1.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100/90 hover:text-slate-950 sm:text-[13px] lg:min-h-0 lg:min-w-0 lg:py-1.5 lg:px-2 lg:text-[14px]"
           >

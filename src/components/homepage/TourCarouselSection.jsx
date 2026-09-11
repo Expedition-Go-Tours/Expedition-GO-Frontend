@@ -20,6 +20,7 @@ export function TourCarouselSection({
   fallbackKey,
   hideViewAll,
   hideTitle,
+  viewAllTo,
   sideArrows,
   badge,
   CardComponent,
@@ -147,6 +148,7 @@ export function TourCarouselSection({
         fallbackKey={fallbackKey}
         hideViewAll={hideViewAll}
         hideTitle={hideTitle}
+        viewAllTo={viewAllTo}
         onScrollLeft={!sideArrows ? () => scroll('left') : undefined}
         onScrollRight={!sideArrows ? () => scroll('right') : undefined}
       />

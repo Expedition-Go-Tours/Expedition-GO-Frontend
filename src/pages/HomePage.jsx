@@ -31,6 +31,7 @@ import { DiscoverExperiencesSection } from '@/components/homepage/DiscoverExperi
 import { TodoSection } from '@/components/homepage/TodoSection';
 import { NewsArticlesSection } from '@/components/homepage/NewsArticlesSection';
 import { ReviewsCarousel } from '@/components/homepage/ReviewsCarousel';
+import { PreviousSearchSections } from '@/components/homepage/PreviousSearchSections';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CarouselCardsSkeleton } from '@/components/homepage/skeletons/CarouselCardsSkeleton';
 import BrandLoader from '@/components/ui/BrandLoader';
@@ -739,6 +740,10 @@ function HomePageContent() {
 
         <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
           <ReviewsCarousel />
+        </div>
+
+        <div className="mx-auto max-w-[1520px] px-4 sm:px-6 mb-14">
+          <PreviousSearchSections />
         </div>
 
         {/* Discover Experiences Section - Tabbed cards */}

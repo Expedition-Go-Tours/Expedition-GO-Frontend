@@ -38,6 +38,7 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import { WishlistProvider } from '@/contexts/WishlistContext';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { LocationSearchProvider } from '@/contexts/LocationSearchContext';
 import { useScrollRestoration } from '@/hooks/useScrollRestoration';
 import HomePage from '@/pages/HomePage';
 import AllToursPage from '@/pages/AllToursPage';
@@ -158,7 +159,9 @@ function App() {
               }}
             />
             <NotificationProvider>
-              <AppContent />
+              <LocationSearchProvider>
+                <AppContent />
+              </LocationSearchProvider>
             </NotificationProvider>
           </AuthProvider>
         </NavigationProvider>

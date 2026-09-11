@@ -17,7 +17,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useNavigationLoader } from '@/contexts/NavigationContext';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronUp, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { DestinationsSection } from '@/components/homepage/DestinationsSection';
 import { Footer } from '@/components/homepage/Footer';
@@ -56,6 +56,7 @@ import { useHomePageData } from '@/hooks/useHomePageData';
 import { CarouselClipTrack } from '@/components/ui/CarouselClipTrack';
 import { useAllTours } from '@/hooks/useAllTours';
 import { useRecentlyViewedStorage } from '@/hooks/useRecentlyViewedStorage';
+import { useLocationSearch } from '@/contexts/LocationSearchContext';
 
 /** Post–sign-in/register handoff: show brand splash, stay under ~1200ms. */
 const POST_AUTH_SPLASH_MS = 700;
@@ -92,6 +93,12 @@ function HomePageContent() {
   const { navigateWithLoader } = useNavigationLoader();
   const { isAuthModalOpen, closeAuthModal } = useAuthModal();
   const { t } = useTranslation();
+  const { currentLocation, previousLocations, hasActiveSearch, setLocation, resetLocation } = useLocationSearch();
+  // Append " in <city>" to section titles while a location search is active.
+  const withLocation = useCallback(
+    (title) => (hasActiveSearch && currentLocation ? `${title} in ${currentLocation}` : title),
+    [hasActiveSearch, currentLocation]
+  );
   const [skipInitialHomeDelay] = useState(() =>
     Boolean(location.state?.skipHomeSkeletonDelay || location.state?.showQuickHomeSkeleton)
   );
@@ -114,6 +121,7 @@ function HomePageContent() {
     enabled: homeDataEnabled,
     handoffNonce: authHandoffId,
     postAuthHandoff: authHandoffId != null,
+    city: currentLocation,
   });
   /** Use fetchStatus + fresh handoff nonce so skeleton does not disappear when TanStack skips isLoading during cache quirks. */
   const categories = homeLoad.data?.categories || {};
@@ -163,14 +171,14 @@ function HomePageContent() {
           items: padItems([...items], fallback),
         });
       };
-      addSlot(0, t('sections.featuredTitle'), categories[categoryKeys[0]]);
-      if (categoryKeys[1]) addSlot(1, t('sections.recommendedTitle'), categories[categoryKeys[1]]);
-      if (categoryKeys[2]) addSlot(2, t('sections.topRatedTitle'), categories[categoryKeys[2]]);
-      if (categoryKeys[3]) addSlot(3, t('sections.likelyToSellOut'), categories[categoryKeys[3]]);
+      addSlot(0, withLocation(t('sections.featuredTitle')), categories[categoryKeys[0]]);
+      if (categoryKeys[1]) addSlot(1, withLocation(t('sections.recommendedTitle')), categories[categoryKeys[1]]);
+      if (categoryKeys[2]) addSlot(2, withLocation(t('sections.topRatedTitle')), categories[categoryKeys[2]]);
+      if (categoryKeys[3]) addSlot(3, withLocation(t('sections.likelyToSellOut')), categories[categoryKeys[3]]);
       if (categoryKeys.length < 4 && leisureTours.length > 0) {
         slots.push({
           id: 'leisure',
-          title: t('sections.likelyToSellOut'),
+          title: withLocation(t('sections.likelyToSellOut')),
           fallbackKey: 'leisure',
           items: padItems([...leisureTours], topRatedTours),
         });
@@ -182,7 +190,7 @@ function HomePageContent() {
         ? [
             {
               id: 'tours',
-              title: t('sections.featuredTitle'),
+              title: withLocation(t('sections.featuredTitle')),
               fallbackKey: 'tours',
               items: padItems([...pickupTours], recommendedTours),
             },
@@ -192,7 +200,7 @@ function HomePageContent() {
         ? [
             {
               id: 'recommended',
-              title: t('sections.recommendedTitle'),
+              title: withLocation(t('sections.recommendedTitle')),
               fallbackKey: 'recommended',
               items: padItems([...recommendedTours], topRatedTours),
             },
@@ -202,7 +210,7 @@ function HomePageContent() {
         ? [
             {
               id: 'deals',
-              title: t('sections.topRatedTitle'),
+              title: withLocation(t('sections.topRatedTitle')),
               fallbackKey: 'deals',
               items: padItems([...topRatedTours], leisureTours),
             },
@@ -212,7 +220,7 @@ function HomePageContent() {
         ? [
             {
               id: 'leisure',
-              title: t('sections.likelyToSellOut'),
+              title: withLocation(t('sections.likelyToSellOut')),
               fallbackKey: 'leisure',
               items: padItems([...leisureTours], pickupTours),
             },
@@ -225,7 +233,7 @@ function HomePageContent() {
     .slice(4)
     .map((key) => ({
       id: key,
-      title: key.replace(/\b\w/g, (c) => c.toUpperCase()),
+      title: withLocation(key.replace(/\b\w/g, (c) => c.toUpperCase())),
       items: categories[key] || [],
       fallbackKey: key,
     }))
@@ -462,6 +470,37 @@ function HomePageContent() {
           onExternalSearchChange={setSharedSearchQuery}
         />
 
+        {hasActiveSearch ? (
+          <div className="mx-auto max-w-[1520px] px-4 pt-5 sm:px-6">
+            <button
+              type="button"
+              onClick={resetLocation}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+            >
+              Reset to default
+            </button>
+          </div>
+        ) : previousLocations.length > 0 ? (
+          <div className="mx-auto max-w-[1520px] px-4 pt-5 sm:px-6">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Recently searched
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {previousLocations.map((loc) => (
+                <button
+                  key={loc}
+                  type="button"
+                  onClick={() => setLocation(loc)}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+                >
+                  <MapPin className="size-4" />
+                  {loc}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         <main className="mx-auto max-w-[1520px] px-4 pb-14 sm:px-6 lg:px-8">
           <div className="space-y-6 pt-6 min-w-0 md:space-y-6 md:pt-6 xl:space-y-5 xl:pt-5">
             {/* Continue Planning Our Trip */}
@@ -564,9 +603,9 @@ function HomePageContent() {
                   <h2
                     className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
                     style={{ fontSize: 'clamp(1rem, 1.5vw + 0.5rem, 1.75rem)' }}
-                    title={t('sections.lastMinuteDeals')}
+                    title={withLocation(t('sections.lastMinuteDeals'))}
                   >
-                    {t('sections.lastMinuteDeals')}
+                    {withLocation(t('sections.lastMinuteDeals'))}
                   </h2>
                 </div>
                 <div className="section-header-actions">
@@ -632,9 +671,9 @@ function HomePageContent() {
                   <h2
                     className="truncate font-bold tracking-tight text-slate-900 leading-[1.15]"
                     style={{ fontSize: 'clamp(1rem, 1.5vw + 0.5rem, 1.75rem)' }}
-                    title={t('sections.newExperiences')}
+                    title={withLocation(t('sections.newExperiences'))}
                   >
-                    {t('sections.newExperiences')}
+                    {withLocation(t('sections.newExperiences'))}
                   </h2>
                 </div>
                 <div className="section-header-actions">

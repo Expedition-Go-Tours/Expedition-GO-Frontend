@@ -33,6 +33,7 @@ export function useHomePageData({
   enabled = true,
   handoffNonce = null,
   postAuthHandoff = false,
+  city = null,
 } = {}) {
   const delayMs = postAuthHandoff
     ? POST_AUTH_INITIAL_DELAY_MS
@@ -59,6 +60,7 @@ export function useHomePageData({
       delayModeKey,
       postAuthHandoff ? 'postAuth' : 'default',
       nonceKey,
+      city || 'all',
     ],
     queryFn: async () => {
       if (delayMs > 0) {
@@ -66,7 +68,7 @@ export function useHomePageData({
       }
 
       const [popularData, filterData] = await Promise.allSettled([
-        fetchPopularByCategory({ perCategory: 8 }),
+        fetchPopularByCategory({ perCategory: 8, ...(city ? { city } : {}) }),
         fetchFilterOptions(),
       ]);
 
@@ -108,11 +110,11 @@ export function useHomePageData({
         filterOptions: filterData.status === 'fulfilled' ? filterData.value?.filterOptions : null,
       };
 
-      writeCache(result);
+      if (!city) writeCache(result);
 
       return result;
     },
-    initialData: enabled ? readCache() : undefined,
+    initialData: enabled && !city ? readCache() : undefined,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 10,
     refetchOnMount: true,

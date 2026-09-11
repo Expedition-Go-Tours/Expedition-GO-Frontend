@@ -5,9 +5,11 @@
  * @see hooks/useSearchAutocomplete.js — fuzzy matching logic
  */
 import { forwardRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MapPin, Clock, Star } from 'lucide-react';
 import { useNavigationLoader } from '@/contexts/NavigationContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useLocationSearch } from '@/contexts/LocationSearchContext';
 
 export const SearchAutocomplete = forwardRef(function SearchAutocomplete(
   {
@@ -21,6 +23,8 @@ export const SearchAutocomplete = forwardRef(function SearchAutocomplete(
 ) {
   const { navigateWithLoader } = useNavigationLoader();
   const { convertPrice } = useCurrency();
+  const routerLocation = useLocation();
+  const { setLocation } = useLocationSearch();
 
   if (!isVisible || results.total === 0) {
     return null;
@@ -33,7 +37,12 @@ export const SearchAutocomplete = forwardRef(function SearchAutocomplete(
   };
 
   const handleDestinationClick = (destination) => {
-    navigateWithLoader(`/tours?search=${encodeURIComponent(destination.title)}`);
+    // Selecting a destination personalizes the homepage in place. If the user
+    // is on another route, send them back to the homepage first.
+    setLocation(destination.title);
+    if (routerLocation.pathname !== '/') {
+      navigateWithLoader('/');
+    }
     onSelect();
   };
 

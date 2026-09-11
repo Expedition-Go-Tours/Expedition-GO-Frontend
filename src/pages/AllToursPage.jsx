@@ -214,12 +214,13 @@ function AllToursPageContent() {
   const urlFallbackKey = searchParams.get('fk');
   const tourListBadge = category === 'new-experiences' ? 'new' : 'duration';
   const initialSearch = searchParams.get('search') || '';
+  const nearParam = searchParams.get('near') || '';
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [category]);
   const { isAuthModalOpen, closeAuthModal } = useAuthModal();
-  const [sortBy, setSortBy] = useState('featured');
+  const [sortBy, setSortBy] = useState(nearParam ? 'near' : 'featured');
   const [searchQuery, setSearchQuery] = useState(initialSearch);
 
   // Sync search query state with URL changes (e.g., when navigating from navbar search)
@@ -286,6 +287,7 @@ function AllToursPageContent() {
 
   const sortMapping = {
     featured: { sortBy: 'popularity', sortOrder: 'desc' },
+    near: { sortBy: 'nearest', sortOrder: 'asc' },
     'price-low': { sortBy: 'price', sortOrder: 'asc' },
     'price-high': { sortBy: 'price', sortOrder: 'desc' },
     rating: { sortBy: 'rating', sortOrder: 'desc' },
@@ -328,6 +330,7 @@ function AllToursPageContent() {
     search: searchQuery || undefined,
     sortBy: apiSortBy,
     sortOrder: apiSortOrder,
+    near: nearParam || undefined,
   };
 
   const { data: tourData, isLoading: apiLoading } = useAllTours(tourParams);
@@ -796,6 +799,7 @@ function AllToursPageContent() {
                     className="rounded px-3 py-2 text-sm font-medium text-slate-900 outline-none"
                   >
                     <option value="featured">Featured</option>
+                    {nearParam && <option value="near">Closest</option>}
                     <option value="price-low">Price: Low to High</option>
                     <option value="price-high">Price: High to Low</option>
                     <option value="rating">Highest Rated</option>

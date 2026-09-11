@@ -42,7 +42,7 @@ export function PreviousSearchRail({ location, title, note }) {
       subtitle={note}
       items={tours}
       CardComponent={RecommendedExperiencesCard}
-      viewAllTo={`/tours?location=${encodeURIComponent(location)}`}
+        viewAllTo={`/tours?near=${encodeURIComponent(location)}`}
     />
   );
 }

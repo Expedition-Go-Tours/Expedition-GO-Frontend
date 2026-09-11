@@ -13,6 +13,11 @@ export async function fetchPopularByCategory(params = {}) {
   return unwrap(data);
 }
 
+export async function fetchSearchFallback(params = {}) {
+  const data = await apiRequest('/tours/search-fallback', { params, auth: false });
+  return unwrap(data);
+}
+
 export async function fetchFilterOptions() {
   const data = await apiRequest('/tours/filters/options', { auth: false });
   return unwrap(data);

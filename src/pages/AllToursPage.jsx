@@ -22,6 +22,7 @@ import {
 import { Navbar } from '@/components/homepage/Navbar';
 import { Footer } from '@/components/homepage/Footer';
 import { FeaturedExperiencesCard } from '@/components/homepage/FeaturedExperiencesCard';
+import { NoToursEmptyState } from '@/components/NoToursEmptyState';
 import { PopularDestinationsCard } from '@/components/homepage/PopularDestinationsCard';
 import { Calendar } from '@/components/ui/calendar';
 import { AuthModalProvider } from '@/contexts/AuthModalContext';
@@ -813,9 +814,7 @@ function AllToursPageContent() {
                     Loading tours...
                   </div>
                 ) : tours.length === 0 ? (
-                  <div className="py-20 text-center text-sm text-slate-500">
-                    No tours found matching your criteria.
-                  </div>
+                  <NoToursEmptyState location={nearParam || searchQuery || ''} />
                 ) : (
                   <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-8 lg:grid-cols-3 xl:grid-cols-4">
                     {tours.map((item) => (

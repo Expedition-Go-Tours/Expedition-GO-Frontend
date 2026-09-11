@@ -319,7 +319,7 @@ function AllToursPageContent() {
   // scope the listing to it — the backend ranks in-place -> near -> rest — and
   // drop the raw text search so a location search can't dead-end.
   const { data: resolvedPlace } = usePlaceResolve(searchQuery);
-  const placeValue = nearParam ? '' : (resolvedPlace?.name || '');
+  const placeValue = nearParam ? '' : (resolvedPlace?.displayName || resolvedPlace?.name || '');
 
   const tourParams = {
     page: currentPage,
